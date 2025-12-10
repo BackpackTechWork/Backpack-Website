@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : (typeof req !== 'undefined' ? req.originalUrl : '/')
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+  
+  <% if (success_msg && success_msg.length > 0) { %>
+    <div class="container" style="margin-top: 2rem;">
+      <div class="alert alert-success"><%= success_msg %></div>
+    </div>
+  <% } %>
+  
+  <% if (error_msg && error_msg.length > 0) { %>
+    <div class="container" style="margin-top: 2rem;">
+      <div class="alert alert-error"><%= error_msg %></div>
+    </div>
+  <% } %>
+  
+  <% if (error && error.length > 0) { %>
+    <div class="container" style="margin-top: 2rem;">
+      <div class="alert alert-error"><%= error %></div>
+    </div>
+  <% } %>
+
+  <%- body %>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,3692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <!-- Devicon CSS for tech icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+  <!-- CodeMirror CSS for markdown editor -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/theme/eclipse.css">
+  <style>
+    :root {
+      --accent: #c51d34;
+      --accent-dark: #9e1528;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --card-bg: #ffffff;
+    }
+
+    body {
+      background: var(--gray-50);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .force-show {
+      opacity: 1 !important;
+      transform: none !important;
+      visibility: visible !important;
+    }
+
+    .profile-page-container {
+      padding: 0 1rem 4rem;
+    }
+
+    .profile-page-header {
+      margin-bottom: 2rem;
+    }
+
+    .profile-page-header h1 {
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: #0f172a;
+    }
+
+    .profile-page-header p {
+      color: var(--gray-500);
+    }
+
+    .profile-edit-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      opacity: 1 !important;
+      animation: none !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    .profile-section-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .profile-section-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: 0 20px 35px -25px rgba(14, 30, 37, 0.25);
+      position: relative;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+      box-sizing: border-box !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: hidden !important;
+    }
+    
+    /* Bio section specific styles */
+    #builderBio {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    #builderBio .form-group {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    #builderBio textarea.form-control {
+      margin-top: 0.5rem !important;
+    }
+
+    .profile-section-card h3 {
+      margin-bottom: 0.35rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .profile-section-card > p.section-hint {
+      color: var(--gray-500);
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .profile-picture-section {
+      text-align: center;
+    }
+
+    .profile-img-wrapper-large {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+      overflow: hidden;
+      border-radius: 20px;
+      width: 180px;
+      height: 180px;
+    }
+
+    .profile-img-wrapper-large .member-detail-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 20px;
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .profile-img-wrapper-large .member-main-image {
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .profile-img-wrapper-large .member-alter-ego-image {
+      opacity: 0;
+      z-index: 1;
+      filter: grayscale(0.2) contrast(1.15) brightness(1.05);
+      transform: scale(1.1) rotate(2deg);
+    }
+
+    .profile-img-wrapper-large:hover .member-main-image {
+      opacity: 0;
+      transform: scale(0.9) rotate(-2deg);
+      filter: blur(3px);
+    }
+
+    .profile-img-wrapper-large:hover .member-alter-ego-image {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+      filter: grayscale(0) contrast(1.1) brightness(1);
+    }
+
+    .image-type-btn {
+      padding: 0.75rem 1.5rem;
+      border: 2px solid var(--gray-300);
+      background: transparent;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      color: var(--gray-700);
+    }
+
+    .image-type-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(197, 29, 52, 0.05);
+    }
+
+    .image-type-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .modal-image-selector {
+      transition: all 0.3s ease;
+    }
+
+    .modal-image-selector:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-image-selector.selected {
+      border-color: var(--accent) !important;
+      background: rgba(197, 29, 52, 0.05);
+      box-shadow: 0 4px 15px rgba(197, 29, 52, 0.2);
+    }
+
+    .modal-image-selector.selected p {
+      color: var(--accent) !important;
+    }
+
+
+    .profile-picture-hint {
+      font-size: 0.9rem;
+      color: var(--gray-500);
+      text-align: center;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .form-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .form-group small {
+      color: var(--gray-500);
+      font-size: 0.8rem;
+    }
+
+    .form-help {
+      color: var(--gray-500);
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      display: block;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .repeatable-card .checkbox-group {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.25rem !important;  /* Reduced from 0.75rem */
+      margin: 0.5rem 0 !important;  /* Reduced from 0.75rem */
+      padding: 0 !important;
+      width: 100% !important;
+      justify-content: flex-start !important;
+    }
+
+    .repeatable-card .checkbox-group input[type="checkbox"] {
+      margin: 0 0 0 0.25rem !important;  /* Added left margin */
+      flex-shrink: 0;
+      width: 16px !important;  /* Slightly smaller checkbox */
+      height: 16px !important;  /* Slightly smaller checkbox */
+    }
+
+    .repeatable-card .checkbox-group label {
+      margin: 0 !important;
+      padding: 0 !important;
+      white-space: nowrap;
+      font-size: 0.9em;  /* Slightly smaller font */
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--accent);
+      margin: 0;
+      padding: 0;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    .checkbox-group label,
+    .checkbox-group span {
+      margin: 0;
+      padding: 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: #111827;
+      line-height: 1.5;
+      align-self: center;
+    }
+
+    .password-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-input-wrapper .form-control {
+      padding-right: 3rem;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      background: transparent;
+      border: none;
+      color: var(--gray-500);
+      cursor: pointer;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+      z-index: 1;
+    }
+
+    .password-toggle:hover {
+      color: var(--accent);
+    }
+
+    .password-toggle:focus {
+      outline: none;
+    }
+
+    .profile-mode-selector {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* When markdown mode is active, make Profile Type full width */
+    #profileTypeCard.full-width-mode {
+      grid-column: 1 / -1;
+    }
+
+    #profileTypeCard.full-width-mode .mode-option {
+      min-width: 200px;
+    }
+
+    .mode-option {
+      cursor: pointer;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .mode-option input[type="radio"] {
+      display: none;
+    }
+
+    .mode-card {
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      text-align: center;
+      transition: all 0.2s ease;
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mode-card i {
+      font-size: 1.25rem;
+      color: var(--gray-500);
+      display: block;
+      transition: color 0.2s ease;
+    }
+
+    .mode-card h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .mode-card p {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    .mode-option input[type="radio"]:checked + .mode-card {
+      border-color: var(--accent);
+      background: rgba(197, 29, 52, 0.08);
+      box-shadow: 0 2px 8px rgba(197, 29, 52, 0.2);
+    }
+
+    .mode-option input[type="radio"]:checked + .mode-card i {
+      color: var(--accent);
+    }
+
+    .mode-option:hover .mode-card {
+      border-color: var(--gray-300);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-mode-content {
+      transition: opacity 0.3s ease;
+    }
+
+    .profile-mode-content[style*="display: none"] {
+      display: none !important;
+    }
+
+    #builderBio {
+      opacity: 1 !important;
+      visibility: visible !important;
+      box-sizing: border-box !important;
+      width: 100% !important;
+    }
+
+    #builderBio .form-group {
+      display: flex !important;
+      flex-direction: column !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      gap: 0.5rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      box-sizing: border-box !important;
+    }
+
+    #builderBio textarea,
+    #builderBio textarea.form-control {
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      margin-left: 25px !important;
+      margin-right: 0 !important;
+      background: #fff !important;
+      color: #0f172a !important;
+      border: 2px solid var(--gray-200) !important;
+      border-radius: 12px !important;
+      padding: 1.25rem 1.5rem !important;
+      padding-left: 1.5rem !important;
+      min-height: 160px !important;
+      font-size: 0.95rem !important;
+      line-height: 1.6 !important;
+      font-family: 'Inter', sans-serif !important;
+      transition: all 0.2s ease !important;
+      resize: vertical !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    #builderBio textarea:focus,
+    #builderBio textarea.form-control:focus {
+      outline: none !important;
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+      background: #fff !important;
+    }
+
+    #builderBio textarea::placeholder {
+      color: var(--gray-500) !important;
+      opacity: 0.7 !important;
+    }
+
+    #builderBio textarea:hover {
+      border-color: var(--gray-300) !important;
+    }
+
+    .form-control,
+    textarea.form-control {
+      width: 100%;
+      border-radius: 10px;
+      border: 2px solid var(--gray-200);
+      padding: 0.85rem 1rem;
+      font-size: 0.95rem;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+      background: #fff;
+    }
+
+    .form-control:focus,
+    textarea.form-control:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.15);
+      outline: none;
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .profile-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: white;
+      border: none;
+      padding: 0.9rem 1.75rem;
+      font-weight: 600;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-outline {
+      border: 2px solid var(--gray-300);
+      color: var(--gray-700);
+      background: transparent;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(197, 29, 52, 0.05);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(197, 29, 52, 0.1);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 15px 25px rgba(197, 29, 52, 0.35);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .profile-markdown-editor {
+      background: var(--gray-50);
+      border-radius: 14px;
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .markdown-tabs {
+      display: flex;
+      background: var(--gray-100);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .markdown-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.75rem;
+      cursor: pointer;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      border-bottom: 3px solid transparent;
+      transition: color 0.2s ease, border 0.2s ease, background 0.2s ease;
+    }
+
+    .markdown-tab.active {
+      color: #0f172a;
+      border-bottom-color: var(--accent);
+      background: #fff;
+    }
+
+    .markdown-pane {
+      padding: 0;
+      min-height: 650px;
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .markdown-pane textarea {
+      width: 100%;
+      height: 100%;
+      border: none;
+      resize: none;
+      min-height: 650px;
+      font-size: 0.95rem;
+      background: transparent;
+      color: inherit;
+      padding: 1.25rem;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+
+    .markdown-pane textarea:focus {
+      outline: none;
+    }
+
+    /* CodeMirror Custom Styling - Light Theme */
+    .CodeMirror {
+      height: 650px !important;
+      min-height: 650px !important;
+      font-size: 14px !important;
+      line-height: 1.6 !important;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
+      border: none !important;
+      border-radius: 0 !important;
+      background: #ffffff !important;
+      color: #24292e !important;
+    }
+
+    .CodeMirror-scroll {
+      min-height: 650px !important;
+    }
+
+    .CodeMirror-gutters {
+      background: #f6f8fa !important;
+      border-right: 1px solid #e1e4e8 !important;
+      padding-right: 8px !important;
+    }
+
+    .CodeMirror-linenumber {
+      color: #6a737d !important;
+      font-size: 13px !important;
+      padding: 0 8px 0 0 !important;
+      min-width: 40px !important;
+    }
+
+    .CodeMirror-lines {
+      padding: 1.25rem 0 !important;
+      background: #ffffff !important;
+    }
+
+    .CodeMirror-cursor {
+      border-left: 2px solid #24292e !important;
+    }
+
+    .CodeMirror-selected {
+      background: rgba(197, 29, 52, 0.15) !important;
+    }
+
+    .CodeMirror-focused .CodeMirror-selected {
+      background: rgba(197, 29, 52, 0.2) !important;
+    }
+
+    .CodeMirror-focused .CodeMirror-activeline-background {
+      background: rgba(197, 29, 52, 0.05) !important;
+    }
+
+    /* CodeMirror theme overrides for light theme readability */
+    .CodeMirror .cm-header {
+      color: #0366d6 !important;
+      font-weight: 600 !important;
+    }
+
+    .CodeMirror .cm-string {
+      color: #032f62 !important;
+    }
+
+    .CodeMirror .cm-comment {
+      color: #6a737d !important;
+      font-style: italic !important;
+    }
+
+    .CodeMirror .cm-keyword {
+      color: #d73a49 !important;
+    }
+
+    .CodeMirror .cm-link {
+      color: #0366d6 !important;
+    }
+
+    .CodeMirror .cm-strong {
+      color: #24292e !important;
+      font-weight: 700 !important;
+    }
+
+    .CodeMirror .cm-em {
+      color: #24292e !important;
+      font-style: italic !important;
+    }
+
+    .CodeMirror .cm-variable {
+      color: #e36209 !important;
+    }
+
+    .markdown-preview {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      font-size: 16px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      color: #24292e;
+    }
+
+    .github-markdown {
+      padding: 1.5rem;
+    }
+
+    /* Custom scrollbar for preview pane */
+    .markdown-preview::-webkit-scrollbar,
+    .github-markdown::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .markdown-preview::-webkit-scrollbar-track,
+    .github-markdown::-webkit-scrollbar-track {
+      background: var(--gray-100);
+      border-radius: 5px;
+    }
+
+    .markdown-preview::-webkit-scrollbar-thumb,
+    .github-markdown::-webkit-scrollbar-thumb {
+      background: var(--gray-300);
+      border-radius: 5px;
+    }
+
+    .markdown-preview::-webkit-scrollbar-thumb:hover,
+    .github-markdown::-webkit-scrollbar-thumb:hover {
+      background: var(--gray-500);
+    }
+
+    .github-markdown h1,
+    .github-markdown h2,
+    .github-markdown h3,
+    .github-markdown h4,
+    .github-markdown h5,
+    .github-markdown h6 {
+      margin-top: 24px;
+      margin-bottom: 16px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .github-markdown h1 {
+      font-size: 2em;
+      border-bottom: 1px solid #eaecef;
+      padding-bottom: 0.3em;
+    }
+
+    .github-markdown h2 {
+      font-size: 1.5em;
+      border-bottom: 1px solid #eaecef;
+      padding-bottom: 0.3em;
+    }
+
+    .github-markdown h3 {
+      font-size: 1.25em;
+    }
+
+    .github-markdown h4 {
+      font-size: 1em;
+    }
+
+    .github-markdown h5 {
+      font-size: 0.875em;
+    }
+
+    .github-markdown h6 {
+      font-size: 0.85em;
+      color: #6a737d;
+    }
+
+    .github-markdown p {
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    .github-markdown ul,
+    .github-markdown ol {
+      margin-top: 0;
+      margin-bottom: 16px;
+      padding-left: 2em;
+    }
+
+    .github-markdown li {
+      margin-top: 0.25em;
+    }
+
+    .github-markdown li > p {
+      margin-top: 16px;
+    }
+
+    .github-markdown blockquote {
+      padding: 0 1em;
+      color: #6a737d;
+      border-left: 0.25em solid #dfe2e5;
+      margin: 0;
+      margin-bottom: 16px;
+    }
+
+    .github-markdown code {
+      padding: 0.2em 0.4em;
+      margin: 0;
+      font-size: 85%;
+      background-color: rgba(27, 31, 35, 0.05);
+      border-radius: 3px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    .github-markdown pre {
+      padding: 16px;
+      overflow: auto;
+      font-size: 85%;
+      line-height: 1.45;
+      background-color: #f6f8fa;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+
+    .github-markdown pre code {
+      display: inline;
+      max-width: auto;
+      padding: 0;
+      margin: 0;
+      overflow: visible;
+      line-height: inherit;
+      word-wrap: normal;
+      background-color: transparent;
+      border: 0;
+    }
+
+    .github-markdown pre > code {
+      padding: 0;
+      margin: 0;
+      font-size: 100%;
+      word-break: normal;
+      white-space: pre;
+      background: transparent;
+      border: 0;
+    }
+
+    .github-markdown table {
+      border-spacing: 0;
+      border-collapse: collapse;
+      margin-top: 0;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+
+    .github-markdown table th,
+    .github-markdown table td {
+      padding: 6px 13px;
+      border: 1px solid #dfe2e5;
+    }
+
+    .github-markdown table th {
+      font-weight: 600;
+      background-color: #f6f8fa;
+    }
+
+    .github-markdown table tr {
+      background-color: #fff;
+      border-top: 1px solid #c6cbd1;
+    }
+
+    .github-markdown table tr:nth-child(2n) {
+      background-color: #f6f8fa;
+    }
+
+    .github-markdown img {
+      max-width: 100%;
+      box-sizing: content-box;
+      background-color: #fff;
+      border-style: none;
+    }
+
+    .github-markdown a {
+      color: #0366d6;
+      text-decoration: none;
+    }
+
+    .github-markdown a:hover {
+      text-decoration: underline;
+    }
+
+    .github-markdown hr {
+      height: 0.25em;
+      padding: 0;
+      margin: 24px 0;
+      background-color: #e1e4e8;
+      border: 0;
+    }
+
+    .repeatable-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .repeatable-header h3 {
+      margin: 0;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .repeatable-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .repeatable-card {
+      border: 1px solid var(--gray-200);
+      border-radius: 14px;
+      padding: 1.25rem;
+      padding-left: calc(1.25rem + 25px);
+      background: #fff;
+      position: relative;
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      overflow: hidden !important;
+    }
+
+    .repeatable-card .form-group {
+      display: flex !important;
+      flex-direction: column !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      gap: 0.45rem !important;
+      margin: 0 !important;
+      margin-bottom: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      align-items: stretch !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+    }
+
+    .repeatable-card .form-group label {
+      display: block !important;
+      margin: 0 !important;
+      margin-bottom: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    .repeatable-card .form-group input,
+    .repeatable-card .form-group select,
+    .repeatable-card .form-group textarea {
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      padding: 0.85rem 1rem !important;
+    }
+
+    .repeatable-card .form-grid {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 1rem !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      margin: 0 !important;
+      margin-bottom: 1rem !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      align-items: start !important;
+      box-sizing: border-box !important;
+      padding: 0 !important;
+    }
+
+    .repeatable-card .form-grid > .form-group {
+      min-width: 0 !important;
+      overflow: hidden !important;
+    }
+
+    .repeatable-card .date-fields-group {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 1rem !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+
+    .language-item .form-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .repeatable-card .form-control,
+    .repeatable-card input,
+    .repeatable-card select,
+    .repeatable-card textarea {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+    }
+
+    .repeatable-card label {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      margin: 0 !important;
+      margin-bottom: 0.25rem !important;
+    }
+
+    .repeatable-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .repeatable-card-title {
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-left: -25px;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--gray-100);
+      color: var(--gray-700);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .icon-button:hover {
+      background: rgba(197, 29, 52, 0.1);
+      color: var(--accent);
+    }
+
+    .add-entry-btn {
+      border: 2px dashed var(--gray-300);
+      border-radius: 12px;
+      padding: 1.25rem 1.75rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--gray-700);
+      background: var(--gray-50);
+      cursor: pointer;
+      width: 100%;
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .add-entry-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(197, 29, 52, 0.05);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.15);
+    }
+
+    .add-entry-btn i {
+      font-size: 1.1rem;
+    }
+
+    .social-input-group {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .social-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: var(--gray-500);
+    }
+
+    .skills-select,
+    .project-technologies-select {
+      width: 100%;
+    }
+
+    .notification {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      padding: 1rem 1.25rem;
+      border-radius: 14px;
+      color: #fff;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .notification.success {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+    }
+
+    .notification.error {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+    }
+
+    .notification.hide {
+      opacity: 0;
+      transform: translateX(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Select2 Custom Styling */
+    .select2-container--default .select2-selection--multiple {
+      border: 2px solid var(--gray-200) !important;
+      border-radius: 8px !important;
+      min-height: 52px !important;
+      padding: 0.375rem 0.75rem !important;
+      background: #ffffff !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%) !important;
+      border: none !important;
+      color: white !important;
+      padding: 0.5rem 0.75rem 0.5rem 1rem !important;
+      border-radius: 20px !important;
+      margin: 0.375rem 0.375rem 0.375rem 0 !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+      box-shadow: 0 2px 8px rgba(197, 29, 52, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      cursor: default !important;
+      position: relative !important;
+      overflow: hidden !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice:hover {
+      background: linear-gradient(135deg, var(--accent-dark) 0%, #8a1323 100%) !important;
+      transform: translateY(-2px) scale(1.02) !important;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.35), 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice:hover::before {
+      left: 100%;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+      color: transparent !important;
+      margin-right: 0 !important;
+      font-weight: 700 !important;
+      font-size: 0 !important;
+      width: 20px !important;
+      height: 20px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 50% !important;
+      background: rgba(255, 255, 255, 0.25) !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      cursor: pointer !important;
+      line-height: 1 !important;
+      padding: 0 !important;
+      opacity: 1 !important;
+      flex-shrink: 0 !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      position: relative !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove::before {
+      content: '×' !important;
+      display: block !important;
+      font-size: 1.25rem !important;
+      line-height: 1 !important;
+      font-weight: 300 !important;
+      color: white !important;
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border-color: rgba(255, 255, 255, 0.5) !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+      transform: scale(1.15) !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover::before {
+      color: var(--accent) !important;
+      transform: translate(-50%, -50%) rotate(90deg) !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:active {
+      transform: scale(1.05) !important;
+      background: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:active::before {
+      transform: translate(-50%, -50%) rotate(90deg) !important;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+      background-color: var(--accent) !important;
+      color: white !important;
+    }
+
+    .select2-container--default .select2-results__option[aria-selected=true] {
+      background-color: var(--gray-100) !important;
+      color: var(--gray-700) !important;
+    }
+
+    .select2-container {
+      width: 100% !important;
+    }
+
+    .select2-dropdown {
+      border: 2px solid var(--gray-200) !important;
+      border-radius: 8px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+      margin-top: 4px !important;
+    }
+
+    .select2-results__options {
+      max-height: 280px !important;
+      overflow-y: auto !important;
+    }
+
+    .select2-results__option {
+      padding: 0.625rem 1rem !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.75rem !important;
+      font-size: 0.875rem !important;
+      transition: all 0.15s ease !important;
+    }
+
+    .select2-results__option i {
+      font-size: 1.25rem !important;
+      width: 24px !important;
+      text-align: center !important;
+    }
+
+    .select2-search--dropdown {
+      padding: 0.75rem !important;
+      background: var(--gray-50) !important;
+      border-bottom: 1px solid var(--gray-200) !important;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+      border: 2px solid var(--gray-200) !important;
+      border-radius: 6px !important;
+      padding: 0.625rem 1rem !important;
+      font-size: 0.875rem !important;
+      background: white !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .select2-search--dropdown .select2-search__field:focus {
+      border-color: var(--accent) !important;
+      outline: none !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+    }
+
+    /* Custom scrollbar for dropdown */
+    .select2-results__options::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .select2-results__options::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .select2-results__options::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 10px;
+    }
+
+    .select2-results__options::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-dark);
+    }
+
+    @media (max-width: 1024px) {
+      .profile-edit-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Profile Layout - GitHub Style */
+    .profile-main-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 2rem;
+      margin-top: 1.5rem;
+    }
+
+    .profile-picture-sidebar {
+      position: sticky;
+      top: 2rem;
+      height: fit-content;
+      width: 100%;
+    }
+
+    .profile-picture-sidebar .profile-section-card {
+      margin-bottom: 0;
+    }
+
+    .profile-picture-sidebar .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      width: 100%;
+    }
+    
+    /* Bio section specific overrides */
+    .profile-picture-sidebar .profile-section-card:has(#simpleBio) {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    
+    .profile-picture-sidebar .profile-section-card:has(#simpleBio) .form-group {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0.5rem !important;
+      width: 100% !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      margin: 0 !important;
+      margin-left: 1rem !important;
+      padding: 0 !important;
+    }
+    
+    .profile-picture-sidebar .profile-section-card:has(#simpleBio) #simpleBio {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      width: calc(100% - 1rem) !important;
+      min-height: 120px !important;
+      padding: 0.85rem 1rem !important;
+      margin: 0 !important;
+      margin-top: 0.5rem !important;
+      margin-left: 1rem !important;
+      background: #fff !important;
+      color: #0f172a !important;
+      border: 2px solid var(--gray-200) !important;
+      border-radius: 10px !important;
+      font-size: 0.95rem !important;
+      line-height: 1.6 !important;
+      font-family: 'Inter', sans-serif !important;
+      resize: vertical !important;
+    }
+    
+    /* Fallback for browsers that don't support :has() */
+    .profile-picture-sidebar .profile-section-card .form-group #simpleBio {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      width: calc(100% - 1rem) !important;
+      min-height: 120px !important;
+      padding: 0.85rem 1rem !important;
+      margin: 0 !important;
+      margin-top: 0.5rem !important;
+      margin-left: 1rem !important;
+      background: #fff !important;
+      color: #0f172a !important;
+      border: 2px solid var(--gray-200) !important;
+      border-radius: 10px !important;
+      font-size: 0.95rem !important;
+      line-height: 1.6 !important;
+      font-family: 'Inter', sans-serif !important;
+      resize: vertical !important;
+    }
+
+    .profile-picture-sidebar textarea.form-control,
+    .profile-picture-sidebar #simpleBio,
+    .profile-picture-sidebar textarea#simpleBio {
+      width: 100% !important;
+      min-height: 120px !important;
+      resize: vertical !important;
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      border: 2px solid var(--gray-200) !important;
+      border-radius: 10px !important;
+      padding: 0.85rem 1rem !important;
+      font-size: 0.95rem !important;
+      background: #fff !important;
+      color: #0f172a !important;
+      font-family: 'Inter', sans-serif !important;
+      transition: border 0.2s ease, box-shadow 0.2s ease !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      margin-top: 0.5rem !important;
+    }
+    
+    /* Ensure Bio section form-group is visible and properly aligned */
+    .profile-picture-sidebar .profile-section-card .form-group {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0.45rem !important;
+      width: 100% !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    
+    /* Bio section form-group specific alignment */
+    .profile-picture-sidebar .profile-section-card .form-group:has(#simpleBio) {
+      margin-left: 1rem !important;
+    }
+    
+    /* Bio section card specific styling */
+    .profile-picture-sidebar .profile-section-card {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    .profile-picture-sidebar textarea.form-control:focus,
+    .profile-picture-sidebar #simpleBio:focus,
+    .profile-picture-sidebar textarea#simpleBio:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.15) !important;
+      outline: none !important;
+    }
+
+    .profile-picture-sidebar .social-input-group {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 0.75rem;
+      align-items: center;
+      width: 100%;
+    }
+
+    .profile-tabs-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 20px 35px -25px rgba(14, 30, 37, 0.25);
+      overflow: hidden;
+      min-height: 500px;
+    }
+
+    .profile-tabs-nav {
+      display: flex;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0.5rem;
+      margin: 0;
+      list-style: none;
+      flex-wrap: wrap;
+      border-radius: 12px 12px 0 0;
+      gap: 0.5rem;
+    }
+
+    .profile-tab-item {
+      margin: 0;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .profile-tab-button {
+      padding: 0.875rem 1.25rem;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--gray-600);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .profile-tab-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.1), rgba(197, 29, 52, 0.05));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 8px;
+    }
+
+    .profile-tab-button:hover {
+      color: var(--accent);
+      background: rgba(197, 29, 52, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .profile-tab-button:hover::before {
+      opacity: 1;
+    }
+
+    .profile-tab-button.active {
+      color: var(--accent);
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(197, 29, 52, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+      transform: translateY(0);
+    }
+
+    .profile-tab-button.active::before {
+      opacity: 1;
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.12), rgba(197, 29, 52, 0.08));
+    }
+
+    .profile-tab-button i {
+      font-size: 1rem;
+      transition: transform 0.3s ease;
+    }
+
+    .profile-tab-button:hover i {
+      transform: scale(1.1);
+    }
+
+    .profile-tab-button.active i {
+      transform: scale(1.15);
+      color: var(--accent);
+    }
+
+    .profile-tab-content {
+      display: none;
+      padding: 1.75rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: none;
+    }
+
+    .profile-tab-content.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .profile-tab-content .profile-edit-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-top: 0;
+    }
+
+    .profile-tab-content .profile-section-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    /* Full width for single card tabs */
+    #basicTab .profile-edit-grid,
+    #passwordTab .profile-edit-grid {
+      grid-template-columns: 1fr;
+      max-width: 800px;
+    }
+
+    @media (max-width: 1024px) {
+      .profile-main-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-picture-sidebar {
+        position: relative;
+        top: 0;
+        max-width: 100%;
+        margin: 0 auto;
+      }
+
+      .profile-tab-content .profile-edit-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <div class="profile-page-container">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
+      <div class="profile-page-header">
+        <h1>My Profile</h1>
+        <p>Manage your profile information, bio, skills, and social links</p>
+      </div>
+
+          <!-- Profile Layout - GitHub Style -->
+          <div class="profile-main-layout">
+            <!-- Profile Picture Sidebar (Left) -->
+            <div class="profile-picture-sidebar">
+              <div class="profile-section-card">
+                <h3>Profile Picture</h3>
+                <div class="profile-picture-section">
+                  <div class="profile-img-wrapper-large member-image-wrapper">
+                    <%
+                      let profileImgSrc = user.avatar || '/images/default-avatar.png';
+
+                      if (profileImgSrc && profileImgSrc.includes('googleusercontent.com')) {
+
+                        profileImgSrc = profileImgSrc.replace(/=s\d+-c$/, '');
+
+                        profileImgSrc += '=s256-c';
+
+                        const cacheBuster = Math.floor(Date.now() / (1000 * 60 * 60)); 
+
+                        profileImgSrc = '/avatar-proxy?url=' + encodeURIComponent(profileImgSrc) + '&t=' + cacheBuster;
+                      }
+                      
+                      let alterEgoSrc = teamMember?.alter_ego || null;
+                      if (alterEgoSrc && !alterEgoSrc.startsWith('http')) {
+                        alterEgoSrc = alterEgoSrc + '?v=' + Math.floor(Date.now() / (1000 * 60 * 60));
+                      }
+                    %>
+                    <img src="<%= profileImgSrc %>" alt="<%= user.name %>" class="profile-img-large profile-clickable member-detail-image member-main-image" id="profileImage" data-role="<%= user.role %>">
+                    <% if (alterEgoSrc) { %>
+                      <img src="<%= alterEgoSrc %>" alt="<%= user.name %> - Alter Ego" class="profile-img-large member-detail-image member-alter-ego-image" id="alterEgoImage">
+                    <% } %>
+                  </div>
+                  <p class="profile-picture-hint">Click on the image to upload profile picture or alter ego</p>
+                </div>
+              </div>
+
+              <!-- Bio Section (Always Visible) -->
+              <div class="profile-section-card" style="margin-top: 1.5rem;">
+                <h3>Bio</h3>
+                <p class="section-hint">Write a brief professional bio about yourself</p>
+                <div class="form-group">
+                  <textarea id="simpleBio" name="simpleBio" class="form-control" rows="6" placeholder="Tell us about yourself..."><%= teamMember?.bio || '' %></textarea>
+                </div>
+              </div>
+
+              <!-- Social Links Section (Always Visible) -->
+              <div class="profile-section-card" style="margin-top: 1.5rem;">
+                <h3>Social Links</h3>
+                <p class="section-hint">Add your professional social media profiles (optional)</p>
+                <div class="form-grid" style="grid-template-columns: 1fr;">
+                  <div class="social-input-group">
+                    <div class="social-icon"><i class="fab fa-linkedin-in"></i></div>
+                    <input type="url" id="linkedin" name="linkedin" value="<%= teamMember?.linkedin || '' %>" class="form-control" placeholder="https://linkedin.com/in/username">
+                  </div>
+
+                  <div class="social-input-group">
+                    <div class="social-icon"><i class="fab fa-github"></i></div>
+                    <input type="url" id="github" name="github" value="<%= teamMember?.github || '' %>" class="form-control" placeholder="https://github.com/username">
+                  </div>
+
+                  <div class="social-input-group">
+                    <div class="social-icon"><i class="fab fa-x-twitter"></i></div>
+                    <input type="url" id="twitter" name="twitter" value="<%= teamMember?.twitter || '' %>" class="form-control" placeholder="https://twitter.com/username">
+                  </div>
+
+                  <div class="social-input-group">
+                    <div class="social-icon"><i class="fab fa-instagram"></i></div>
+                    <input type="url" id="instagram" name="instagram" value="<%= teamMember?.instagram || '' %>" class="form-control" placeholder="https://instagram.com/username">
+                  </div>
+
+                  <div class="social-input-group">
+                    <div class="social-icon"><i class="fab fa-facebook-f"></i></div>
+                    <input type="url" id="facebook" name="facebook" value="<%= teamMember?.facebook || '' %>" class="form-control" placeholder="https://facebook.com/username">
+                  </div>
+                </div>
+                
+                <!-- Save Bio and Social Links Button -->
+                <div class="form-actions" style="margin-top: 1.5rem;">
+                  <button type="button" id="saveBioSocialBtn" class="btn-primary">
+                    <i class="fas fa-save"></i>
+                    Save Bio & Social Links
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Profile Tabs Container (Right) -->
+            <div class="profile-tabs-container">
+              <ul class="profile-tabs-nav">
+                <li class="profile-tab-item">
+                  <button class="profile-tab-button active" data-tab="basic">
+                    <i class="fas fa-user"></i>
+                    Basic Information
+                  </button>
+                </li>
+                <li class="profile-tab-item">
+                  <button class="profile-tab-button" data-tab="password">
+                    <i class="fas fa-key"></i>
+                    Password Settings
+                  </button>
+                </li>
+                <li class="profile-tab-item">
+                  <button class="profile-tab-button" data-tab="content">
+                    <i class="fas fa-file-alt"></i>
+                    Profile Content
+                  </button>
+                </li>
+              </ul>
+
+              <!-- Basic Information Tab -->
+              <div class="profile-tab-content active" id="basicTab">
+                <div class="profile-edit-grid">
+                  <!-- Basic Information -->
+                  <div class="profile-section-card">
+                    <h3>Basic Information</h3>
+                    <form id="basicForm" class="profile-form">
+                      <div class="form-grid">
+                        <div class="form-group">
+                          <label for="name">Full Name</label>
+                          <input type="text" id="name" name="name" value="<%= user.name %>" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="email">Email Address</label>
+                          <input type="email" id="email" name="email" value="<%= user.email %>" class="form-control" required>
+                        </div>
+                      </div>
+
+                      <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                          <i class="fas fa-save"></i>
+                          Save Changes
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Password Settings Tab -->
+              <div class="profile-tab-content" id="passwordTab">
+                <div class="profile-edit-grid">
+                  <!-- Change Password Section -->
+                  <div class="profile-section-card">
+                    <h3>Change Password</h3>
+                    <p class="section-hint">Update your account password</p>
+                    <form id="changePasswordForm" class="profile-form">
+                      <div class="form-grid">
+                        <div class="form-group">
+                          <label for="currentPassword">Current Password</label>
+                          <div class="password-input-wrapper">
+                            <input type="password" id="currentPassword" name="currentPassword" class="form-control" required>
+                            <button type="button" class="password-toggle" data-target="currentPassword">
+                              <i class="fas fa-eye"></i>
+                            </button>
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="newPassword">New Password</label>
+                          <div class="password-input-wrapper">
+                            <input type="password" id="newPassword" name="newPassword" class="form-control" required minlength="6">
+                            <button type="button" class="password-toggle" data-target="newPassword">
+                              <i class="fas fa-eye"></i>
+                            </button>
+                          </div>
+                          <small>Password must be at least 6 characters long</small>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="confirmPassword">Confirm New Password</label>
+                          <div class="password-input-wrapper">
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required minlength="6">
+                            <button type="button" class="password-toggle" data-target="confirmPassword">
+                              <i class="fas fa-eye"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                          <i class="fas fa-key"></i>
+                          Change Password
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Profile Content Tab -->
+              <div class="profile-tab-content" id="contentTab">
+                <div class="profile-edit-grid">
+                <!-- Profile Mode Selection -->
+            <div class="profile-section-card" id="profileTypeCard">
+              <h3>Profile Type</h3>
+              <p class="section-hint">Choose how you want to build your profile</p>
+              <div class="profile-mode-selector">
+                <label class="mode-option">
+                  <input type="radio" name="profileType" value="markdown" <%= teamMember?.profile_type === 'markdown' ? 'checked' : '' %>>
+                  <div class="mode-card">
+                    <i class="fas fa-code"></i>
+                    <h4>Markdown Editor</h4>
+                    <p>Full control with Markdown formatting</p>
+                  </div>
+                </label>
+                <label class="mode-option">
+                  <input type="radio" name="profileType" value="builder" <%= (!teamMember?.profile_type || teamMember?.profile_type === 'builder') ? 'checked' : '' %>>
+                  <div class="mode-card">
+                    <i class="fas fa-wrench"></i>
+                    <h4>Profile Builder</h4>
+                    <p>Guided experience with structured sections</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Markdown Editor Mode -->
+            <div class="profile-section-card profile-mode-content full-width" id="markdownMode"<% if (teamMember?.profile_type !== 'markdown') { %> style="display: none !important;"<% } %>>
+              <h3>README.md</h3>
+              <p class="section-hint">Write your professional bio using Markdown. You can use formatting like **bold**, *italic*, and more.</p>
+              <div class="profile-markdown-editor">
+                <div class="markdown-tabs">
+                  <div class="markdown-tab active" data-tab="write">Write</div>
+                  <div class="markdown-tab" data-tab="preview">Preview</div>
+                </div>
+                <div class="markdown-pane" id="markdownWritePane">
+                  <textarea id="bioMarkdown" placeholder="Write your README.md here..."><%= teamMember?.bio_markdown || '' %></textarea>
+                </div>
+                <div class="markdown-pane markdown-preview github-markdown" id="markdownPreviewPane" style="display: none;"></div>
+              </div>
+            </div>
+
+            <!-- Skills Section (Only in Profile Builder) -->
+            <div class="profile-section-card profile-mode-content" id="builderSkills"<% if (teamMember?.profile_type === 'markdown') { %> style="display: none !important;"<% } %>>
+                <h3>Skills</h3>
+                <p class="section-hint">Select your technical skills and expertise</p>
+                <select id="skills" name="skills" class="form-control skills-select" multiple="multiple">
+                <option value="PHP" data-icon="devicon-php-plain" <%= (teamMember?.skills || []).includes('PHP') ? 'selected' : '' %>>PHP</option>
+                <option value="Laravel" data-icon="devicon-laravel-plain" <%= (teamMember?.skills || []).includes('Laravel') ? 'selected' : '' %>>Laravel</option>
+                <option value="Vue" data-icon="devicon-vuejs-plain" <%= (teamMember?.skills || []).includes('Vue') ? 'selected' : '' %>>Vue</option>
+                <option value="React" data-icon="devicon-react-original" <%= (teamMember?.skills || []).includes('React') ? 'selected' : '' %>>React</option>
+                <option value="React Native" data-icon="devicon-react-original" <%= (teamMember?.skills || []).includes('React Native') ? 'selected' : '' %>>React Native</option>
+                <option value="TypeScript" data-icon="devicon-typescript-plain" <%= (teamMember?.skills || []).includes('TypeScript') ? 'selected' : '' %>>TypeScript</option>
+                <option value="JavaScript" data-icon="devicon-javascript-plain" <%= (teamMember?.skills || []).includes('JavaScript') ? 'selected' : '' %>>JavaScript</option>
+                <option value="Livewire" data-icon="devicon-livewire-plain-wordmark" <%= (teamMember?.skills || []).includes('Livewire') ? 'selected' : '' %>>Livewire</option>
+                <option value="Supabase" data-icon="devicon-supabase-plain" <%= (teamMember?.skills || []).includes('Supabase') ? 'selected' : '' %>>Supabase</option>
+                <option value="EJS" data-icon="fas fa-file-code" <%= (teamMember?.skills || []).includes('EJS') ? 'selected' : '' %>>EJS</option>
+                <option value="MySQL" data-icon="devicon-mysql-plain" <%= (teamMember?.skills || []).includes('MySQL') ? 'selected' : '' %>>MySQL</option>
+                <option value="jQuery" data-icon="devicon-jquery-plain" <%= (teamMember?.skills || []).includes('jQuery') ? 'selected' : '' %>>jQuery</option>
+                <option value="Premire Pro" data-icon="devicon-premierepro-plain" <%= (teamMember?.skills || []).includes('Premire Pro') ? 'selected' : '' %>>Premire Pro</option>
+                <option value="PostgreSQL" data-icon="devicon-postgresql-plain" <%= (teamMember?.skills || []).includes('PostgreSQL') ? 'selected' : '' %>>PostgreSQL</option>
+                <option value="Google Workspace" data-icon="fab fa-google" <%= (teamMember?.skills || []).includes('Google Workspace') ? 'selected' : '' %>>Google Workspace</option>
+                <option value="Node.js" data-icon="fab fa-node-js" <%= (teamMember?.skills || []).includes('Node.js') ? 'selected' : '' %>>Node.js</option>
+                <option value="Bootstrap" data-icon="devicon-bootstrap-plain" <%= (teamMember?.skills || []).includes('Bootstrap') ? 'selected' : '' %>>Bootstrap</option>
+                <option value="Express.js" data-icon="devicon-express-original" <%= (teamMember?.skills || []).includes('Express.js') ? 'selected' : '' %>>Express.js</option>
+                <option value="HTML" data-icon="devicon-html5-plain" <%= (teamMember?.skills || []).includes('HTML') ? 'selected' : '' %>>HTML</option>
+                <option value="CSS" data-icon="devicon-css3-plain" <%= (teamMember?.skills || []).includes('CSS') ? 'selected' : '' %>>CSS</option>
+                <option value="Python" data-icon="devicon-python-plain" <%= (teamMember?.skills || []).includes('Python') ? 'selected' : '' %>>Python</option>
+                <option value="Django" data-icon="devicon-django-plain" <%= (teamMember?.skills || []).includes('Django') ? 'selected' : '' %>>Django</option>
+                <option value="Flask" data-icon="devicon-flask-original" <%= (teamMember?.skills || []).includes('Flask') ? 'selected' : '' %>>Flask</option>
+                <option value="MongoDB" data-icon="devicon-mongodb-plain" <%= (teamMember?.skills || []).includes('MongoDB') ? 'selected' : '' %>>MongoDB</option>
+                <option value="Git" data-icon="devicon-git-plain" <%= (teamMember?.skills || []).includes('Git') ? 'selected' : '' %>>Git</option>
+                <option value="Docker" data-icon="devicon-docker-plain" <%= (teamMember?.skills || []).includes('Docker') ? 'selected' : '' %>>Docker</option>
+                <option value="AWS" data-icon="devicon-amazonwebservices-plain-wordmark" <%= (teamMember?.skills || []).includes('AWS') ? 'selected' : '' %>>AWS</option>
+                <option value="Firebase" data-icon="devicon-firebase-plain" <%= (teamMember?.skills || []).includes('Firebase') ? 'selected' : '' %>>Firebase</option>
+                <option value="Next.js" data-icon="devicon-nextjs-plain" <%= (teamMember?.skills || []).includes('Next.js') ? 'selected' : '' %>>Next.js</option>
+                <option value="Tailwind CSS" data-icon="devicon-tailwindcss-plain" <%= (teamMember?.skills || []).includes('Tailwind CSS') ? 'selected' : '' %>>Tailwind CSS</option>
+                <option value="Redux" data-icon="devicon-redux-original" <%= (teamMember?.skills || []).includes('Redux') ? 'selected' : '' %>>Redux</option>
+                <option value="GraphQL" data-icon="devicon-graphql-plain" <%= (teamMember?.skills || []).includes('GraphQL') ? 'selected' : '' %>>GraphQL</option>
+                <option value="Sass" data-icon="devicon-sass-original" <%= (teamMember?.skills || []).includes('Sass') ? 'selected' : '' %>>Sass</option>
+                <option value="Webpack" data-icon="devicon-webpack-plain" <%= (teamMember?.skills || []).includes('Webpack') ? 'selected' : '' %>>Webpack</option>
+                <option value="Figma" data-icon="devicon-figma-plain" <%= (teamMember?.skills || []).includes('Figma') ? 'selected' : '' %>>Figma</option>
+                <option value="Java" data-icon="devicon-java-plain" <%= (teamMember?.skills || []).includes('Java') ? 'selected' : '' %>>Java</option>
+                <option value="Spring" data-icon="devicon-spring-plain" <%= (teamMember?.skills || []).includes('Spring') ? 'selected' : '' %>>Spring</option>
+                <option value="C++" data-icon="devicon-cplusplus-plain" <%= (teamMember?.skills || []).includes('C++') ? 'selected' : '' %>>C++</option>
+                <option value="C#" data-icon="devicon-csharp-plain" <%= (teamMember?.skills || []).includes('C#') ? 'selected' : '' %>>C#</option>
+                <option value="Go" data-icon="devicon-go-plain" <%= (teamMember?.skills || []).includes('Go') ? 'selected' : '' %>>Go</option>
+                <option value="Ruby" data-icon="devicon-ruby-plain" <%= (teamMember?.skills || []).includes('Ruby') ? 'selected' : '' %>>Ruby</option>
+                <option value="Rails" data-icon="devicon-rails-plain" <%= (teamMember?.skills || []).includes('Rails') ? 'selected' : '' %>>Rails</option>
+                <option value="Angular" data-icon="devicon-angularjs-plain" <%= (teamMember?.skills || []).includes('Angular') ? 'selected' : '' %>>Angular</option>
+                <option value="Svelte" data-icon="devicon-svelte-plain" <%= (teamMember?.skills || []).includes('Svelte') ? 'selected' : '' %>>Svelte</option>
+                </select>
+                <small class="form-help">Select multiple skills (searchable)</small>
+              </div>
+
+              <!-- Experience Section -->
+            <div class="profile-section-card profile-mode-content full-width" id="builderExperience"<% if (teamMember?.profile_type === 'markdown') { %> style="display: none !important;"<% } %>>
+              <div class="repeatable-header">
+                <h3>Experience</h3>
+                <button type="button" class="btn-outline" id="addExperienceBtn">
+                  <i class="fas fa-plus"></i>
+                  Add Experience
+                </button>
+              </div>
+              <p class="section-hint">Add your professional work experience</p>
+              <div class="repeatable-list" id="experiencesList">
+                <% (experiences || []).forEach((exp, index) => { %>
+                <div class="repeatable-card experience-item">
+                  <div class="repeatable-card-header">
+                    <div class="repeatable-card-title">Experience <%= index + 1 %></div>
+                    <button type="button" class="icon-button remove-btn" onclick="removeExperience(this)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>Job Title</label>
+                      <input type="text" name="experiences[<%= index %>][title]" value="<%= exp.title || '' %>" class="form-control" placeholder="Software Developer">
+                    </div>
+                    <div class="form-group">
+                      <label>Company</label>
+                      <input type="text" name="experiences[<%= index %>][company]" value="<%= exp.company || '' %>" class="form-control" placeholder="Company Name">
+                    </div>
+                    <div class="date-fields-group">
+                      <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" name="experiences[<%= index %>][start_date]" value="<%= exp.start_date ? new Date(exp.start_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" name="experiences[<%= index %>][end_date]" value="<%= exp.end_date ? new Date(exp.end_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-top: 1rem; width: 100%;">
+                    <label>Description</label>
+                    <textarea name="experiences[<%= index %>][description]" class="form-control" rows="3" placeholder="Describe your responsibilities..."><%= exp.description || '' %></textarea>
+                  </div>
+                  <div class="checkbox-group">
+                    <input type="checkbox" id="is_current_<%= index %>" name="experiences[<%= index %>][is_current]" value="true" <%= exp.is_current ? 'checked' : '' %>>
+                    <label for="is_current_<%= index %>">Currently working here</label>
+                  </div>
+                </div>
+                <% }); %>
+              </div>
+              <% if (!(experiences || []).length) { %>
+              <button type="button" class="add-entry-btn" id="addExperienceBtn2">
+                <i class="fas fa-plus"></i>
+                Add Your First Experience
+              </button>
+              <% } %>
+              </div>
+
+              <!-- Education Section -->
+            <div class="profile-section-card profile-mode-content full-width" id="builderEducation"<% if (teamMember?.profile_type === 'markdown') { %> style="display: none !important;"<% } %>>
+              <div class="repeatable-header">
+                <h3>Education</h3>
+                <button type="button" class="btn-outline" id="addEducationBtn">
+                  <i class="fas fa-plus"></i>
+                  Add Education
+                </button>
+              </div>
+              <p class="section-hint">Add your educational background</p>
+              <div class="repeatable-list" id="educationList">
+                <% (education || []).forEach((edu, index) => { %>
+                <div class="repeatable-card education-item">
+                  <div class="repeatable-card-header">
+                    <div class="repeatable-card-title">Education <%= index + 1 %></div>
+                    <button type="button" class="icon-button remove-btn" onclick="removeEducation(this)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>Degree</label>
+                      <input type="text" name="education[<%= index %>][degree]" value="<%= edu.degree || '' %>" class="form-control" placeholder="Bachelor of Science">
+                    </div>
+                    <div class="form-group">
+                      <label>Institution</label>
+                      <input type="text" name="education[<%= index %>][institution]" value="<%= edu.institution || '' %>" class="form-control" placeholder="University Name">
+                    </div>
+                    <div class="date-fields-group">
+                      <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" name="education[<%= index %>][start_date]" value="<%= edu.start_date ? new Date(edu.start_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" name="education[<%= index %>][end_date]" value="<%= edu.end_date ? new Date(edu.end_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-top: 1rem; width: 100%;">
+                    <label>Field of Study</label>
+                    <input type="text" name="education[<%= index %>][field_of_study]" value="<%= edu.field_of_study || '' %>" class="form-control" placeholder="Computer Science">
+                  </div>
+                  <div class="form-group" style="margin-top: 1rem; width: 100%;">
+                    <label>Description</label>
+                    <textarea name="education[<%= index %>][description]" class="form-control" rows="3" placeholder="Describe your studies..."><%= edu.description || '' %></textarea>
+                  </div>
+                </div>
+                <% }); %>
+              </div>
+              <% if (!(education || []).length) { %>
+              <button type="button" class="add-entry-btn" id="addEducationBtn2">
+                <i class="fas fa-plus"></i>
+                Add Your Education
+              </button>
+              <% } %>
+              </div>
+
+              <!-- Languages Section -->
+            <div class="profile-section-card profile-mode-content full-width" id="builderLanguages"<% if (teamMember?.profile_type === 'markdown') { %> style="display: none !important;"<% } %>>
+              <div class="repeatable-header">
+                <h3>Languages</h3>
+                <button type="button" class="btn-outline" id="addLanguageBtn">
+                  <i class="fas fa-plus"></i>
+                  Add Language
+                </button>
+              </div>
+              <p class="section-hint">Add languages you speak</p>
+              <div class="repeatable-list" id="languagesList">
+                <% (languages || []).forEach((lang, index) => { %>
+                <div class="repeatable-card language-item">
+                  <div class="repeatable-card-header">
+                    <div class="repeatable-card-title">Language <%= index + 1 %></div>
+                    <button type="button" class="icon-button remove-btn" onclick="removeLanguage(this)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="form-grid">
+                    <div class="date-fields-group">
+                      <div class="form-group">
+                        <label>Language</label>
+                        <input type="text" name="languages[<%= index %>][language]" value="<%= lang.language || '' %>" class="form-control" placeholder="English">
+                      </div>
+                      <div class="form-group">
+                        <label>Proficiency</label>
+                        <select name="languages[<%= index %>][proficiency_level]" class="form-control">
+                          <option value="beginner" <%= lang.proficiency_level === 'beginner' ? 'selected' : '' %>>Beginner</option>
+                          <option value="intermediate" <%= lang.proficiency_level === 'intermediate' ? 'selected' : '' %>>Intermediate</option>
+                          <option value="advanced" <%= lang.proficiency_level === 'advanced' ? 'selected' : '' %>>Advanced</option>
+                          <option value="native" <%= lang.proficiency_level === 'native' ? 'selected' : '' %>>Native</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <% }); %>
+              </div>
+              <% if (!(languages || []).length) { %>
+              <button type="button" class="add-entry-btn" id="addLanguageBtn2">
+                <i class="fas fa-plus"></i>
+                Add Your Languages
+              </button>
+              <% } %>
+              </div>
+
+              <!-- Licenses Section -->
+            <div class="profile-section-card profile-mode-content full-width" id="builderLicenses"<% if (teamMember?.profile_type === 'markdown') { %> style="display: none !important;"<% } %>>
+              <div class="repeatable-header">
+                <h3>Licenses & Certifications</h3>
+                <button type="button" class="btn-outline" id="addLicenseBtn">
+                  <i class="fas fa-plus"></i>
+                  Add License
+                </button>
+              </div>
+              <p class="section-hint">Add your professional licenses and certifications</p>
+              <div class="repeatable-list" id="licensesList">
+                <% (licenses || []).forEach((license, index) => { %>
+                <div class="repeatable-card license-item">
+                  <div class="repeatable-card-header">
+                    <div class="repeatable-card-title">License <%= index + 1 %></div>
+                    <button type="button" class="icon-button remove-btn" onclick="removeLicense(this)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>License/Certification Name</label>
+                      <input type="text" name="licenses[<%= index %>][name]" value="<%= license.name || '' %>" class="form-control" placeholder="AWS Certified Solutions Architect">
+                    </div>
+                    <div class="form-group">
+                      <label>Issuing Organization</label>
+                      <input type="text" name="licenses[<%= index %>][issuing_organization]" value="<%= license.issuing_organization || '' %>" class="form-control" placeholder="Amazon Web Services">
+                    </div>
+                    <div class="date-fields-group">
+                      <div class="form-group">
+                        <label>Issue Date</label>
+                        <input type="date" name="licenses[<%= index %>][issue_date]" value="<%= license.issue_date ? new Date(license.issue_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="date" name="licenses[<%= index %>][expiry_date]" value="<%= license.expiry_date ? new Date(license.expiry_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>Credential ID</label>
+                      <input type="text" name="licenses[<%= index %>][credential_id]" value="<%= license.credential_id || '' %>" class="form-control" placeholder="Optional">
+                    </div>
+                    <div class="form-group">
+                      <label>Credential URL</label>
+                      <input type="url" name="licenses[<%= index %>][credential_url]" value="<%= license.credential_url || '' %>" class="form-control" placeholder="https://...">
+                    </div>
+                  </div>
+                </div>
+                <% }); %>
+              </div>
+              <% if (!(licenses || []).length) { %>
+              <button type="button" class="add-entry-btn" id="addLicenseBtn2">
+                <i class="fas fa-plus"></i>
+                Add Your First License
+              </button>
+              <% } %>
+              </div>
+
+              <!-- Projects Section -->
+            <div class="profile-section-card profile-mode-content full-width" id="builderProjects"<% if (teamMember?.profile_type === 'markdown') { %> style="display: none !important;"<% } %>>
+              <div class="repeatable-header">
+                <h3>Personal Projects</h3>
+                <button type="button" class="btn-outline" id="addProjectBtn">
+                  <i class="fas fa-plus"></i>
+                  Add Project
+                </button>
+              </div>
+              <p class="section-hint">Add your personal projects and portfolio items</p>
+              <div class="repeatable-list" id="projectsList">
+                <% (projects || []).forEach((project, index) => { %>
+                <div class="repeatable-card project-item">
+                  <div class="repeatable-card-header">
+                    <div class="repeatable-card-title">Project <%= index + 1 %></div>
+                    <button type="button" class="icon-button remove-btn" onclick="removeProject(this)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>Project Name</label>
+                      <input type="text" name="projects[<%= index %>][name]" value="<%= project.name || '' %>" class="form-control" placeholder="My Awesome Project">
+                    </div>
+                    <div class="form-group">
+                      <label>Project URL</label>
+                      <input type="url" name="projects[<%= index %>][url]" value="<%= project.url || '' %>" class="form-control" placeholder="https://...">
+                    </div>
+                    <div class="date-fields-group">
+                      <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" name="projects[<%= index %>][start_date]" value="<%= project.start_date ? new Date(project.start_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" name="projects[<%= index %>][end_date]" value="<%= project.end_date ? new Date(project.end_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-top: 1rem; width: 100%;">
+                    <label>Description</label>
+                    <textarea name="projects[<%= index %>][description]" class="form-control" rows="3" placeholder="Describe your project..."><%= project.description || '' %></textarea>
+                  </div>
+                  <div class="form-group" style="margin-top: 1rem; width: 100%;">
+                    <label>Technologies</label>
+                    <select name="projects[<%= index %>][technologies]" class="form-control project-technologies-select" multiple="multiple" style="width: 100%;">
+                      <% 
+                        const projectTechs = Array.isArray(project.technologies) ? project.technologies : (project.technologies ? project.technologies.split(',').map(t => t.trim()).filter(Boolean) : []);
+                      %>
+                      <option value="PHP" data-icon="devicon-php-plain" <%= projectTechs.includes('PHP') ? 'selected' : '' %>>PHP</option>
+                      <option value="Laravel" data-icon="devicon-laravel-plain" <%= projectTechs.includes('Laravel') ? 'selected' : '' %>>Laravel</option>
+                      <option value="Vue" data-icon="devicon-vuejs-plain" <%= projectTechs.includes('Vue') ? 'selected' : '' %>>Vue</option>
+                      <option value="React" data-icon="devicon-react-original" <%= projectTechs.includes('React') ? 'selected' : '' %>>React</option>
+                      <option value="React Native" data-icon="devicon-react-original" <%= projectTechs.includes('React Native') ? 'selected' : '' %>>React Native</option>
+                      <option value="TypeScript" data-icon="devicon-typescript-plain" <%= projectTechs.includes('TypeScript') ? 'selected' : '' %>>TypeScript</option>
+                      <option value="JavaScript" data-icon="devicon-javascript-plain" <%= projectTechs.includes('JavaScript') ? 'selected' : '' %>>JavaScript</option>
+                      <option value="Livewire" data-icon="devicon-livewire-plain-wordmark" <%= projectTechs.includes('Livewire') ? 'selected' : '' %>>Livewire</option>
+                      <option value="Supabase" data-icon="devicon-supabase-plain" <%= projectTechs.includes('Supabase') ? 'selected' : '' %>>Supabase</option>
+                      <option value="EJS" data-icon="fas fa-file-code" <%= projectTechs.includes('EJS') ? 'selected' : '' %>>EJS</option>
+                      <option value="MySQL" data-icon="devicon-mysql-plain" <%= projectTechs.includes('MySQL') ? 'selected' : '' %>>MySQL</option>
+                      <option value="jQuery" data-icon="devicon-jquery-plain" <%= projectTechs.includes('jQuery') ? 'selected' : '' %>>jQuery</option>
+                      <option value="Premire Pro" data-icon="devicon-premierepro-plain" <%= projectTechs.includes('Premire Pro') ? 'selected' : '' %>>Premire Pro</option>
+                      <option value="PostgreSQL" data-icon="devicon-postgresql-plain" <%= projectTechs.includes('PostgreSQL') ? 'selected' : '' %>>PostgreSQL</option>
+                      <option value="Google Workspace" data-icon="fab fa-google" <%= projectTechs.includes('Google Workspace') ? 'selected' : '' %>>Google Workspace</option>
+                      <option value="Node.js" data-icon="fab fa-node-js" <%= projectTechs.includes('Node.js') ? 'selected' : '' %>>Node.js</option>
+                      <option value="Bootstrap" data-icon="devicon-bootstrap-plain" <%= projectTechs.includes('Bootstrap') ? 'selected' : '' %>>Bootstrap</option>
+                      <option value="Express.js" data-icon="devicon-express-original" <%= projectTechs.includes('Express.js') ? 'selected' : '' %>>Express.js</option>
+                      <option value="HTML" data-icon="devicon-html5-plain" <%= projectTechs.includes('HTML') ? 'selected' : '' %>>HTML</option>
+                      <option value="CSS" data-icon="devicon-css3-plain" <%= projectTechs.includes('CSS') ? 'selected' : '' %>>CSS</option>
+                      <option value="Python" data-icon="devicon-python-plain" <%= projectTechs.includes('Python') ? 'selected' : '' %>>Python</option>
+                      <option value="Django" data-icon="devicon-django-plain" <%= projectTechs.includes('Django') ? 'selected' : '' %>>Django</option>
+                      <option value="Flask" data-icon="devicon-flask-original" <%= projectTechs.includes('Flask') ? 'selected' : '' %>>Flask</option>
+                      <option value="MongoDB" data-icon="devicon-mongodb-plain" <%= projectTechs.includes('MongoDB') ? 'selected' : '' %>>MongoDB</option>
+                      <option value="Git" data-icon="devicon-git-plain" <%= projectTechs.includes('Git') ? 'selected' : '' %>>Git</option>
+                      <option value="Docker" data-icon="devicon-docker-plain" <%= projectTechs.includes('Docker') ? 'selected' : '' %>>Docker</option>
+                      <option value="AWS" data-icon="devicon-amazonwebservices-plain-wordmark" <%= projectTechs.includes('AWS') ? 'selected' : '' %>>AWS</option>
+                      <option value="Firebase" data-icon="devicon-firebase-plain" <%= projectTechs.includes('Firebase') ? 'selected' : '' %>>Firebase</option>
+                      <option value="Next.js" data-icon="devicon-nextjs-plain" <%= projectTechs.includes('Next.js') ? 'selected' : '' %>>Next.js</option>
+                      <option value="Tailwind CSS" data-icon="devicon-tailwindcss-plain" <%= projectTechs.includes('Tailwind CSS') ? 'selected' : '' %>>Tailwind CSS</option>
+                      <option value="Redux" data-icon="devicon-redux-original" <%= projectTechs.includes('Redux') ? 'selected' : '' %>>Redux</option>
+                      <option value="GraphQL" data-icon="devicon-graphql-plain" <%= projectTechs.includes('GraphQL') ? 'selected' : '' %>>GraphQL</option>
+                      <option value="Sass" data-icon="devicon-sass-original" <%= projectTechs.includes('Sass') ? 'selected' : '' %>>Sass</option>
+                      <option value="Webpack" data-icon="devicon-webpack-plain" <%= projectTechs.includes('Webpack') ? 'selected' : '' %>>Webpack</option>
+                      <option value="Figma" data-icon="devicon-figma-plain" <%= projectTechs.includes('Figma') ? 'selected' : '' %>>Figma</option>
+                      <option value="Java" data-icon="devicon-java-plain" <%= projectTechs.includes('Java') ? 'selected' : '' %>>Java</option>
+                      <option value="Spring" data-icon="devicon-spring-plain" <%= projectTechs.includes('Spring') ? 'selected' : '' %>>Spring</option>
+                      <option value="C++" data-icon="devicon-cplusplus-plain" <%= projectTechs.includes('C++') ? 'selected' : '' %>>C++</option>
+                      <option value="C#" data-icon="devicon-csharp-plain" <%= projectTechs.includes('C#') ? 'selected' : '' %>>C#</option>
+                      <option value="Go" data-icon="devicon-go-plain" <%= projectTechs.includes('Go') ? 'selected' : '' %>>Go</option>
+                      <option value="Ruby" data-icon="devicon-ruby-plain" <%= projectTechs.includes('Ruby') ? 'selected' : '' %>>Ruby</option>
+                      <option value="Rails" data-icon="devicon-rails-plain" <%= projectTechs.includes('Rails') ? 'selected' : '' %>>Rails</option>
+                      <option value="Angular" data-icon="devicon-angularjs-plain" <%= projectTechs.includes('Angular') ? 'selected' : '' %>>Angular</option>
+                      <option value="Svelte" data-icon="devicon-svelte-plain" <%= projectTechs.includes('Svelte') ? 'selected' : '' %>>Svelte</option>
+                    </select>
+                    <small class="form-help">Select multiple technologies (searchable)</small>
+                  </div>
+                </div>
+                <% }); %>
+              </div>
+              <% if (!(projects || []).length) { %>
+              <button type="button" class="add-entry-btn" id="addProjectBtn2">
+                <i class="fas fa-plus"></i>
+                Add Your First Project
+              </button>
+              <% } %>
+              </div>
+              
+              <!-- Save Profile Content Button -->
+              <div class="form-actions" style="margin-top: 2rem; grid-column: 1 / -1;">
+                <button type="button" id="saveProfileContentBtn" class="btn-primary">
+                  <i class="fas fa-save"></i>
+                  Save Profile Content
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Upload Modal -->
+  <div class="profile-upload-modal" id="profileUploadModal">
+    <div class="profile-modal-content">
+      <div class="profile-modal-header">
+        <h3 id="uploadModalTitle">Change Profile Picture</h3>
+        <button class="profile-modal-close" id="closeModal">&times;</button>
+      </div>
+      <div class="profile-modal-body">
+        <div class="modal-images-preview" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.5rem; flex-wrap: wrap;">
+          <div class="modal-image-selector" data-type="profile" id="modalProfileSelector" style="text-align: center; cursor: pointer; padding: 0.75rem; border-radius: 12px; border: 3px solid var(--gray-300); transition: all 0.3s ease;">
+            <div style="width: 100px; height: 100px; border-radius: 12px; overflow: hidden; margin: 0 auto 0.5rem; position: relative;">
+              <img id="modalProfileImg" src="" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <p style="font-weight: 600; margin: 0; color: var(--gray-700); font-size: 0.9rem;"><i class="fas fa-user"></i> Profile Picture</p>
+            <p style="font-size: 0.75rem; color: var(--gray-500); margin: 0.25rem 0 0;">Click to change</p>
+          </div>
+          <div class="modal-image-selector" data-type="alterego" id="modalAlterEgoSelector" style="text-align: center; cursor: pointer; padding: 0.75rem; border-radius: 12px; border: 3px solid var(--gray-300); transition: all 0.3s ease;">
+            <div style="width: 100px; height: 100px; border-radius: 12px; overflow: hidden; margin: 0 auto 0.5rem; position: relative; background: var(--gray-100);">
+              <img id="modalAlterEgoImg" src="" alt="Alter Ego" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+              <div id="noAlterEgoPlaceholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--gray-400);">
+                <i class="fas fa-mask" style="font-size: 2rem;"></i>
+              </div>
+            </div>
+            <p style="font-weight: 600; margin: 0; color: var(--gray-700); font-size: 0.9rem;"><i class="fas fa-mask"></i> Alter Ego</p>
+            <p style="font-size: 0.75rem; color: var(--gray-500); margin: 0.25rem 0 0;">Click to change</p>
+          </div>
+        </div>
+        <form id="profileUploadForm" enctype="multipart/form-data">
+          <div class="upload-area" id="uploadArea">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Click to select or drag and drop</p>
+            <p class="upload-hint">PNG, JPG, GIF up to 5MB</p>
+            <input type="file" id="profileFileInput" name="profilePicture" accept="image/*" style="display: none;">
+          </div>
+          <div class="preview-area" id="previewArea" style="display: none;">
+            <img id="previewImage" src="" alt="Preview">
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" id="cancelUpload">Cancel</button>
+            <button type="submit" class="btn-upload">Upload</button>
+          </div>
+          <div class="upload-progress" id="uploadProgress" style="display: none;">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p class="progress-text">Uploading...</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <!-- CodeMirror JS for markdown editor -->
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/mode/markdown/markdown.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/addon/edit/closebrackets.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/addon/edit/matchbrackets.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/addon/selection/active-line.js"></script>
+
+  <script>
+
+    let codeMirrorEditor = null
+    let markdownPreviewPane = null
+    let markdownWritePane = null
+    let markdownTabs = null
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const markdownTextarea = document.getElementById('bioMarkdown')
+      markdownPreviewPane = document.getElementById('markdownPreviewPane')
+      markdownWritePane = document.getElementById('markdownWritePane')
+      markdownTabs = document.querySelectorAll('.markdown-tab')
+      
+      document.querySelectorAll(
+        '.profile-section-card, .profile-form-actions, .form-actions, .profile-form, .profile-form .form-group, .form-grid, .form-control'
+      ).forEach(el => {
+
+        if (el.classList.contains('profile-mode-content')) {
+          const isHidden = el.style.display === 'none' || window.getComputedStyle(el).display === 'none'
+          if (!isHidden) {
+            el.classList.add('force-show')
+          }
+        } else {
+          el.classList.add('force-show')
+        }
+      })
+      
+
+      const initialModeRadio = document.querySelector('input[name="profileType"]:checked')
+      const markdownModeEl = document.getElementById('markdownMode')
+      const profileTypeCard = document.getElementById('profileTypeCard')
+      const builderSections = [
+        document.getElementById('builderSkills'),
+        document.getElementById('builderExperience'),
+        document.getElementById('builderEducation'),
+        document.getElementById('builderLanguages'),
+        document.getElementById('builderLicenses'),
+        document.getElementById('builderProjects')
+      ]
+      
+
+      if (markdownTextarea && typeof CodeMirror !== 'undefined' && !codeMirrorEditor) {
+        codeMirrorEditor = CodeMirror.fromTextArea(markdownTextarea, {
+          mode: 'markdown',
+          theme: 'eclipse',
+          lineNumbers: true,
+          lineWrapping: true,
+          indentUnit: 2,
+          tabSize: 2,
+          autofocus: false,
+          matchBrackets: true,
+          autoCloseBrackets: true,
+          styleActiveLine: true,
+          viewportMargin: Infinity,
+          extraKeys: {
+            'Ctrl-Space': 'autocomplete',
+            'Cmd-Space': 'autocomplete'
+          }
+        })
+
+
+        codeMirrorEditor.on('change', function(cm) {
+          cm.save()
+        })
+      }
+      
+      if (initialModeRadio && initialModeRadio.value === 'markdown') {
+        if (markdownModeEl) {
+          markdownModeEl.style.setProperty('display', 'block', 'important')
+          markdownModeEl.classList.add('full-width')
+          markdownModeEl.classList.add('force-show')
+          
+
+          if (markdownTabs && markdownTabs.length > 0 && markdownWritePane && markdownPreviewPane) {
+
+            markdownTabs.forEach(t => t.classList.remove('active'))
+
+            const writeTab = Array.from(markdownTabs).find(tab => tab.dataset.tab === 'write')
+            if (writeTab) {
+              writeTab.classList.add('active')
+            }
+
+            markdownWritePane.style.display = 'block'
+            markdownPreviewPane.style.display = 'none'
+          }
+          
+
+
+          setTimeout(() => {
+            if (!codeMirrorEditor && markdownTextarea && typeof CodeMirror !== 'undefined') {
+
+              const savedValue = markdownTextarea.value || ''
+              
+              codeMirrorEditor = CodeMirror.fromTextArea(markdownTextarea, {
+                mode: 'markdown',
+                theme: 'eclipse',
+                lineNumbers: true,
+                lineWrapping: true,
+                indentUnit: 2,
+                tabSize: 2,
+                autofocus: false,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                styleActiveLine: true,
+                viewportMargin: Infinity,
+                value: savedValue, 
+                extraKeys: {
+                  'Ctrl-Space': 'autocomplete',
+                  'Cmd-Space': 'autocomplete'
+                }
+              })
+
+              codeMirrorEditor.on('change', function(cm) {
+                cm.save()
+              })
+              
+
+              codeMirrorEditor.refresh()
+              
+
+              if (savedValue) {
+
+                const editorElement = codeMirrorEditor.getWrapperElement()
+                if (editorElement) {
+                  const originalDisplay = editorElement.style.display
+                  editorElement.style.display = 'none'
+                  editorElement.offsetHeight 
+                  editorElement.style.display = originalDisplay || ''
+                }
+                codeMirrorEditor.refresh()
+              }
+            } else if (codeMirrorEditor) {
+
+              const savedValue = markdownTextarea ? markdownTextarea.value : ''
+              if (savedValue && codeMirrorEditor.getValue() !== savedValue) {
+                codeMirrorEditor.setValue(savedValue)
+              }
+              codeMirrorEditor.refresh()
+              
+
+              const editorElement = codeMirrorEditor.getWrapperElement()
+              if (editorElement) {
+                const originalDisplay = editorElement.style.display
+                editorElement.style.display = 'none'
+                editorElement.offsetHeight 
+                editorElement.style.display = originalDisplay || ''
+              }
+              codeMirrorEditor.refresh()
+            }
+          }, 100)
+        }
+
+        if (profileTypeCard) {
+          profileTypeCard.classList.add('full-width-mode')
+        }
+        builderSections.forEach(section => {
+          if (section) section.style.setProperty('display', 'none', 'important')
+        })
+      } else {
+
+        if (markdownModeEl) {
+          markdownModeEl.style.setProperty('display', 'none', 'important')
+          markdownModeEl.classList.remove('force-show')
+        }
+
+        if (profileTypeCard) {
+          profileTypeCard.classList.remove('full-width-mode')
+        }
+        builderSections.forEach(section => {
+          if (section) {
+            section.style.setProperty('display', 'block', 'important')
+            section.classList.add('force-show')
+          }
+        })
+        
+
+        setTimeout(function() {
+          if (typeof $ !== 'undefined' && $.fn.select2) {
+            $('.project-technologies-select').each(function() {
+              const $select = $(this)
+              if (!$select.hasClass('select2-hidden-accessible')) {
+                $select.select2({
+                  placeholder: 'Search and select technologies...',
+                  allowClear: true,
+                  closeOnSelect: false,
+                  width: '100%',
+                  templateResult: formatSkill,
+                  templateSelection: formatSkillSelection
+                })
+              }
+            })
+          }
+        }, 200)
+      }
+      
+
+      if (typeof marked !== 'undefined' && marked.setOptions) {
+        marked.setOptions({
+          gfm: true,
+          breaks: true,
+          headerIds: true,
+          mangle: false
+        })
+      }
+
+      const renderMarkdownPreview = () => {
+        if (!markdownPreviewPane) return
+        let raw = ''
+        if (codeMirrorEditor) {
+          raw = codeMirrorEditor.getValue() || ''
+        } else {
+          const textarea = document.getElementById('bioMarkdown')
+          if (textarea) {
+            raw = textarea.value || ''
+          }
+        }
+        if (typeof marked !== 'undefined') {
+          const html = DOMPurify.sanitize(marked.parse(raw || ''))
+          markdownPreviewPane.innerHTML = html || '<p class="section-hint">Nothing to preview yet.</p>'
+        }
+      }
+
+
+      if (codeMirrorEditor) {
+        codeMirrorEditor.on('change', function(cm) {
+          cm.save()
+          if (markdownWritePane && markdownWritePane.style.display !== 'none') {
+            setTimeout(renderMarkdownPreview, 300)
+          }
+        })
+      }
+
+
+      if (markdownTabs && markdownTabs.length > 0) {
+        markdownTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            if (markdownTabs && markdownTabs.length > 0) {
+              markdownTabs.forEach(t => t.classList.remove('active'))
+            }
+            tab.classList.add('active')
+            if (tab.dataset.tab === 'preview') {
+              if (markdownWritePane) markdownWritePane.style.display = 'none'
+              if (markdownPreviewPane) markdownPreviewPane.style.display = 'block'
+              renderMarkdownPreview()
+            } else {
+              if (markdownWritePane) markdownWritePane.style.display = 'block'
+              if (markdownPreviewPane) markdownPreviewPane.style.display = 'none'
+
+              if (codeMirrorEditor) {
+                setTimeout(() => {
+                  codeMirrorEditor.refresh()
+                }, 100)
+              }
+            }
+          })
+        })
+      }
+    })
+
+
+    function formatSkill(skill) {
+      if (!skill.id) {
+        return skill.text
+      }
+      
+      var iconClass = $(skill.element).data('icon')
+      if (!iconClass) {
+        return skill.text
+      }
+      
+      var $skill = $(
+        '<span><i class="' + iconClass + '"></i> ' + skill.text + '</span>'
+      )
+      return $skill
+    }
+
+
+    function formatSkillSelection(skill) {
+      if (!skill.id) {
+        return skill.text
+      }
+      
+      var iconClass = $(skill.element).data('icon')
+      if (!iconClass) {
+        return skill.text
+      }
+      
+      var $skill = $(
+        '<span><i class="' + iconClass + '"></i> ' + skill.text + '</span>'
+      )
+      return $skill
+    }
+
+
+    $(document).ready(function () {
+      $('.skills-select').select2({
+        placeholder: 'Search and select skills...',
+        allowClear: true,
+        closeOnSelect: false,
+        width: '100%',
+        templateResult: formatSkill,
+        templateSelection: formatSkillSelection
+      })
+
+
+      $('.project-technologies-select').select2({
+        placeholder: 'Search and select technologies...',
+        allowClear: true,
+        closeOnSelect: false,
+        width: '100%',
+        templateResult: formatSkill,
+        templateSelection: formatSkillSelection
+      })
+
+
+      $('.skills-select, .project-technologies-select').on('select2:select', function (e) {
+        setTimeout(function() {
+          $('.select2-search__field').val('');
+        }, 50)
+      })
+    })
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const profileImage = document.getElementById('profileImage')
+      const uploadModal = document.getElementById('profileUploadModal')
+      const closeModal = document.getElementById('closeModal')
+      const cancelBtn = document.getElementById('cancelUpload')
+      const uploadArea = document.getElementById('uploadArea')
+      const fileInput = document.getElementById('profileFileInput')
+      const previewArea = document.getElementById('previewArea')
+      const previewImage = document.getElementById('previewImage')
+      const uploadForm = document.getElementById('profileUploadForm')
+      const uploadProgress = document.getElementById('uploadProgress')
+      const progressFill = document.getElementById('progressFill')
+
+      const alterEgoImage = document.getElementById('alterEgoImage')
+      const profileWrapper = document.querySelector('.profile-img-wrapper-large')
+      const modalProfileSelector = document.getElementById('modalProfileSelector')
+      const modalAlterEgoSelector = document.getElementById('modalAlterEgoSelector')
+      const modalProfileImg = document.getElementById('modalProfileImg')
+      const modalAlterEgoImg = document.getElementById('modalAlterEgoImg')
+      const noAlterEgoPlaceholder = document.getElementById('noAlterEgoPlaceholder')
+      let isAlterEgoUpload = false
+
+      if (!profileWrapper) return
+
+
+      profileWrapper.addEventListener('click', function(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        
+
+        if (profileImage) {
+          modalProfileImg.src = profileImage.src
+        }
+        
+        if (alterEgoImage) {
+          modalAlterEgoImg.src = alterEgoImage.src
+          modalAlterEgoImg.style.display = 'block'
+          noAlterEgoPlaceholder.style.display = 'none'
+        } else {
+          modalAlterEgoImg.style.display = 'none'
+          noAlterEgoPlaceholder.style.display = 'flex'
+        }
+        
+
+        isAlterEgoUpload = false
+        modalProfileSelector?.classList.add('selected')
+        modalAlterEgoSelector?.classList.remove('selected')
+        document.getElementById('uploadModalTitle').textContent = 'Change Profile Picture'
+        uploadModal.classList.add('active')
+      })
+
+
+      if (modalProfileSelector) {
+        modalProfileSelector.addEventListener('click', function() {
+          isAlterEgoUpload = false
+          modalProfileSelector.classList.add('selected')
+          modalAlterEgoSelector?.classList.remove('selected')
+          document.getElementById('uploadModalTitle').textContent = 'Change Profile Picture'
+          uploadArea.style.display = 'block'
+          previewArea.style.display = 'none'
+          fileInput.value = ''
+        })
+      }
+
+      if (modalAlterEgoSelector) {
+        modalAlterEgoSelector.addEventListener('click', function() {
+          isAlterEgoUpload = true
+          modalAlterEgoSelector.classList.add('selected')
+          modalProfileSelector?.classList.remove('selected')
+          document.getElementById('uploadModalTitle').textContent = 'Change Alter Ego Picture'
+          uploadArea.style.display = 'block'
+          previewArea.style.display = 'none'
+          fileInput.value = ''
+        })
+      }
+
+
+      function closeModalFunc() {
+        uploadModal.classList.remove('active')
+        fileInput.value = ''
+        previewArea.style.display = 'none'
+        uploadArea.style.display = 'block'
+        uploadProgress.style.display = 'none'
+      }
+
+      closeModal.addEventListener('click', closeModalFunc)
+      cancelBtn.addEventListener('click', closeModalFunc)
+      uploadModal.addEventListener('click', function(e) {
+        if (e.target === uploadModal) {
+          closeModalFunc()
+        }
+      })
+
+
+      uploadArea.addEventListener('click', () => fileInput.click())
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault()
+        uploadArea.classList.add('dragover')
+      })
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover')
+      })
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault()
+        uploadArea.classList.remove('dragover')
+        if (e.dataTransfer.files.length > 0) {
+          fileInput.files = e.dataTransfer.files
+          handleFileSelect(e.dataTransfer.files[0])
+        }
+      })
+
+      fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+          handleFileSelect(e.target.files[0])
+        }
+      })
+
+      function handleFileSelect(file) {
+        if (!file.type.startsWith('image/')) {
+          showNotification('Invalid File', 'Please select an image file (PNG, JPG, GIF)', 'error')
+          return
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+          showNotification('File Too Large', 'File size must be less than 5MB', 'error')
+          return
+        }
+
+        const reader = new FileReader()
+        reader.onload = function(e) {
+          previewImage.src = e.target.result
+          previewArea.style.display = 'block'
+          uploadArea.style.display = 'none'
+        }
+        reader.readAsDataURL(file)
+      }
+
+
+      uploadForm.addEventListener('submit', async function(e) {
+        e.preventDefault()
+
+        const formData = new FormData()
+        formData.append('profilePicture', fileInput.files[0])
+
+        uploadProgress.style.display = 'block'
+        progressFill.style.width = '0%'
+
+        try {
+          const xhr = new XMLHttpRequest()
+
+          xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+              const percentComplete = (e.loaded / e.total) * 100
+              progressFill.style.width = percentComplete + '%'
+            }
+          })
+
+          xhr.addEventListener('load', function() {
+            if (xhr.status === 200) {
+              const response = JSON.parse(xhr.responseText)
+              if (response.success) {
+                if (isAlterEgoUpload) {
+
+                  showNotification('Success!', 'Alter ego picture updated successfully!', 'success')
+                } else {
+
+                  showNotification('Success!', 'Profile picture updated successfully!', 'success')
+                }
+                closeModalFunc()
+                setTimeout(() => window.location.reload(), 1500)
+              } else {
+                showNotification('Upload Failed', response.message || 'Failed to upload image', 'error')
+                uploadProgress.style.display = 'none'
+              }
+            } else {
+              const response = JSON.parse(xhr.responseText)
+              showNotification('Upload Failed', response.message || 'Failed to upload image', 'error')
+              uploadProgress.style.display = 'none'
+            }
+          })
+
+          xhr.addEventListener('error', function() {
+            showNotification('Upload Error', 'Error uploading file. Please try again.', 'error')
+            uploadProgress.style.display = 'none'
+          })
+
+          const uploadUrl = isAlterEgoUpload ? '/team/upload-alter-ego' : '/team/upload-avatar'
+          xhr.open('POST', uploadUrl)
+          xhr.send(formData)
+        } catch (error) {
+          console.error('Upload error:', error)
+          showNotification('Upload Error', 'Error uploading file. Please try again.', 'error')
+          uploadProgress.style.display = 'none'
+        }
+      })
+    })
+
+
+    document.querySelectorAll('.profile-tab-button').forEach(button => {
+      button.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab')
+        const targetTab = document.getElementById(tabId + 'Tab')
+        
+        if (!targetTab) return
+        
+
+        document.querySelectorAll('.profile-tab-button').forEach(btn => {
+          btn.classList.remove('active')
+        })
+        document.querySelectorAll('.profile-tab-content').forEach(content => {
+          content.classList.remove('active')
+        })
+        
+
+        setTimeout(() => {
+          this.classList.add('active')
+          targetTab.classList.add('active')
+        }, 50)
+      })
+    })
+
+
+    document.querySelectorAll('input[name="profileType"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const selectedMode = this.value
+        const markdownMode = document.getElementById('markdownMode')
+        const profileTypeCard = document.getElementById('profileTypeCard')
+        const builderSections = [
+          document.getElementById('builderSkills'),
+          document.getElementById('builderExperience'),
+          document.getElementById('builderEducation'),
+          document.getElementById('builderLanguages'),
+          document.getElementById('builderLicenses'),
+          document.getElementById('builderProjects')
+        ]
+
+        if (selectedMode === 'markdown') {
+          if (markdownMode) {
+            markdownMode.style.setProperty('display', 'block', 'important')
+            markdownMode.classList.add('full-width')
+            markdownMode.classList.add('force-show')
+            
+
+            const markdownTabs = document.querySelectorAll('.markdown-tab')
+            const markdownWritePane = document.getElementById('markdownWritePane')
+            const markdownPreviewPane = document.getElementById('markdownPreviewPane')
+            
+            if (markdownTabs && markdownTabs.length > 0 && markdownWritePane && markdownPreviewPane) {
+
+              markdownTabs.forEach(t => t.classList.remove('active'))
+
+              const writeTab = Array.from(markdownTabs).find(tab => tab.dataset.tab === 'write')
+              if (writeTab) {
+                writeTab.classList.add('active')
+              }
+
+              markdownWritePane.style.display = 'block'
+              markdownPreviewPane.style.display = 'none'
+            }
+            
+
+            setTimeout(() => {
+              if (codeMirrorEditor) {
+                codeMirrorEditor.refresh()
+              }
+            }, 100)
+          }
+
+          if (profileTypeCard) {
+            profileTypeCard.classList.add('full-width-mode')
+          }
+          builderSections.forEach(section => {
+            if (section) {
+              section.style.setProperty('display', 'none', 'important')
+              section.classList.remove('force-show')
+            }
+          })
+        } else {
+          if (markdownMode) {
+            markdownMode.style.setProperty('display', 'none', 'important')
+            markdownMode.classList.remove('full-width')
+            markdownMode.classList.remove('force-show')
+          }
+
+          if (profileTypeCard) {
+            profileTypeCard.classList.remove('full-width-mode')
+          }
+          builderSections.forEach(section => {
+            if (section) {
+              section.style.setProperty('display', 'block', 'important')
+              section.classList.add('force-show')
+            }
+          })
+          
+
+          setTimeout(function() {
+            if (typeof $ !== 'undefined' && $.fn.select2) {
+              $('.project-technologies-select').each(function() {
+                const $select = $(this)
+                if (!$select.hasClass('select2-hidden-accessible')) {
+                  $select.select2({
+                    placeholder: 'Search and select technologies...',
+                    allowClear: true,
+                    closeOnSelect: false,
+                    width: '100%',
+                    templateResult: formatSkill,
+                    templateSelection: formatSkillSelection
+                  })
+                }
+              })
+            }
+          }, 200)
+        }
+      })
+    })
+
+
+
+    document.getElementById('saveBioSocialBtn')?.addEventListener('click', async function(e) {
+      e.preventDefault()
+
+      const data = {
+        bio: document.getElementById('simpleBio').value,
+        linkedin: document.getElementById('linkedin').value,
+        github: document.getElementById('github').value,
+        twitter: document.getElementById('twitter').value,
+        instagram: document.getElementById('instagram').value,
+        facebook: document.getElementById('facebook').value
+      }
+
+      try {
+        const response = await fetch('/team/profile/bio-social', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        })
+
+        const result = await response.json()
+
+        if (result.success) {
+          showNotification('Success!', 'Bio and social links updated successfully!', 'success')
+        } else {
+          showNotification('Update Failed', result.message || 'Failed to update bio and social links', 'error')
+        }
+      } catch (error) {
+        console.error('Error:', error)
+        showNotification('Error', 'Error updating bio and social links. Please try again.', 'error')
+      }
+    })
+
+
+    document.getElementById('saveProfileContentBtn')?.addEventListener('click', async function(e) {
+      e.preventDefault()
+
+      const params = new URLSearchParams()
+      
+
+      const selectedProfileType = document.querySelector('input[name="profileType"]:checked').value
+      params.append('profile_type', selectedProfileType)
+
+
+      params.append('bio', document.getElementById('simpleBio').value)
+      
+
+      const markdownValue = codeMirrorEditor ? codeMirrorEditor.getValue() : document.getElementById('bioMarkdown').value
+      params.append('bio_markdown', markdownValue)
+
+
+      const skillsSelect = document.getElementById('skills')
+      const selectedSkills = Array.from(skillsSelect.selectedOptions).map(option => option.value)
+      selectedSkills.forEach(skill => params.append('skills', skill))
+
+
+      document.querySelectorAll('.experience-item, .education-item, .language-item, .license-item, .project-item').forEach((item, index) => {
+        const inputs = item.querySelectorAll('input, select, textarea')
+        inputs.forEach(input => {
+          if (input.name && input.value !== undefined) {
+
+            if (input.type === 'checkbox') {
+              if (input.checked) {
+                params.append(input.name, input.value || 'true')
+              }
+            } 
+
+            else if (input.multiple && input.tagName === 'SELECT') {
+              const selectedOptions = Array.from(input.selectedOptions).map(option => option.value)
+              selectedOptions.forEach(value => {
+                params.append(input.name, value)
+              })
+            }
+
+            else {
+              params.append(input.name, input.value)
+            }
+          }
+        })
+      })
+
+      try {
+        const response = await fetch('/team/profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: params.toString()
+        })
+
+        const result = await response.json()
+
+        if (result.success) {
+          showNotification('Success!', 'Profile content updated successfully!', 'success')
+          setTimeout(() => window.location.reload(), 1500)
+        } else {
+          showNotification('Update Failed', result.message || 'Failed to update profile content', 'error')
+        }
+      } catch (error) {
+        console.error('Error:', error)
+        showNotification('Error', 'Error updating profile content. Please try again.', 'error')
+      }
+    })
+
+
+    document.getElementById('basicForm').addEventListener('submit', async function(e) {
+      e.preventDefault()
+
+      const formData = new FormData()
+      formData.append('name', document.getElementById('name').value)
+      formData.append('email', document.getElementById('email').value)
+      
+
+      const selectedProfileType = document.querySelector('input[name="profileType"]:checked').value
+      formData.append('profile_type', selectedProfileType)
+
+
+      formData.append('bio', document.getElementById('simpleBio').value)
+      
+
+      const markdownValue = codeMirrorEditor ? codeMirrorEditor.getValue() : document.getElementById('bioMarkdown').value
+      formData.append('bio_markdown', markdownValue)
+
+
+      const skillsSelect = document.getElementById('skills')
+      const selectedSkills = Array.from(skillsSelect.selectedOptions).map(option => option.value)
+      selectedSkills.forEach(skill => formData.append('skills', skill))
+
+
+      formData.append('linkedin', document.getElementById('linkedin').value)
+      formData.append('github', document.getElementById('github').value)
+      formData.append('twitter', document.getElementById('twitter').value)
+      formData.append('instagram', document.getElementById('instagram').value)
+      formData.append('facebook', document.getElementById('facebook').value)
+
+
+      document.querySelectorAll('.experience-item, .education-item, .language-item, .license-item, .project-item').forEach((item, index) => {
+        const inputs = item.querySelectorAll('input, select, textarea')
+        inputs.forEach(input => {
+          if (input.value) {
+            formData.append(input.name, input.value)
+          }
+        })
+      })
+
+      try {
+        const response = await fetch('/team/profile', {
+          method: 'POST',
+          body: formData
+        })
+
+        const result = await response.json()
+
+        if (result.success) {
+          showNotification('Success!', 'Profile updated successfully!', 'success')
+          setTimeout(() => window.location.reload(), 1500)
+        } else {
+          showNotification('Update Failed', result.message || 'Failed to update profile', 'error')
+        }
+      } catch (error) {
+        console.error('Error:', error)
+        showNotification('Error', 'Error updating profile. Please try again.', 'error')
+      }
+    })
+
+
+    function addExperience() {
+      const experiencesList = document.getElementById('experiencesList')
+      const index = experiencesList.children.length
+
+      const experienceHtml = `
+        <div class="repeatable-card experience-item">
+          <div class="repeatable-card-header">
+            <div class="repeatable-card-title">Experience ${index + 1}</div>
+            <button type="button" class="icon-button remove-btn" onclick="removeExperience(this)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Job Title</label>
+              <input type="text" name="experiences[${index}][title]" class="form-control" placeholder="Software Developer">
+            </div>
+            <div class="form-group">
+              <label>Company</label>
+              <input type="text" name="experiences[${index}][company]" class="form-control" placeholder="Company Name">
+            </div>
+            <div class="date-fields-group">
+              <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" name="experiences[${index}][start_date]" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>End Date</label>
+                <input type="date" name="experiences[${index}][end_date]" class="form-control">
+              </div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 1rem; width: 100%;">
+            <label>Description</label>
+            <textarea name="experiences[${index}][description]" class="form-control" rows="3" placeholder="Describe your responsibilities..."></textarea>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="is_current_${index}" name="experiences[${index}][is_current]" value="true">
+            <label for="is_current_${index}">Currently working here</label>
+          </div>
+        </div>
+      `
+
+      experiencesList.insertAdjacentHTML('beforeend', experienceHtml)
+
+      const newExperience = experiencesList.lastElementChild
+      if (newExperience) {
+        newExperience.style.setProperty('display', 'block', 'important')
+        newExperience.style.setProperty('opacity', '1', 'important')
+        newExperience.style.setProperty('visibility', 'visible', 'important')
+      }
+      document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'none')
+    }
+
+    function addEducation() {
+      const educationList = document.getElementById('educationList')
+      const index = educationList.children.length
+
+      const educationHtml = `
+        <div class="repeatable-card education-item">
+          <div class="repeatable-card-header">
+            <div class="repeatable-card-title">Education ${index + 1}</div>
+            <button type="button" class="icon-button remove-btn" onclick="removeEducation(this)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Degree</label>
+              <input type="text" name="education[${index}][degree]" class="form-control" placeholder="Bachelor of Science">
+            </div>
+            <div class="form-group">
+              <label>Institution</label>
+              <input type="text" name="education[${index}][institution]" class="form-control" placeholder="University Name">
+            </div>
+            <div class="date-fields-group">
+              <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" name="education[${index}][start_date]" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>End Date</label>
+                <input type="date" name="education[${index}][end_date]" class="form-control">
+              </div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 1rem; width: 100%;">
+            <label>Field of Study</label>
+            <input type="text" name="education[${index}][field_of_study]" class="form-control" placeholder="Computer Science">
+          </div>
+          <div class="form-group" style="margin-top: 1rem; width: 100%;">
+            <label>Description</label>
+            <textarea name="education[${index}][description]" class="form-control" rows="3" placeholder="Describe your studies..."></textarea>
+          </div>
+        </div>
+      `
+
+      educationList.insertAdjacentHTML('beforeend', educationHtml)
+
+      const newEducation = educationList.lastElementChild
+      if (newEducation) {
+        newEducation.style.setProperty('display', 'block', 'important')
+        newEducation.style.setProperty('opacity', '1', 'important')
+        newEducation.style.setProperty('visibility', 'visible', 'important')
+      }
+      document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'none')
+    }
+
+    function addLanguage() {
+      const languagesList = document.getElementById('languagesList')
+      const index = languagesList.children.length
+
+      const languageHtml = `
+        <div class="repeatable-card language-item">
+          <div class="repeatable-card-header">
+            <div class="repeatable-card-title">Language ${index + 1}</div>
+            <button type="button" class="icon-button remove-btn" onclick="removeLanguage(this)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <div class="form-grid">
+            <div class="date-fields-group">
+              <div class="form-group">
+                <label>Language</label>
+                <input type="text" name="languages[${index}][language]" class="form-control" placeholder="English">
+              </div>
+              <div class="form-group">
+                <label>Proficiency</label>
+                <select name="languages[${index}][proficiency_level]" class="form-control">
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate" selected>Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="native">Native</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+
+      languagesList.insertAdjacentHTML('beforeend', languageHtml)
+
+      const newLanguage = languagesList.lastElementChild
+      if (newLanguage) {
+        newLanguage.style.setProperty('display', 'block', 'important')
+        newLanguage.style.setProperty('opacity', '1', 'important')
+        newLanguage.style.setProperty('visibility', 'visible', 'important')
+      }
+      document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'none')
+    }
+
+    function removeExperience(btn) {
+      btn.closest('.experience-item').remove()
+      if (document.querySelectorAll('.experience-item').length === 0) {
+        document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'block')
+      }
+    }
+
+    function removeEducation(btn) {
+      btn.closest('.education-item').remove()
+      if (document.querySelectorAll('.education-item').length === 0) {
+        document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'block')
+      }
+    }
+
+    function removeLanguage(btn) {
+      btn.closest('.language-item').remove()
+      if (document.querySelectorAll('.language-item').length === 0) {
+        document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'block')
+      }
+    }
+
+    function addLicense() {
+      const licensesList = document.getElementById('licensesList')
+      const index = licensesList.children.length
+
+      const licenseHtml = `
+        <div class="repeatable-card license-item">
+          <div class="repeatable-card-header">
+            <div class="repeatable-card-title">License ${index + 1}</div>
+            <button type="button" class="icon-button remove-btn" onclick="removeLicense(this)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>License/Certification Name</label>
+              <input type="text" name="licenses[${index}][name]" class="form-control" placeholder="AWS Certified Solutions Architect">
+            </div>
+            <div class="form-group">
+              <label>Issuing Organization</label>
+              <input type="text" name="licenses[${index}][issuing_organization]" class="form-control" placeholder="Amazon Web Services">
+            </div>
+            <div class="date-fields-group">
+              <div class="form-group">
+                <label>Issue Date</label>
+                <input type="date" name="licenses[${index}][issue_date]" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>Expiry Date</label>
+                <input type="date" name="licenses[${index}][expiry_date]" class="form-control">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Credential ID</label>
+              <input type="text" name="licenses[${index}][credential_id]" class="form-control" placeholder="Optional">
+            </div>
+            <div class="form-group">
+              <label>Credential URL</label>
+              <input type="url" name="licenses[${index}][credential_url]" class="form-control" placeholder="https://...">
+            </div>
+          </div>
+        </div>
+      `
+
+      licensesList.insertAdjacentHTML('beforeend', licenseHtml)
+      const newLicense = licensesList.lastElementChild
+      if (newLicense) {
+        newLicense.style.setProperty('display', 'block', 'important')
+        newLicense.style.setProperty('opacity', '1', 'important')
+        newLicense.style.setProperty('visibility', 'visible', 'important')
+      }
+      document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'none')
+    }
+
+    function addProject() {
+      const projectsList = document.getElementById('projectsList')
+      const index = projectsList.children.length
+
+      const projectHtml = `
+        <div class="repeatable-card project-item">
+          <div class="repeatable-card-header">
+            <div class="repeatable-card-title">Project ${index + 1}</div>
+            <button type="button" class="icon-button remove-btn" onclick="removeProject(this)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Project Name</label>
+              <input type="text" name="projects[${index}][name]" class="form-control" placeholder="My Awesome Project">
+            </div>
+            <div class="form-group">
+              <label>Project URL</label>
+              <input type="url" name="projects[${index}][url]" class="form-control" placeholder="https://...">
+            </div>
+            <div class="date-fields-group">
+              <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" name="projects[${index}][start_date]" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>End Date</label>
+                <input type="date" name="projects[${index}][end_date]" class="form-control">
+              </div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 1rem; width: 100%;">
+            <label>Description</label>
+            <textarea name="projects[${index}][description]" class="form-control" rows="3" placeholder="Describe your project..."></textarea>
+          </div>
+          <div class="form-group" style="margin-top: 1rem; width: 100%;">
+            <label>Technologies</label>
+            <select name="projects[${index}][technologies]" class="form-control project-technologies-select" multiple="multiple" style="width: 100%;">
+              <option value="PHP" data-icon="devicon-php-plain">PHP</option>
+              <option value="Laravel" data-icon="devicon-laravel-plain">Laravel</option>
+              <option value="Vue" data-icon="devicon-vuejs-plain">Vue</option>
+              <option value="React" data-icon="devicon-react-original">React</option>
+              <option value="React Native" data-icon="devicon-react-original">React Native</option>
+              <option value="TypeScript" data-icon="devicon-typescript-plain">TypeScript</option>
+              <option value="JavaScript" data-icon="devicon-javascript-plain">JavaScript</option>
+              <option value="Livewire" data-icon="devicon-livewire-plain-wordmark">Livewire</option>
+              <option value="Supabase" data-icon="devicon-supabase-plain">Supabase</option>
+              <option value="EJS" data-icon="fas fa-file-code">EJS</option>
+              <option value="MySQL" data-icon="devicon-mysql-plain">MySQL</option>
+              <option value="jQuery" data-icon="devicon-jquery-plain">jQuery</option>
+              <option value="Premire Pro" data-icon="devicon-premierepro-plain">Premire Pro</option>
+              <option value="PostgreSQL" data-icon="devicon-postgresql-plain">PostgreSQL</option>
+              <option value="Google Workspace" data-icon="fab fa-google">Google Workspace</option>
+              <option value="Node.js" data-icon="fab fa-node-js">Node.js</option>
+              <option value="Bootstrap" data-icon="devicon-bootstrap-plain">Bootstrap</option>
+              <option value="Express.js" data-icon="devicon-express-original">Express.js</option>
+              <option value="HTML" data-icon="devicon-html5-plain">HTML</option>
+              <option value="CSS" data-icon="devicon-css3-plain">CSS</option>
+              <option value="Python" data-icon="devicon-python-plain">Python</option>
+              <option value="Django" data-icon="devicon-django-plain">Django</option>
+              <option value="Flask" data-icon="devicon-flask-original">Flask</option>
+              <option value="MongoDB" data-icon="devicon-mongodb-plain">MongoDB</option>
+              <option value="Git" data-icon="devicon-git-plain">Git</option>
+              <option value="Docker" data-icon="devicon-docker-plain">Docker</option>
+              <option value="AWS" data-icon="devicon-amazonwebservices-plain-wordmark">AWS</option>
+              <option value="Firebase" data-icon="devicon-firebase-plain">Firebase</option>
+              <option value="Next.js" data-icon="devicon-nextjs-plain">Next.js</option>
+              <option value="Tailwind CSS" data-icon="devicon-tailwindcss-plain">Tailwind CSS</option>
+              <option value="Redux" data-icon="devicon-redux-original">Redux</option>
+              <option value="GraphQL" data-icon="devicon-graphql-plain">GraphQL</option>
+              <option value="Sass" data-icon="devicon-sass-original">Sass</option>
+              <option value="Webpack" data-icon="devicon-webpack-plain">Webpack</option>
+              <option value="Figma" data-icon="devicon-figma-plain">Figma</option>
+              <option value="Java" data-icon="devicon-java-plain">Java</option>
+              <option value="Spring" data-icon="devicon-spring-plain">Spring</option>
+              <option value="C++" data-icon="devicon-cplusplus-plain">C++</option>
+              <option value="C#" data-icon="devicon-csharp-plain">C#</option>
+              <option value="Go" data-icon="devicon-go-plain">Go</option>
+              <option value="Ruby" data-icon="devicon-ruby-plain">Ruby</option>
+              <option value="Rails" data-icon="devicon-rails-plain">Rails</option>
+              <option value="Angular" data-icon="devicon-angularjs-plain">Angular</option>
+              <option value="Svelte" data-icon="devicon-svelte-plain">Svelte</option>
+            </select>
+            <small class="form-help">Select multiple technologies (searchable)</small>
+          </div>
+        </div>
+      `
+
+      projectsList.insertAdjacentHTML('beforeend', projectHtml)
+      const newProject = projectsList.lastElementChild
+      if (newProject) {
+        newProject.style.setProperty('display', 'block', 'important')
+        newProject.style.setProperty('opacity', '1', 'important')
+        newProject.style.setProperty('visibility', 'visible', 'important')
+        
+
+        const techSelect = newProject.querySelector('.project-technologies-select')
+        if (techSelect && typeof $ !== 'undefined' && $.fn.select2) {
+          $(techSelect).select2({
+            placeholder: 'Search and select technologies...',
+            allowClear: true,
+            closeOnSelect: false,
+            width: '100%',
+            templateResult: formatSkill,
+            templateSelection: formatSkillSelection
+          })
+        }
+      }
+      document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'none')
+    }
+
+    function removeLicense(btn) {
+      btn.closest('.license-item').remove()
+      if (document.querySelectorAll('.license-item').length === 0) {
+        document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'block')
+      }
+    }
+
+    function removeProject(btn) {
+      btn.closest('.project-item').remove()
+      if (document.querySelectorAll('.project-item').length === 0) {
+        document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'block')
+      }
+    }
+
+
+    document.getElementById('addExperienceBtn')?.addEventListener('click', addExperience)
+    document.getElementById('addExperienceBtn2')?.addEventListener('click', addExperience)
+    document.getElementById('addEducationBtn')?.addEventListener('click', addEducation)
+    document.getElementById('addEducationBtn2')?.addEventListener('click', addEducation)
+    document.getElementById('addLanguageBtn')?.addEventListener('click', addLanguage)
+    document.getElementById('addLanguageBtn2')?.addEventListener('click', addLanguage)
+    document.getElementById('addLicenseBtn')?.addEventListener('click', addLicense)
+    document.getElementById('addLicenseBtn2')?.addEventListener('click', addLicense)
+    document.getElementById('addProjectBtn')?.addEventListener('click', addProject)
+    document.getElementById('addProjectBtn2')?.addEventListener('click', addProject)
+
+
+    document.querySelectorAll('.password-toggle').forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target')
+        const passwordInput = document.getElementById(targetId)
+        const icon = this.querySelector('i')
+        
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text'
+          icon.classList.remove('fa-eye')
+          icon.classList.add('fa-eye-slash')
+        } else {
+          passwordInput.type = 'password'
+          icon.classList.remove('fa-eye-slash')
+          icon.classList.add('fa-eye')
+        }
+      })
+    })
+
+
+    document.getElementById('changePasswordForm')?.addEventListener('submit', async function(e) {
+      e.preventDefault()
+
+      const currentPassword = document.getElementById('currentPassword').value
+      const newPassword = document.getElementById('newPassword').value
+      const confirmPassword = document.getElementById('confirmPassword').value
+
+      if (newPassword !== confirmPassword) {
+        showNotification('Password Mismatch', 'New password and confirm password do not match', 'error')
+        return
+      }
+
+      if (newPassword.length < 6) {
+        showNotification('Invalid Password', 'Password must be at least 6 characters long', 'error')
+        return
+      }
+
+      try {
+        const response = await fetch('/team/change-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            currentPassword,
+            newPassword
+          })
+        })
+
+        const result = await response.json()
+
+        if (result.success) {
+          showNotification('Success!', 'Password changed successfully!', 'success')
+          document.getElementById('changePasswordForm').reset()
+        } else {
+          showNotification('Password Change Failed', result.message || 'Failed to change password', 'error')
+        }
+      } catch (error) {
+        console.error('Error:', error)
+        showNotification('Error', 'Error changing password. Please try again.', 'error')
+      }
+    })
+
+
+    function showNotification(title, message, type = 'success') {
+      const existingNotification = document.querySelector('.custom-notification')
+      if (existingNotification) {
+        existingNotification.remove()
+      }
+
+      const notification = document.createElement('div')
+      notification.className = `custom-notification ${type}`
+
+      const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'
+
+      notification.innerHTML = `
+        <div class="notification-icon">
+          <i class="fas ${icon}"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-title">${title}</div>
+          <div class="notification-message">${message}</div>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </button>
+      `
+
+      document.body.appendChild(notification)
+
+      setTimeout(() => notification.classList.add('show'), 10)
+
+      setTimeout(() => {
+        notification.classList.remove('show')
+        setTimeout(() => notification.remove(), 500)
+      }, 4000)
+    }
+
+
+    function initScrollAnimations() {
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+      };
+
+      const checkIfAlreadyVisible = (element) => {
+        const rect = element.getBoundingClientRect();
+
+        const isVisible = rect.top < (window.innerHeight + 100) && rect.bottom > -100;
+        return isVisible;
+      };
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+
+
+        document.querySelectorAll('section').forEach(section => {
+          observer.observe(section);
+        });
+
+
+        const footer = document.querySelector('footer');
+        if (footer) {
+
+          if (checkIfAlreadyVisible(footer)) {
+            footer.classList.add('visible');
+          } else {
+            observer.observe(footer);
+          }
+        }
+      } else {
+
+        document.querySelectorAll('section, footer').forEach(target => {
+          target.classList.add('visible');
+        });
+      }
+    }
+
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+
+        setTimeout(initScrollAnimations, 100);
+      });
+    } else {
+
+      setTimeout(initScrollAnimations, 100);
+    }
+  </script>
+  
+  <%- include('../partials/footer') %>
+</body>
+</html>

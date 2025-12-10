@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <!-- Devicon CSS for tech icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+  <style>
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      background: #f9fafb;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: #6b7280;
+      font-size: 0.9375rem;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .breadcrumb a {
+      color: #c51d34;
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .project-info-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: fadeInUp 0.6s ease-out 0.2s both;
+    }
+
+    .project-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .project-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .project-details h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 0.25rem;
+    }
+
+    .project-details p {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .form-container {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.5s ease-out both;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.4s; }
+    .form-group:nth-child(2) { animation-delay: 0.45s; }
+    .form-group:nth-child(3) { animation-delay: 0.5s; }
+    .form-group:nth-child(4) { animation-delay: 0.55s; }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-container .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #111827 !important;
+      opacity: 1 !important;
+    }
+
+    .form-container .form-group label .required {
+      color: #c51d34;
+    }
+
+    .form-container .form-control,
+    .form-container input.form-control,
+    .form-container select.form-control,
+    .form-container textarea.form-control {
+      width: 100% !important;
+      padding: 0.75rem !important;
+      border: 2px solid #e5e7eb !important;
+      border-radius: 6px !important;
+      font-size: 0.875rem !important;
+      font-family: inherit !important;
+      background: #ffffff !important;
+      color: #111827 !important;
+      box-sizing: border-box !important;
+      transition: all 0.2s ease !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+    }
+
+    .form-container textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-container .form-control:focus,
+    .form-container input.form-control:focus,
+    .form-container select.form-control:focus,
+    .form-container textarea.form-control:focus {
+      outline: none !important;
+      border-color: #c51d34 !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+
+    .form-help {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.8125rem;
+      color: #6b7280;
+      opacity: 1 !important;
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0;
+    }
+
+    .form-checkbox input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #c51d34;
+      margin: 0;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    .form-checkbox label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: #111827;
+      line-height: 20px;
+      display: block;
+      align-self: center;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+      animation: fadeInUp 0.5s ease-out 1s both;
+      z-index: 1;
+    }
+
+    .form-container .btn {
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 1 !important;
+      width: 40px;
+      height: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container .btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .form-container .btn-primary:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .form-container .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .form-container .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .form-container .btn-submit {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+      width: auto;
+      padding: 0.75rem 1.5rem;
+    }
+
+    .form-container .btn-submit:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    /* Image Upload Styles */
+    .image-upload-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .existing-images-container {
+      margin-bottom: 1rem;
+    }
+
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .image-item {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #e5e7eb;
+      background: #f9fafb;
+    }
+
+    .image-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-actions {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .cover-image-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(107, 114, 128, 0.9);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .cover-image-btn:hover {
+      background: rgba(75, 85, 99, 1);
+      transform: scale(1.1);
+    }
+
+    .cover-image-btn.active {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+    }
+
+    .cover-image-btn.active:hover {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .remove-image-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .remove-image-btn:hover {
+      background: rgba(220, 38, 38, 1);
+      transform: scale(1.1);
+    }
+
+    .image-upload-input {
+      display: none;
+    }
+
+    /* Drag and Drop Styles */
+    .image-upload-dropzone {
+      position: relative;
+      min-height: 120px;
+      border: 2px dashed #e5e7eb;
+      border-radius: 8px;
+      padding: 1.5rem;
+      background: #f9fafb;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .image-upload-dropzone:hover {
+      border-color: #c51d34;
+      background: #fef2f2;
+      transform: scale(1.02);
+      box-shadow: 0 0 0 4px rgba(197, 29, 52, 0.1),
+                  0 4px 20px rgba(197, 29, 52, 0.3),
+                  0 8px 30px rgba(197, 29, 52, 0.2),
+                  inset 0 0 20px rgba(197, 29, 52, 0.05);
+      animation: dragGlow 1.5s ease-in-out infinite;
+    }
+
+    .image-upload-dropzone.drag-over {
+      border-color: #c51d34;
+      background: #fef2f2;
+      transform: scale(1.02);
+      box-shadow: 0 0 0 4px rgba(197, 29, 52, 0.1),
+                  0 4px 20px rgba(197, 29, 52, 0.3),
+                  0 8px 30px rgba(197, 29, 52, 0.2),
+                  inset 0 0 20px rgba(197, 29, 52, 0.05);
+      animation: dragGlow 1.5s ease-in-out infinite;
+    }
+
+    @keyframes dragGlow {
+      0%, 100% {
+        box-shadow: 0 0 0 4px rgba(197, 29, 52, 0.1),
+                    0 4px 20px rgba(197, 29, 52, 0.3),
+                    0 8px 30px rgba(197, 29, 52, 0.2),
+                    inset 0 0 20px rgba(197, 29, 52, 0.05);
+      }
+      50% {
+        box-shadow: 0 0 0 6px rgba(197, 29, 52, 0.15),
+                    0 4px 25px rgba(197, 29, 52, 0.4),
+                    0 10px 40px rgba(197, 29, 52, 0.3),
+                    inset 0 0 25px rgba(197, 29, 52, 0.08);
+      }
+    }
+
+    .image-upload-dropzone:hover .dropzone-content,
+    .image-upload-dropzone.drag-over .dropzone-content {
+      opacity: 1;
+    }
+
+    .image-upload-dropzone:hover .dropzone-text {
+      color: #c51d34;
+    }
+
+    .dropzone-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      text-align: center;
+      transition: opacity 0.3s ease;
+    }
+
+    .dropzone-icon {
+      font-size: 2.5rem;
+      color: #c51d34;
+      margin-bottom: 0.5rem;
+    }
+
+    .dropzone-text {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #111827;
+      margin: 0;
+    }
+
+    .dropzone-hint {
+      font-size: 0.8125rem;
+      color: #6b7280;
+      margin: 0;
+    }
+
+    .dropzone-or {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin: 0.5rem 0;
+      font-weight: 500;
+    }
+
+    .image-upload-btn {
+      padding: 0.5rem 1rem;
+      background: #f9fafb;
+      border: 2px dashed #e5e7eb;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6b7280;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .image-upload-btn:hover {
+      border-color: #c51d34;
+      background: #fef2f2;
+      color: #c51d34;
+    }
+
+    /* Upload Progress Styles */
+    .upload-progress {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f9fafb;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .progress-text {
+      font-size: 0.875rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    /* Select2 Custom Styling for Technologies */
+    .select2-container--default .select2-selection--multiple {
+      border: 2px solid #e5e7eb !important;
+      border-radius: 8px !important;
+      min-height: 52px !important;
+      padding: 0.375rem 0.75rem !important;
+      background: #ffffff !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+      border-color: #c51d34 !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%) !important;
+      border: none !important;
+      color: white !important;
+      padding: 0.5rem 0.75rem 0.5rem 1rem !important;
+      border-radius: 20px !important;
+      margin: 0.375rem 0.375rem 0.375rem 0 !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 0.5rem !important;
+      box-shadow: 0 2px 8px rgba(197, 29, 52, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      cursor: default !important;
+      line-height: 1.5 !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+      display: flex !important;
+      align-items: center !important;
+      line-height: 1.5 !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%) !important;
+      transform: translateY(-2px) scale(1.02) !important;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.35), 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+      color: white !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      font-weight: 700 !important;
+      font-size: 1.1rem !important;
+      width: 20px !important;
+      height: 20px !important;
+      min-width: 20px !important;
+      min-height: 20px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 50% !important;
+      background: rgba(255, 255, 255, 0.25) !important;
+      transition: all 0.2s ease !important;
+      cursor: pointer !important;
+      line-height: 1 !important;
+      padding: 0 !important;
+      opacity: 0.9 !important;
+      flex-shrink: 0 !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      text-align: center !important;
+      vertical-align: middle !important;
+      box-sizing: border-box !important;
+      position: relative !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:before {
+      content: "×" !important;
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      line-height: 20px !important;
+      text-align: center !important;
+      font-size: 16px !important;
+      font-weight: bold !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove > span {
+      display: none !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+      background: rgba(255, 255, 255, 0.95) !important;
+      opacity: 1 !important;
+      transform: scale(1.15) !important;
+      color: #c51d34 !important;
+      border-color: rgba(255, 255, 255, 0.4) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+      background-color: #c51d34 !important;
+      color: white !important;
+    }
+
+    .select2-container {
+      width: 100% !important;
+    }
+
+    .select2-dropdown {
+      border: 2px solid #e5e7eb !important;
+      border-radius: 8px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+      margin-top: 4px !important;
+    }
+
+    .select2-results__options {
+      max-height: 280px !important;
+      overflow-y: auto !important;
+    }
+
+    .select2-results__option {
+      padding: 0.625rem 1rem !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.75rem !important;
+      font-size: 0.875rem !important;
+      transition: all 0.15s ease !important;
+    }
+
+    .select2-results__option i {
+      font-size: 1.25rem !important;
+      width: 24px !important;
+      text-align: center !important;
+    }
+
+    .select2-search--dropdown {
+      padding: 0.75rem !important;
+      background: #f9fafb !important;
+      border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+      border: 2px solid #e5e7eb !important;
+      border-radius: 6px !important;
+      padding: 0.625rem 1rem !important;
+      font-size: 0.875rem !important;
+      background: white !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .select2-search--dropdown .select2-search__field:focus {
+      border-color: #c51d34 !important;
+      outline: none !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+    }
+
+    /* Success Modal */
+    .success-modal,
+    .confirmation-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .success-modal.show,
+    .confirmation-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .success-modal.show .modal-content-wrapper,
+    .confirmation-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    .modal-icon.error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .modal-icon.warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    /* Milestones Styles */
+    .milestones-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .milestone-card {
+      background: #f9fafb;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.2s;
+    }
+
+    .milestone-card:hover {
+      border-color: #c51d34;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.1);
+    }
+
+    .milestone-header {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .milestone-fields {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .milestone-title-input {
+      padding: 0.75rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .milestone-title-input:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .milestone-status-select {
+      padding: 0.75rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      width: 100%;
+      box-sizing: border-box;
+      background: white;
+    }
+
+    .milestone-status-select:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .milestone-date-input {
+      padding: 0.75rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .milestone-date-input:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .milestone-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .milestone-delete-btn {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .milestone-delete-btn:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+    }
+
+    .tasks-section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .tasks-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .tasks-header h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #111827;
+      margin: 0;
+    }
+
+    .add-task-btn {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .add-task-btn:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+    }
+
+    .tasks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .task-item {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .task-checkbox {
+      margin-top: 0.25rem;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #c51d34;
+      flex-shrink: 0;
+    }
+
+    .task-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .task-title-input {
+      padding: 0.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .task-title-input:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 2px rgba(197, 29, 52, 0.1);
+    }
+
+    .task-description-input {
+      padding: 0.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 0.8125rem;
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .task-description-input:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 2px rgba(197, 29, 52, 0.1);
+    }
+
+    .task-delete-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .task-delete-btn:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+
+    .task-item.completed .task-title-input,
+    .task-item.completed .task-description-input {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .milestone-fields {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="breadcrumb">
+        <a href="/admin/dashboard">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="/admin/projects">Projects</a>
+        <i class="fas fa-chevron-right"></i>
+        <span><%= isEdit ? 'Edit' : 'Add' %> Project</span>
+      </div>
+
+      <div class="page-header">
+        <h1><%= isEdit ? 'Edit' : 'Add' %> Project</h1>
+        <p><%= isEdit ? 'Update project information' : 'Create a new project' %></p>
+      </div>
+
+      <% if (isEdit && project) { %>
+      <div class="project-info-card">
+        <div class="project-image">
+          <% 
+            let coverImagePath = null;
+            if (project.cover_image && project.images && Array.isArray(project.images)) {
+              const coverImg = project.images.find(img => img.filename === project.cover_image);
+              if (coverImg) {
+                coverImagePath = coverImg.path;
+              } else if (project.images.length > 0) {
+                coverImagePath = project.images[0].path;
+              }
+            } else if (project.images && Array.isArray(project.images) && project.images.length > 0) {
+              coverImagePath = project.images[0].path;
+            }
+          %>
+          <% if (coverImagePath) { %>
+            <img src="<%= coverImagePath %>" alt="Project Image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <i class="fas fa-image" style="display: none;"></i>
+          <% } else { %>
+            <i class="fas fa-folder"></i>
+          <% } %>
+        </div>
+        <div class="project-details">
+          <h3><%= project.title %></h3>
+          <p><%= project.slug %></p>
+        </div>
+      </div>
+      <% } %>
+
+      <div class="form-container">
+        <form method="POST" action="<%= isEdit ? `/admin/projects/${project.id}` : '/admin/projects/add' %>" id="projectForm" enctype="multipart/form-data">
+          <div class="form-grid">
+            <!-- Title -->
+            <div class="form-group">
+              <label for="title">Title <span class="required">*</span></label>
+              <input type="text" id="title" name="title" class="form-control" required placeholder="Project Title" value="<%= isEdit && project ? (project.title || '') : '' %>">
+            </div>
+
+            <!-- Slug -->
+            <div class="form-group">
+              <label for="slug">Slug <span class="required">*</span></label>
+              <input type="text" id="slug" name="slug" class="form-control" required placeholder="project-slug" value="<%= isEdit && project ? (project.slug || '') : '' %>">
+              <small class="form-help">URL-friendly identifier (auto-generated from title)</small>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group full-width">
+              <label for="description">Description</label>
+              <textarea id="description" name="description" class="form-control" placeholder="Project description..."><%= isEdit && project ? (project.description || '') : '' %></textarea>
+            </div>
+
+            <!-- Client -->
+            <div class="form-group">
+              <label for="client_id">Client</label>
+              <select id="client_id" name="client_id" class="form-control">
+                <option value="">No client</option>
+                <% if (clients && clients.length > 0) { %>
+                  <% clients.forEach(client => { %>
+                    <option value="<%= client.id %>" <%= isEdit && project && project.client_id == client.id ? 'selected' : '' %>><%= client.name %> (<%= client.email %>)</option>
+                  <% }) %>
+                <% } %>
+              </select>
+            </div>
+
+            <!-- Service -->
+            <div class="form-group">
+              <label for="service_id">Service</label>
+              <select id="service_id" name="service_id" class="form-control">
+                <option value="">No service</option>
+                <% if (services && services.length > 0) { %>
+                  <% services.forEach(service => { %>
+                    <option value="<%= service.id %>" <%= isEdit && project && project.service_id == service.id ? 'selected' : '' %>><%= service.title %></option>
+                  <% }) %>
+                <% } %>
+              </select>
+            </div>
+
+            <!-- Technologies -->
+            <div class="form-group full-width">
+              <label for="technologies">Technologies</label>
+              <% 
+                let technologiesArray = [];
+                if (isEdit && project && project.technologies) {
+                  try {
+                    technologiesArray = Array.isArray(project.technologies) ? project.technologies : JSON.parse(project.technologies);
+                  } catch (e) {
+                    technologiesArray = [];
+                  }
+                }
+              %>
+              <select id="technologies" name="technologies" class="form-control technologies-select" multiple="multiple">
+                <option value="PHP" data-icon="devicon-php-plain" <%= technologiesArray.includes('PHP') ? 'selected' : '' %>>PHP</option>
+                <option value="Laravel" data-icon="devicon-laravel-plain" <%= technologiesArray.includes('Laravel') ? 'selected' : '' %>>Laravel</option>
+                <option value="Vue" data-icon="devicon-vuejs-plain" <%= technologiesArray.includes('Vue') ? 'selected' : '' %>>Vue</option>
+                <option value="React" data-icon="devicon-react-original" <%= technologiesArray.includes('React') ? 'selected' : '' %>>React</option>
+                <option value="React Native" data-icon="devicon-react-original" <%= technologiesArray.includes('React Native') ? 'selected' : '' %>>React Native</option>
+                <option value="TypeScript" data-icon="devicon-typescript-plain" <%= technologiesArray.includes('TypeScript') ? 'selected' : '' %>>TypeScript</option>
+                <option value="JavaScript" data-icon="devicon-javascript-plain" <%= technologiesArray.includes('JavaScript') ? 'selected' : '' %>>JavaScript</option>
+                <option value="Livewire" data-icon="devicon-livewire-plain-wordmark" <%= technologiesArray.includes('Livewire') ? 'selected' : '' %>>Livewire</option>
+                <option value="Supabase" data-icon="devicon-supabase-plain" <%= technologiesArray.includes('Supabase') ? 'selected' : '' %>>Supabase</option>
+                <option value="EJS" data-icon="fas fa-file-code" <%= technologiesArray.includes('EJS') ? 'selected' : '' %>>EJS</option>
+                <option value="MySQL" data-icon="devicon-mysql-plain" <%= technologiesArray.includes('MySQL') ? 'selected' : '' %>>MySQL</option>
+                <option value="jQuery" data-icon="devicon-jquery-plain" <%= technologiesArray.includes('jQuery') ? 'selected' : '' %>>jQuery</option>
+                <option value="Premire Pro" data-icon="devicon-premierepro-plain" <%= technologiesArray.includes('Premire Pro') ? 'selected' : '' %>>Premire Pro</option>
+                <option value="PostgreSQL" data-icon="devicon-postgresql-plain" <%= technologiesArray.includes('PostgreSQL') ? 'selected' : '' %>>PostgreSQL</option>
+                <option value="Google Workspace" data-icon="fab fa-google" <%= technologiesArray.includes('Google Workspace') ? 'selected' : '' %>>Google Workspace</option>
+                <option value="Node.js" data-icon="fab fa-node-js" <%= technologiesArray.includes('Node.js') ? 'selected' : '' %>>Node.js</option>
+                <option value="Bootstrap" data-icon="devicon-bootstrap-plain" <%= technologiesArray.includes('Bootstrap') ? 'selected' : '' %>>Bootstrap</option>
+                <option value="Express.js" data-icon="devicon-express-original" <%= technologiesArray.includes('Express.js') ? 'selected' : '' %>>Express.js</option>
+                <option value="HTML" data-icon="devicon-html5-plain" <%= technologiesArray.includes('HTML') ? 'selected' : '' %>>HTML</option>
+                <option value="CSS" data-icon="devicon-css3-plain" <%= technologiesArray.includes('CSS') ? 'selected' : '' %>>CSS</option>
+                <option value="Python" data-icon="devicon-python-plain" <%= technologiesArray.includes('Python') ? 'selected' : '' %>>Python</option>
+                <option value="Django" data-icon="devicon-django-plain" <%= technologiesArray.includes('Django') ? 'selected' : '' %>>Django</option>
+                <option value="Flask" data-icon="devicon-flask-original" <%= technologiesArray.includes('Flask') ? 'selected' : '' %>>Flask</option>
+                <option value="MongoDB" data-icon="devicon-mongodb-plain" <%= technologiesArray.includes('MongoDB') ? 'selected' : '' %>>MongoDB</option>
+                <option value="Git" data-icon="devicon-git-plain" <%= technologiesArray.includes('Git') ? 'selected' : '' %>>Git</option>
+                <option value="Docker" data-icon="devicon-docker-plain" <%= technologiesArray.includes('Docker') ? 'selected' : '' %>>Docker</option>
+                <option value="AWS" data-icon="devicon-amazonwebservices-plain-wordmark" <%= technologiesArray.includes('AWS') ? 'selected' : '' %>>AWS</option>
+                <option value="Firebase" data-icon="devicon-firebase-plain" <%= technologiesArray.includes('Firebase') ? 'selected' : '' %>>Firebase</option>
+                <option value="Next.js" data-icon="devicon-nextjs-plain" <%= technologiesArray.includes('Next.js') ? 'selected' : '' %>>Next.js</option>
+                <option value="Tailwind CSS" data-icon="devicon-tailwindcss-plain" <%= technologiesArray.includes('Tailwind CSS') ? 'selected' : '' %>>Tailwind CSS</option>
+                <option value="Redux" data-icon="devicon-redux-original" <%= technologiesArray.includes('Redux') ? 'selected' : '' %>>Redux</option>
+                <option value="GraphQL" data-icon="devicon-graphql-plain" <%= technologiesArray.includes('GraphQL') ? 'selected' : '' %>>GraphQL</option>
+                <option value="Sass" data-icon="devicon-sass-original" <%= technologiesArray.includes('Sass') ? 'selected' : '' %>>Sass</option>
+                <option value="Webpack" data-icon="devicon-webpack-plain" <%= technologiesArray.includes('Webpack') ? 'selected' : '' %>>Webpack</option>
+                <option value="Figma" data-icon="devicon-figma-plain" <%= technologiesArray.includes('Figma') ? 'selected' : '' %>>Figma</option>
+                <option value="Java" data-icon="devicon-java-plain" <%= technologiesArray.includes('Java') ? 'selected' : '' %>>Java</option>
+                <option value="Spring" data-icon="devicon-spring-plain" <%= technologiesArray.includes('Spring') ? 'selected' : '' %>>Spring</option>
+                <option value="C++" data-icon="devicon-cplusplus-plain" <%= technologiesArray.includes('C++') ? 'selected' : '' %>>C++</option>
+                <option value="C#" data-icon="devicon-csharp-plain" <%= technologiesArray.includes('C#') ? 'selected' : '' %>>C#</option>
+                <option value="Go" data-icon="devicon-go-plain" <%= technologiesArray.includes('Go') ? 'selected' : '' %>>Go</option>
+                <option value="Ruby" data-icon="devicon-ruby-plain" <%= technologiesArray.includes('Ruby') ? 'selected' : '' %>>Ruby</option>
+                <option value="Rails" data-icon="devicon-rails-plain" <%= technologiesArray.includes('Rails') ? 'selected' : '' %>>Rails</option>
+                <option value="Angular" data-icon="devicon-angularjs-plain" <%= technologiesArray.includes('Angular') ? 'selected' : '' %>>Angular</option>
+                <option value="Svelte" data-icon="devicon-svelte-plain" <%= technologiesArray.includes('Svelte') ? 'selected' : '' %>>Svelte</option>
+              </select>
+              <small class="form-help">Select multiple technologies (searchable)</small>
+            </div>
+
+            <!-- Project Images (Multiple) -->
+            <div class="form-group full-width">
+              <label>Project Images <span class="required">*</span></label>
+              <div class="image-upload-container">
+                <!-- Existing Images -->
+                <div id="existingImagesContainer" class="existing-images-container">
+                  <% 
+                    let existingImages = [];
+                    if (isEdit && project && project.images && Array.isArray(project.images)) {
+                      existingImages = project.images;
+                    }
+                  %>
+                  <% if (existingImages.length > 0) { %>
+                    <div class="images-grid" id="existingImagesGrid">
+                      <% existingImages.forEach((img, index) => { %>
+                        <div class="image-item" data-image-filename="<%= img.filename %>" data-image-path="<%= img.path %>">
+                          <img src="<%= img.path %>" alt="Project Image" onerror="this.parentElement.remove();">
+                          <div class="image-actions">
+                            <button type="button" class="cover-image-btn <%= project.cover_image === img.filename ? 'active' : '' %>" 
+                                    onclick="setCoverImage('<%= img.filename %>', this)" 
+                                    title="<%= project.cover_image === img.filename ? 'Cover Image' : 'Set as Cover Image' %>">
+                              <i class="<%= project.cover_image === img.filename ? 'fas' : 'far' %> fa-star"></i>
+                            </button>
+                            <button type="button" class="remove-image-btn" onclick="removeExistingImage('<%= img.filename %>', this)" title="Remove Image">
+                              <i class="fas fa-times"></i>
+                            </button>
+                          </div>
+                          <input type="hidden" name="existing_images[]" value="<%= img.filename %>">
+                        </div>
+                      <% }) %>
+                    </div>
+                    <% } %>
+                  </div>
+                
+                <!-- Cover Image Input (always present) -->
+                <input type="hidden" name="cover_image" id="coverImageInput" value="<%= isEdit && project ? (project.cover_image || '') : '' %>">
+                
+                <!-- New Images Upload -->
+                <div class="new-images-upload">
+                  <div class="image-upload-dropzone" id="imageUploadDropzone">
+                    <div class="dropzone-content">
+                      <i class="fas fa-cloud-upload-alt dropzone-icon"></i>
+                      <p class="dropzone-text">Drag & drop your project images here</p>
+                      <p class="dropzone-hint">or</p>
+                      <label for="images" class="image-upload-btn">
+                        <i class="fas fa-upload"></i> Choose Project Images (Multiple)
+                      </label>
+                      <input type="file" id="images" name="images" class="image-upload-input" accept="image/*" multiple>
+                      <p class="dropzone-hint" style="margin-top: 0.5rem;">PNG, JPG, WEBP - max 5MB each, up to 20 images</p>
+                    </div>
+                  </div>
+                  
+                  <!-- Preview for new images -->
+                  <div id="newImagesPreview" class="images-grid" style="margin-top: 1rem; display: none;"></div>
+                  </div>
+                </div>
+              </div>
+
+            <!-- Project Video URL -->
+            <div class="form-group full-width">
+              <label for="video_url">Project Video URL</label>
+              <input type="url" id="video_url" name="video_url" class="form-control" placeholder="https://www.youtube.com/watch?v=..." value="<%= isEdit && project ? (project.video_url || '') : '' %>">
+              <small class="form-help">Paste a video link (YouTube, Vimeo, or any video URL)</small>
+            </div>
+
+            <!-- Project URL -->
+            <div class="form-group">
+              <label for="project_url">Project URL</label>
+              <input type="url" id="project_url" name="project_url" class="form-control" placeholder="https://example.com" value="<%= isEdit && project ? (project.project_url || '') : '' %>">
+            </div>
+
+            <!-- Completed Date -->
+            <div class="form-group">
+              <label for="completed_at">Completed Date</label>
+              <input type="date" id="completed_at" name="completed_at" class="form-control" value="<%= isEdit && project && project.completed_at ? new Date(project.completed_at).toISOString().split('T')[0] : '' %>">
+            </div>
+
+            <!-- Featured Status -->
+            <div class="form-group full-width">
+              <div class="form-checkbox">
+                <input type="checkbox" id="is_featured" name="is_featured" value="true" <%= isEdit && project ? (project.is_featured ? 'checked' : '') : '' %>>
+                <label for="is_featured">Featured Project</label>
+              </div>
+              <small class="form-help">Featured projects are highlighted on the website</small>
+            </div>
+
+            <!-- Project Milestones -->
+            <div class="form-group full-width">
+              <label>Project Milestones</label>
+              <div id="milestonesContainer" class="milestones-container">
+                <!-- Milestones will be added here dynamically -->
+              </div>
+              <button type="button" class="btn btn-secondary" id="addMilestoneBtn" style="margin-top: 1rem; width: auto; padding: 0.75rem 1.5rem;">
+                <i class="fas fa-plus"></i> Add Milestone
+              </button>
+              <small class="form-help">Add milestones to track project progress with tasks</small>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <a href="/admin/projects" class="btn btn-secondary" title="Cancel">
+              <i class="fas fa-times"></i>
+            </a>
+            <button type="submit" class="btn btn-submit" id="submitBtn" title="<%= isEdit ? 'Update' : 'Add' %> Project">
+              <i class="fas fa-<%= isEdit ? 'save' : 'plus' %>"></i> <%= isEdit ? 'Update' : 'Add' %> Project
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title"><%= isEdit ? 'Project Updated!' : 'Project Created!' %></h3>
+      <p class="modal-message"><%= isEdit ? 'The project has been successfully updated.' : 'The project has been successfully added to the system.' %></p>
+      <div class="modal-actions">
+        <a href="/admin/projects" class="modal-btn modal-btn-secondary">View Projects</a>
+        <% if (!isEdit) { %>
+        <a href="/admin/projects/add" class="modal-btn modal-btn-primary">Add Another</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="success-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon error">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error Occurred</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong. Please try again.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('errorModal')" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon warning">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 class="modal-title">Confirm Action</h3>
+      <p class="modal-message" id="confirmationMessage">Are you sure you want to proceed?</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('confirmationModal')" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirmBtn" class="modal-btn modal-btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery (required for Select2) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <script>
+
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isEditMode = <%= JSON.stringify(isEdit) %>;
+      
+      if (urlParams.get('success') === 'true') {
+        showModal('successModal');
+        
+
+        if (!isEditMode) {
+          setTimeout(function() {
+            const form = document.getElementById('projectForm');
+            if (form) {
+              form.reset();
+            }
+          }, 100);
+        }
+      } else if (urlParams.get('error') === 'true') {
+        const errorMsg = decodeURIComponent(urlParams.get('message') || 'Something went wrong. Please try again.');
+        document.getElementById('errorMessage').textContent = errorMsg;
+        showModal('errorModal');
+      }
+    });
+
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('success-modal') || e.target.classList.contains('confirmation-modal')) {
+        closeModal(e.target.id);
+      }
+    });
+
+
+    document.getElementById('title')?.addEventListener('input', function() {
+      const slugInput = document.getElementById('slug');
+      if (slugInput && !slugInput.dataset.manualEdit) {
+        const slug = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        slugInput.value = slug;
+      }
+    });
+
+
+    document.getElementById('slug')?.addEventListener('input', function() {
+      this.dataset.manualEdit = 'true';
+    });
+
+
+    const imagesInput = document.getElementById('images');
+    const newImagesPreview = document.getElementById('newImagesPreview');
+    const existingImagesGrid = document.getElementById('existingImagesGrid');
+    const imageUploadDropzone = document.getElementById('imageUploadDropzone');
+
+
+    function processFiles(files) {
+      if (!files || files.length === 0) return;
+
+      const filesArray = Array.from(files);
+      
+
+      const existingCount = existingImagesGrid ? existingImagesGrid.children.length : 0;
+      const newPreviewCount = newImagesPreview ? newImagesPreview.children.length : 0;
+      const currentTotal = existingCount + newPreviewCount;
+      
+      if (filesArray.length + currentTotal > 20) {
+        alert(`Maximum 20 images allowed. You currently have ${currentTotal} image(s). Please select fewer images.`);
+        return;
+      }
+
+
+      const currentFileCount = imagesInput ? imagesInput.files.length : 0;
+      let validFiles = [];
+
+
+      filesArray.forEach((file, relativeIndex) => {
+
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`Image "${file.name}" is too large. Maximum size is 5MB.`);
+          return;
+        }
+
+
+        if (!file.type.startsWith('image/')) {
+          alert(`"${file.name}" is not an image file.`);
+          return;
+        }
+
+
+        const currentCount = existingImagesGrid ? existingImagesGrid.children.length : 0;
+        const previewCount = newImagesPreview ? newImagesPreview.children.length : 0;
+        if (currentCount + previewCount >= 20) {
+          alert('Maximum 20 images allowed. Please remove some images first.');
+          return;
+        }
+
+        validFiles.push(file);
+        const index = currentFileCount + validFiles.length - 1;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const imageItem = document.createElement('div');
+          imageItem.className = 'image-item';
+          imageItem.dataset.fileName = file.name;
+          imageItem.dataset.fileIndex = index;
+          
+          const previewId = `preview_${Date.now()}_${index}`;
+          
+          imageItem.innerHTML = `
+            <img src="${e.target.result}" alt="Preview">
+            <div class="image-actions">
+              <button type="button" class="cover-image-btn" 
+                      onclick="setCoverImageFromPreview(${index}, this)" 
+                      title="Set as Cover Image">
+                <i class="far fa-star"></i>
+              </button>
+              <button type="button" class="remove-image-btn" onclick="removeNewImage(this)" title="Remove Image">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          `;
+          imageItem.dataset.previewId = previewId;
+          imageItem.dataset.fileIndex = index;
+          
+          if (!newImagesPreview) return;
+          newImagesPreview.appendChild(imageItem);
+          newImagesPreview.style.display = 'grid';
+          
+
+          const coverImageInput = document.getElementById('coverImageInput');
+          if (coverImageInput && !coverImageInput.value && previewCount === 0 && validFiles.length === 1) {
+            setCoverImageFromPreview(index, imageItem.querySelector('.cover-image-btn'));
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+
+
+      if (imagesInput && validFiles.length > 0) {
+        const dataTransfer = new DataTransfer();
+
+        if (imagesInput.files) {
+          for (let i = 0; i < imagesInput.files.length; i++) {
+            dataTransfer.items.add(imagesInput.files[i]);
+          }
+        }
+
+        validFiles.forEach(file => {
+          dataTransfer.items.add(file);
+        });
+        imagesInput.files = dataTransfer.files;
+      }
+    }
+
+
+    if (imagesInput) {
+      imagesInput.addEventListener('change', function(e) {
+        processFiles(e.target.files);
+      });
+    }
+
+
+    if (imageUploadDropzone) {
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        imageUploadDropzone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        imageUploadDropzone.addEventListener(eventName, highlight, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        imageUploadDropzone.addEventListener(eventName, unhighlight, false);
+      });
+
+      function highlight(e) {
+        imageUploadDropzone.classList.add('drag-over');
+      }
+
+      function unhighlight(e) {
+        imageUploadDropzone.classList.remove('drag-over');
+      }
+
+
+      imageUploadDropzone.addEventListener('drop', handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+          processFiles(files);
+        }
+        
+        imageUploadDropzone.classList.remove('drag-over');
+      }
+    }
+
+
+    function setCoverImage(filename, button) {
+      const coverImageInput = document.getElementById('coverImageInput');
+      if (coverImageInput) {
+        coverImageInput.value = filename;
+      }
+
+
+      document.querySelectorAll('#existingImagesGrid .cover-image-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.querySelector('i').className = 'far fa-star';
+        btn.title = 'Set as Cover Image';
+      });
+
+
+      button.classList.add('active');
+      button.querySelector('i').className = 'fas fa-star';
+      button.title = 'Cover Image';
+    }
+
+
+    function setCoverImageFromPreview(fileIndex, button) {
+      const coverImageInput = document.getElementById('coverImageInput');
+      
+      if (coverImageInput) {
+
+
+        coverImageInput.value = `new_image_index_${fileIndex}`;
+      }
+
+
+      document.querySelectorAll('.cover-image-btn').forEach(btn => {
+        btn.classList.remove('active');
+        const icon = btn.querySelector('i');
+        if (icon) {
+          icon.className = 'far fa-star';
+        }
+        if (btn !== button) {
+          btn.title = 'Set as Cover Image';
+        }
+      });
+
+
+      button.classList.add('active');
+      const icon = button.querySelector('i');
+      if (icon) {
+        icon.className = 'fas fa-star';
+      }
+      button.title = 'Cover Image';
+    }
+
+
+    function removeExistingImage(filename, button) {
+      showConfirmation('Are you sure you want to remove this image?', function() {
+        const coverImageInput = document.getElementById('coverImageInput');
+        if (coverImageInput && coverImageInput.value === filename) {
+          coverImageInput.value = '';
+        }
+
+        const deleteInput = document.createElement('input');
+        deleteInput.type = 'hidden';
+        deleteInput.name = 'delete_images[]';
+        deleteInput.value = filename;
+        document.getElementById('projectForm').appendChild(deleteInput);
+
+        button.closest('.image-item').remove();
+
+        const existingGrid = document.getElementById('existingImagesGrid');
+        if (existingGrid && existingGrid.children.length === 0) {
+          existingGrid.parentElement.style.display = 'none';
+        }
+      });
+    }
+
+
+    const removedFileIndices = new Set();
+
+
+    function removeNewImage(button) {
+      const imageItem = button.closest('.image-item');
+      const coverImageInput = document.getElementById('coverImageInput');
+      
+
+      const fileIndex = parseInt(imageItem.dataset.fileIndex);
+      if (!isNaN(fileIndex)) {
+        removedFileIndices.add(fileIndex);
+      }
+      
+
+      if (coverImageInput && imageItem) {
+        const currentCoverValue = coverImageInput.value;
+        
+
+        if (currentCoverValue && currentCoverValue.startsWith('new_image_index_')) {
+          const coverIndex = parseInt(currentCoverValue.replace('new_image_index_', ''));
+          if (coverIndex === fileIndex) {
+
+            coverImageInput.value = '';
+            
+
+            const remainingImages = newImagesPreview.querySelectorAll('.image-item');
+            if (remainingImages.length > 0) {
+              const firstRemaining = remainingImages[0];
+              const firstIndex = parseInt(firstRemaining.dataset.fileIndex);
+              if (!isNaN(firstIndex) && !removedFileIndices.has(firstIndex)) {
+                const firstCoverBtn = firstRemaining.querySelector('.cover-image-btn');
+                if (firstCoverBtn) {
+                  setCoverImageFromPreview(firstIndex, firstCoverBtn);
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      imageItem.remove();
+      
+
+      if (newImagesPreview && newImagesPreview.children.length === 0) {
+        newImagesPreview.style.display = 'none';
+      }
+    }
+
+
+    $(document).ready(function() {
+      $('.technologies-select').select2({
+        placeholder: 'Search and select technologies...',
+        allowClear: true,
+        closeOnSelect: false,
+        width: '100%',
+        templateResult: formatTechnology,
+        templateSelection: formatTechnologySelection
+      });
+
+
+      $('.technologies-select').on('select2:select', function (e) {
+        setTimeout(function() {
+          $('.select2-search__field').val('');
+        }, 50);
+      });
+
+
+      function formatTechnology(tech) {
+        if (!tech.id) {
+          return tech.text;
+        }
+        
+        var iconClass = $(tech.element).data('icon');
+        if (!iconClass) {
+          return tech.text;
+        }
+        
+        var $tech = $(
+          '<span><i class="' + iconClass + '"></i> ' + tech.text + '</span>'
+        );
+        return $tech;
+      }
+
+
+      function formatTechnologySelection(tech) {
+        return tech.text;
+      }
+    });
+
+
+    const projectForm = document.getElementById('projectForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (projectForm) {
+      projectForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        }
+
+
+        const formData = new FormData();
+        
+
+        const formElements = projectForm.elements;
+        for (let element of formElements) {
+          if (element.name && element.name !== 'images' && element.type !== 'file') {
+            if (element.type === 'checkbox') {
+              if (element.checked) {
+                formData.append(element.name, element.value);
+              }
+            } else if (element.type === 'radio') {
+              if (element.checked) {
+                formData.append(element.name, element.value);
+              }
+            } else if (element.tagName === 'SELECT' && element.multiple) {
+
+              const selectedOptions = Array.from(element.selectedOptions);
+              selectedOptions.forEach(option => {
+                formData.append(element.name, option.value);
+              });
+            } else {
+              formData.append(element.name, element.value);
+            }
+          }
+        }
+        
+
+        const imagesInput = document.getElementById('images');
+        const indexMapping = new Map(); 
+        let newIndex = 0;
+        
+        if (imagesInput && imagesInput.files) {
+          for (let i = 0; i < imagesInput.files.length; i++) {
+            if (!removedFileIndices.has(i)) {
+              formData.append('images', imagesInput.files[i]);
+              indexMapping.set(i, newIndex);
+              newIndex++;
+            }
+          }
+        }
+        
+
+        const coverImageInput = document.getElementById('coverImageInput');
+        let coverImageValue = coverImageInput ? coverImageInput.value : '';
+        
+        if (coverImageValue && coverImageValue.startsWith('new_image_index_')) {
+          const originalIndex = parseInt(coverImageValue.replace('new_image_index_', ''));
+          if (!isNaN(originalIndex) && indexMapping.has(originalIndex)) {
+            const newCoverIndex = indexMapping.get(originalIndex);
+            coverImageValue = `new_image_index_${newCoverIndex}`;
+          } else if (removedFileIndices.has(originalIndex)) {
+
+            coverImageValue = '';
+          }
+        }
+        
+
+        if (coverImageInput && coverImageInput.name) {
+          formData.set('cover_image', coverImageValue);
+        }
+
+
+        const milestones = [];
+        const milestoneCards = document.querySelectorAll('.milestone-card');
+        
+        milestoneCards.forEach(card => {
+          const titleInput = card.querySelector('.milestone-title-input');
+          const statusSelect = card.querySelector('.milestone-status-select');
+          const dateInput = card.querySelector('.milestone-date-input');
+          const tasksList = card.querySelector('.tasks-list');
+          
+          if (titleInput && titleInput.value.trim()) {
+            const milestone = {
+              id: card.dataset.milestoneId,
+              title: titleInput.value.trim(),
+              status: statusSelect.value,
+              date: dateInput.value || null,
+              tasks: []
+            };
+
+
+            const taskItems = tasksList.querySelectorAll('.task-item');
+            taskItems.forEach(taskItem => {
+              const taskTitleInput = taskItem.querySelector('.task-title-input');
+              const taskDescInput = taskItem.querySelector('.task-description-input');
+              const taskCheckbox = taskItem.querySelector('.task-checkbox');
+              const taskIdInput = taskItem.querySelector('[data-field="id"]');
+              
+              if (taskTitleInput && taskTitleInput.value.trim()) {
+                milestone.tasks.push({
+                  id: taskIdInput ? taskIdInput.value : null,
+                  title: taskTitleInput.value.trim(),
+                  description: taskDescInput ? taskDescInput.value.trim() : null,
+                  is_completed: taskCheckbox ? taskCheckbox.checked : false
+                });
+              }
+            });
+
+            milestones.push(milestone);
+          }
+        });
+
+
+        formData.append('milestones', JSON.stringify(milestones));
+
+
+        const xhr = new XMLHttpRequest();
+
+
+        xhr.addEventListener('load', function() {
+
+          if (xhr.status >= 200 && xhr.status < 400) {
+
+
+            const finalUrl = xhr.responseURL;
+            
+            if (finalUrl) {
+
+              try {
+                const url = new URL(finalUrl);
+                const redirectPath = url.pathname + url.search;
+                window.location.href = redirectPath;
+              } catch (e) {
+
+                const match = finalUrl.match(/https?:\/\/[^\/]+(\/.*)/);
+                if (match) {
+                  window.location.href = match[1];
+                } else {
+                  window.location.href = finalUrl;
+                }
+              }
+            } else {
+
+              window.location.reload();
+            }
+          } else {
+
+            const errorMsg = xhr.responseText || 'Error uploading project. Please try again.';
+            alert(errorMsg);
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Project';
+            }
+          }
+        });
+
+
+        xhr.addEventListener('error', function() {
+          alert('Network error. Please check your connection and try again.');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Project';
+          }
+        });
+
+
+        xhr.open('POST', projectForm.action);
+
+        xhr.timeout = 300000;
+        
+        xhr.addEventListener('timeout', function() {
+          alert('Upload timeout. The file may be too large or your connection is slow.');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Project';
+          }
+        });
+        
+        xhr.send(formData);
+      });
+    }
+
+
+    let milestoneCounter = 0;
+    const milestonesContainer = document.getElementById('milestonesContainer');
+    const addMilestoneBtn = document.getElementById('addMilestoneBtn');
+
+
+    const statusOptions = [
+      { value: 'Not Started', color: '#6b7280', bg: '#f3f4f6' },
+      { value: 'In Progress', color: '#3b82f6', bg: '#dbeafe' },
+      { value: 'On Hold', color: '#f59e0b', bg: '#fef3c7' },
+      { value: 'Delayed', color: '#ef4444', bg: '#fee2e2' },
+      { value: 'Completed', color: '#10b981', bg: '#d1fae5' },
+      { value: 'Cancelled', color: '#6b7280', bg: '#f3f4f6' }
+    ];
+
+
+    <% if (isEdit && project && project.milestones && project.milestones.length > 0) { %>
+      <% project.milestones.forEach(milestone => { %>
+        addMilestone({
+          id: <%= milestone.id %>,
+          title: '<%= (milestone.title || '').replace(/'/g, "\\'") %>',
+          status: '<%= milestone.status || 'Not Started' %>',
+          date: '<%= milestone.date ? new Date(milestone.date).toISOString().split('T')[0] : '' %>',
+          tasks: [
+            <% if (milestone.tasks && milestone.tasks.length > 0) { %>
+              <% milestone.tasks.forEach((task, idx) => { %>
+                {
+                  id: <%= task.id %>,
+                  title: '<%= (task.title || '').replace(/'/g, "\\'") %>',
+                  description: '<%= (task.description || '').replace(/'/g, "\\'") %>',
+                  is_completed: <%= task.is_completed ? 'true' : 'false' %>
+                }<%= idx < milestone.tasks.length - 1 ? ',' : '' %>
+              <% }) %>
+            <% } %>
+          ]
+        });
+      <% }) %>
+    <% } %>
+
+
+    addMilestoneBtn.addEventListener('click', () => {
+      addMilestone();
+    });
+
+    function addMilestone(data = {}) {
+      milestoneCounter++;
+      const milestoneId = data.id || `new_${milestoneCounter}`;
+      const milestone = {
+        id: milestoneId,
+        title: data.title || '',
+        status: data.status || 'Not Started',
+        date: data.date || '',
+        tasks: data.tasks || []
+      };
+
+      const milestoneCard = document.createElement('div');
+      milestoneCard.className = 'milestone-card';
+      milestoneCard.dataset.milestoneId = milestoneId;
+
+      milestoneCard.innerHTML = `
+        <div class="milestone-header">
+          <div class="milestone-fields">
+            <input type="text" class="milestone-title-input" placeholder="Milestone Title" value="${escapeHtml(milestone.title)}" data-field="title">
+            <select class="milestone-status-select" data-field="status">
+              ${statusOptions.map(opt => 
+                `<option value="${opt.value}" ${milestone.status === opt.value ? 'selected' : ''}>${opt.value}</option>`
+              ).join('')}
+            </select>
+            <input type="date" class="milestone-date-input" data-field="date" value="${milestone.date}">
+            <button type="button" class="milestone-delete-btn" onclick="deleteMilestone(this)" title="Delete Milestone">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        <div class="tasks-section">
+          <div class="tasks-header">
+            <h4>Tasks</h4>
+            <button type="button" class="add-task-btn" onclick="addTask(this)">
+              <i class="fas fa-plus"></i> Add Task
+            </button>
+          </div>
+          <div class="tasks-list" data-milestone-id="${milestoneId}">
+            ${milestone.tasks.map(task => createTaskHTML(task, milestoneId)).join('')}
+          </div>
+        </div>
+      `;
+
+      milestonesContainer.appendChild(milestoneCard);
+    }
+
+    function createTaskHTML(task, milestoneId) {
+      const taskId = task.id || `new_task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      return `
+        <div class="task-item ${task.is_completed ? 'completed' : ''}" data-task-id="${taskId}">
+          <input type="checkbox" class="task-checkbox" ${task.is_completed ? 'checked' : ''} onchange="toggleTaskCompleted(this)">
+          <div class="task-content">
+            <input type="text" class="task-title-input" placeholder="Task Title" value="${escapeHtml(task.title || '')}" data-field="title">
+            <textarea class="task-description-input" placeholder="Task Description (optional)" data-field="description">${escapeHtml(task.description || '')}</textarea>
+          </div>
+          <button type="button" class="task-delete-btn" onclick="deleteTask(this)" title="Delete Task">
+            <i class="fas fa-times"></i>
+          </button>
+          <input type="hidden" data-field="id" value="${taskId}">
+        </div>
+      `;
+    }
+
+    function addTask(button) {
+      const tasksList = button.closest('.tasks-section').querySelector('.tasks-list');
+      const milestoneId = tasksList.dataset.milestoneId;
+      const taskHTML = createTaskHTML({}, milestoneId);
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = taskHTML;
+      tasksList.appendChild(tempDiv.firstElementChild);
+    }
+
+    function deleteTask(button) {
+      showConfirmation('Are you sure you want to delete this task?', function() {
+        button.closest('.task-item').remove();
+      });
+    }
+
+    function toggleTaskCompleted(checkbox) {
+      const taskItem = checkbox.closest('.task-item');
+      if (checkbox.checked) {
+        taskItem.classList.add('completed');
+      } else {
+        taskItem.classList.remove('completed');
+      }
+    }
+
+    function showConfirmation(message, onConfirm) {
+      const modal = document.getElementById('confirmationModal');
+      const messageEl = document.getElementById('confirmationMessage');
+      const confirmBtn = document.getElementById('confirmBtn');
+      
+      if (modal && messageEl) {
+        messageEl.textContent = message;
+        modal.classList.add('show');
+        
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        newConfirmBtn.onclick = function() {
+          closeModal('confirmationModal');
+          if (onConfirm) onConfirm();
+        };
+      }
+    }
+
+    function deleteMilestone(button) {
+      showConfirmation('Are you sure you want to delete this milestone and all its tasks?', function() {
+        button.closest('.milestone-card').remove();
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
+
+

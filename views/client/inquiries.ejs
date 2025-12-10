@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/client-sidebar') %>
+    
+    <div class="dashboard-main">
+      <section class="client-inquiries-section">
+        <div class="container">
+          <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem;">
+            <div>
+              <h1>My Inquiries</h1>
+              <p>Track all your submitted inquiries and their status</p>
+            </div>
+            <div style="flex-shrink: 0; margin-top: 0.5rem;">
+              <a href="/contact" class="btn btn-primary">
+                <i class="fas fa-plus" style="margin-right: 0.5rem;"></i>
+                Submit New Inquiry
+              </a>
+            </div>
+          </div>
+
+          <!-- Search and Filter Bar -->
+          <div class="inquiries-filters filters-section">
+            <form method="GET" action="/client/inquiries" id="inquiriesFilterForm">
+              <div class="filters-grid">
+                <div class="filter-group">
+                  <label for="searchInput"><i class="fas fa-search"></i> Search</label>
+                  <div class="filter-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input 
+                      type="text" 
+                      id="searchInput" 
+                      name="search"
+                      class="filter-input"
+                      placeholder="Search by subject or message..."
+                      value="<%= searchQuery || '' %>"
+                    >
+                  </div>
+                </div>
+
+                <div class="filter-group">
+                  <label for="statusFilterBtn"><i class="fas fa-filter"></i> Status</label>
+                  <button 
+                    type="button"
+                    id="statusFilterBtn" 
+                    class="filter-select-btn"
+                  >
+                    <span class="filter-btn-text">
+                      <%= selectedStatus === 'new' ? 'New' : selectedStatus === 'in_progress' ? 'In Progress' : selectedStatus === 'resolved' ? 'Resolved' : 'All Statuses' %>
+                    </span>
+                    <i class="fas fa-chevron-down"></i>
+                  </button>
+                  <input type="hidden" id="statusFilter" name="status" value="<%= selectedStatus || '' %>">
+                </div>
+
+                <div class="filter-actions">
+                  <button type="submit" class="btn-filter">
+                    <i class="fas fa-sliders-h"></i> Apply
+                  </button>
+                  <% if (searchQuery || selectedStatus) { %>
+                    <a href="/client/inquiries" class="btn-filter btn-filter-secondary">
+                      <i class="fas fa-times"></i> Clear
+                    </a>
+                  <% } %>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div id="inquiriesContainer">
+          <div style="background: var(--white); padding: 2rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 2rem;">
+            <% if (inquiries && inquiries.length > 0) { %>
+              <!-- Desktop Table View -->
+              <div class="table-wrapper" style="overflow-x: auto;">
+                <table class="table" style="width: 100%; border-collapse: collapse;">
+                  <thead>
+                    <tr style="border-bottom: 2px solid var(--light-gray);">
+                      <th style="text-align: left; padding: 1rem; font-weight: 600; color: var(--dark);">Subject</th>
+                      <th style="text-align: left; padding: 1rem; font-weight: 600; color: var(--dark);">Message</th>
+                      <th style="text-align: left; padding: 1rem; font-weight: 600; color: var(--dark);">Date</th>
+                      <th style="text-align: left; padding: 1rem; font-weight: 600; color: var(--dark);">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% inquiries.forEach((inquiry, index) => { %>
+                      <% const isResolved = inquiry.status === 'resolved'; %>
+                      <tr style="border-bottom: 1px solid var(--light-gray); transition: background 0.2s; <%= isResolved ? 'background: #f0f9ff; border-left: 4px solid #28a745;' : '' %>" 
+                          onmouseover="this.style.background='<%= isResolved ? '#e0f2fe' : '#f8f9fa' %>'"
+                          onmouseout="this.style.background='<%= isResolved ? '#f0f9ff' : 'transparent' %>'">
+                        <td style="padding: 1.25rem 1rem; font-weight: 500; color: var(--dark);">
+                          <%= inquiry.subject %>
+                        </td>
+                        <td style="padding: 1.25rem 1rem; color: var(--gray); max-width: 400px;">
+                          <% if (isResolved) { %>
+                            <div style="margin-bottom: 0.5rem;">
+                              <i class="fas fa-envelope-circle-check" style="color: #28a745; margin-right: 0.5rem;"></i>
+                              <strong style="color: #28a745; font-size: 0.875rem;">Please check your inbox and spam folder for our response.</strong>
+                            </div>
+                          <% } %>
+                          <div style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5;">
+                            <%= inquiry.message %>
+                          </div>
+                        </td>
+                        <td style="padding: 1.25rem 1rem; color: var(--gray);">
+                          <i class="fas fa-calendar" style="margin-right: 0.5rem;"></i>
+                          <%= new Date(inquiry.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                          <br>
+                          <small style="color: var(--gray); opacity: 0.7;">
+                            <%= new Date(inquiry.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %>
+                          </small>
+                        </td>
+                        <td style="padding: 1.25rem 1rem;">
+                          <span style="background: <%= inquiry.status === 'new' ? '#ffc107' : inquiry.status === 'in_progress' ? '#17a2b8' : inquiry.status === 'resolved' ? '#28a745' : '#6c757d' %>; color: white; padding: 0.5rem 1rem; border-radius: 12px; font-size: 0.875rem; font-weight: 500; text-transform: capitalize; display: inline-block;">
+                            <%= inquiry.status || 'new' %>
+                          </span>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Mobile Card View -->
+              <div class="mobile-card-view">
+                <% inquiries.forEach((inquiry, index) => { %>
+                  <% const isResolved = inquiry.status === 'resolved'; %>
+                  <div class="mobile-inquiry-card <%= isResolved ? 'resolved' : '' %>">
+                    <div class="mobile-card-header">
+                      <div class="mobile-card-title">
+                        <h3><%= inquiry.subject %></h3>
+                      </div>
+                      <div class="mobile-card-status">
+                        <span class="status-badge-mobile" style="background: <%= inquiry.status === 'new' ? '#ffc107' : inquiry.status === 'in_progress' ? '#17a2b8' : inquiry.status === 'resolved' ? '#28a745' : '#6c757d' %>;">
+                          <%= inquiry.status || 'new' %>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="mobile-card-body">
+                      <% if (isResolved) { %>
+                        <div class="mobile-resolved-notice">
+                          <i class="fas fa-envelope-circle-check"></i>
+                          <strong>Please check your inbox and spam folder for our response.</strong>
+                        </div>
+                      <% } %>
+                      <div class="mobile-card-row">
+                        <div class="mobile-card-label">Date</div>
+                        <div class="mobile-card-value">
+                          <i class="fas fa-calendar" style="margin-right: 0.5rem; color: var(--gray);"></i>
+                          <%= new Date(inquiry.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                          <br>
+                          <small style="color: var(--gray); opacity: 0.7; font-size: 0.8125rem;">
+                            <%= new Date(inquiry.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %>
+                          </small>
+                        </div>
+                      </div>
+                      <div class="mobile-card-message">
+                        <div class="mobile-card-label">Message</div>
+                        <div class="mobile-card-message-text"><%= inquiry.message %></div>
+                      </div>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            <% } else if (searchQuery || selectedStatus) { %>
+              <div style="text-align: center; padding: 4rem 2rem;">
+                <i class="fas fa-search" style="font-size: 4rem; color: var(--gray); opacity: 0.3; margin-bottom: 1.5rem;"></i>
+                <h2 style="color: var(--dark); margin-bottom: 1rem;">No Inquiries Found</h2>
+                <p style="color: var(--gray); margin-bottom: 2rem;">Try adjusting your search or filter criteria.</p>
+                <a href="/client/inquiries" class="btn btn-primary">Clear Filters</a>
+              </div>
+            <% } else { %>
+              <div style="text-align: center; padding: 4rem 2rem;">
+                <i class="fas fa-inbox" style="font-size: 4rem; color: var(--gray); opacity: 0.3; margin-bottom: 1.5rem;"></i>
+                <h2 style="color: var(--dark); margin-bottom: 1rem;">No Inquiries Yet</h2>
+                <p style="color: var(--gray); margin-bottom: 2rem;">You haven't submitted any inquiries yet. Get in touch with us!</p>
+                <a href="/contact" class="btn btn-primary">
+                  <i class="fas fa-envelope" style="margin-right: 0.5rem;"></i>
+                  Submit New Inquiry
+                </a>
+              </div>
+            <% } %>
+          </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Status Filter Modal -->
+  <div id="statusFilterModal" class="filter-modal">
+    <div class="filter-modal-overlay" id="statusFilterModalOverlay"></div>
+    <div class="filter-modal-content">
+      <div class="filter-modal-header">
+        <h3><i class="fas fa-filter"></i> Filter by Status</h3>
+        <button type="button" class="filter-modal-close" id="statusFilterModalClose">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="filter-modal-body">
+        <div class="filter-option" data-value="">
+          <div class="filter-option-content">
+            <i class="fas fa-list"></i>
+            <span>All Statuses</span>
+          </div>
+          <% if (!selectedStatus) { %>
+            <i class="fas fa-check filter-option-check"></i>
+          <% } %>
+        </div>
+        <div class="filter-option" data-value="new">
+          <div class="filter-option-content">
+            <i class="fas fa-circle" style="color: #ffc107;"></i>
+            <span>New</span>
+          </div>
+          <% if (selectedStatus === 'new') { %>
+            <i class="fas fa-check filter-option-check"></i>
+          <% } %>
+        </div>
+        <div class="filter-option" data-value="in_progress">
+          <div class="filter-option-content">
+            <i class="fas fa-circle" style="color: #17a2b8;"></i>
+            <span>In Progress</span>
+          </div>
+          <% if (selectedStatus === 'in_progress') { %>
+            <i class="fas fa-check filter-option-check"></i>
+          <% } %>
+        </div>
+        <div class="filter-option" data-value="resolved">
+          <div class="filter-option-content">
+            <i class="fas fa-circle" style="color: #28a745;"></i>
+            <span>Resolved</span>
+          </div>
+          <% if (selectedStatus === 'resolved') { %>
+            <i class="fas fa-check filter-option-check"></i>
+          <% } %>
+        </div>
+      </div>
+      <div class="filter-modal-footer">
+        <button type="button" class="btn-filter-secondary" id="statusFilterCancel">Cancel</button>
+        <button type="button" class="btn-filter" id="statusFilterApply">Apply Filter</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const section = document.querySelector('.client-inquiries-section');
+
+      if (!section) {
+        return;
+      }
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.2,
+          rootMargin: '0px 0px -50px 0px'
+        });
+
+        observer.observe(section);
+      } else {
+        section.classList.add('visible');
+      }
+
+
+      const statusFilterBtn = document.getElementById('statusFilterBtn');
+      const statusFilterModal = document.getElementById('statusFilterModal');
+      const statusFilterModalOverlay = document.getElementById('statusFilterModalOverlay');
+      const statusFilterModalClose = document.getElementById('statusFilterModalClose');
+      const statusFilterCancel = document.getElementById('statusFilterCancel');
+      const statusFilterApply = document.getElementById('statusFilterApply');
+      const statusFilterInput = document.getElementById('statusFilter');
+      const statusFilterOptions = document.querySelectorAll('#statusFilterModal .filter-option');
+      const filtersForm = document.getElementById('inquiriesFilterForm');
+
+      let selectedStatusValue = '<%= selectedStatus || "" %>';
+      let originalButtonText = '';
+      let originalSelectedValue = '<%= selectedStatus || "" %>';
+
+
+      if (statusFilterBtn) {
+        const btnText = statusFilterBtn.querySelector('.filter-btn-text');
+        if (btnText) {
+          originalButtonText = btnText.textContent;
+        }
+      }
+
+
+      const restoreOriginalState = () => {
+        selectedStatusValue = originalSelectedValue;
+        statusFilterOptions.forEach(opt => {
+          opt.classList.remove('active');
+          if (opt.getAttribute('data-value') === selectedStatusValue) {
+            opt.classList.add('active');
+          }
+        });
+
+        if (statusFilterBtn) {
+          const btnText = statusFilterBtn.querySelector('.filter-btn-text');
+          if (btnText) {
+            btnText.textContent = originalButtonText;
+          }
+        }
+      };
+
+
+      if (statusFilterBtn && statusFilterModal) {
+        statusFilterBtn.addEventListener('click', () => {
+
+          originalSelectedValue = selectedStatusValue;
+          if (statusFilterBtn) {
+            const btnText = statusFilterBtn.querySelector('.filter-btn-text');
+            if (btnText) {
+              originalButtonText = btnText.textContent;
+            }
+          }
+
+          statusFilterOptions.forEach(opt => {
+            opt.classList.remove('active');
+            if (opt.getAttribute('data-value') === selectedStatusValue) {
+              opt.classList.add('active');
+            }
+          });
+          statusFilterModal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        });
+      }
+
+
+      const closeStatusModal = () => {
+        statusFilterModal.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+
+      if (statusFilterModalOverlay) {
+        statusFilterModalOverlay.addEventListener('click', () => {
+          restoreOriginalState();
+          closeStatusModal();
+        });
+      }
+
+      if (statusFilterModalClose) {
+        statusFilterModalClose.addEventListener('click', () => {
+          restoreOriginalState();
+          closeStatusModal();
+        });
+      }
+
+      if (statusFilterCancel) {
+        statusFilterCancel.addEventListener('click', () => {
+          restoreOriginalState();
+          closeStatusModal();
+        });
+      }
+
+
+      statusFilterOptions.forEach(option => {
+        option.addEventListener('click', () => {
+
+          statusFilterOptions.forEach(opt => opt.classList.remove('active'));
+
+          option.classList.add('active');
+          selectedStatusValue = option.getAttribute('data-value');
+          
+
+          const optionText = option.querySelector('.filter-option-content span').textContent;
+          if (statusFilterBtn) {
+            const btnText = statusFilterBtn.querySelector('.filter-btn-text');
+            if (btnText) {
+              btnText.textContent = optionText;
+            }
+          }
+        });
+      });
+
+
+      if (statusFilterApply) {
+        statusFilterApply.addEventListener('click', () => {
+          if (statusFilterInput) {
+            statusFilterInput.value = selectedStatusValue;
+          }
+          closeStatusModal();
+          if (filtersForm) {
+            filtersForm.submit();
+          }
+        });
+      }
+
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && statusFilterModal.classList.contains('active')) {
+          closeStatusModal();
+        }
+      });
+    });
+  </script>
+
+  <style>
+    .client-inquiries-section {
+      padding: 2rem 0 4rem;
+    }
+
+    .inquiries-filters {
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .filters-section {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--gray);
+    }
+
+    .filter-input-wrapper {
+      position: relative;
+    }
+
+    .filter-input-wrapper i {
+      position: absolute;
+      top: 50%;
+      left: 0.85rem;
+      transform: translateY(-50%);
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .filter-input {
+      width: 100%;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+      font-size: 0.95rem;
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    .filter-select-btn {
+      width: 100%;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      text-align: left;
+    }
+
+    .filter-select-btn:hover {
+      border-color: var(--primary, #c51d34);
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .filter-select-btn:focus {
+      border-color: var(--primary, #c51d34);
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .filter-btn-text {
+      flex: 1;
+      color: var(--dark);
+    }
+
+    .filter-select-btn i {
+      color: var(--gray);
+      font-size: 0.875rem;
+      transition: transform 0.2s;
+    }
+
+    .filter-input:focus {
+      border-color: var(--primary, #c51d34);
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    /* Filter Modal Styles */
+    .filter-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      pointer-events: none;
+    }
+
+    .filter-modal.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
+    }
+
+    .filter-modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    .filter-modal-content {
+      position: relative;
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.3s ease;
+      z-index: 10001;
+    }
+
+    .filter-modal.active .filter-modal-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .filter-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .filter-modal-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .filter-modal-header h3 i {
+      color: var(--primary, #c51d34);
+    }
+
+    .filter-modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--gray);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+    }
+
+    .filter-modal-close:hover {
+      background: #f3f4f6;
+      color: var(--dark);
+    }
+
+    .filter-modal-body {
+      padding: 1rem;
+      overflow-y: auto;
+      flex: 1;
+      max-height: calc(90vh - 160px);
+    }
+
+    .filter-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 0.5rem;
+      border: 2px solid transparent;
+    }
+
+    .filter-option:hover {
+      background: #f8f9fa;
+      border-color: #e5e7eb;
+    }
+
+    .filter-option.active {
+      background: rgba(197, 29, 52, 0.1);
+      border-color: var(--primary, #c51d34);
+    }
+
+    .filter-option-content {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .filter-option-content i {
+      font-size: 0.875rem;
+    }
+
+    .filter-option-content span {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    .filter-option-check {
+      color: var(--primary, #c51d34);
+      font-size: 1rem;
+    }
+
+    .filter-modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+      padding: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .filter-modal-footer .btn-filter,
+    .filter-modal-footer .btn-filter-secondary {
+      min-width: 120px;
+    }
+
+    .filter-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .btn-filter {
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #c51d34, #d93850);
+      color: white;
+      box-shadow: 0 4px 15px rgba(197, 29, 52, 0.25);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-filter:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.35);
+    }
+
+    .btn-filter-secondary {
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: var(--gray);
+      box-shadow: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-filter-secondary:hover {
+      background: #f8f9fa;
+      border-color: #d1d5db;
+      color: var(--dark);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Clear button in filter section - keep dark style */
+    .filter-actions .btn-filter.btn-filter-secondary {
+      background: #2e2e30;
+      border: none;
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .filter-actions .btn-filter.btn-filter-secondary:hover {
+      background: #1a1a1b;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Mobile Card Layout */
+    .mobile-card-view {
+      display: none;
+    }
+
+    .mobile-inquiry-card {
+      background: var(--white);
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      transition: all 0.2s ease;
+    }
+
+    .mobile-inquiry-card.resolved {
+      background: #f0f9ff;
+      border-left: 4px solid #28a745;
+    }
+
+    .mobile-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .mobile-card-title {
+      flex: 1;
+    }
+
+    .mobile-card-title h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--dark);
+      line-height: 1.3;
+    }
+
+    .mobile-card-status {
+      flex-shrink: 0;
+    }
+
+    .mobile-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .mobile-card-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+
+    .mobile-card-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .mobile-card-value {
+      font-size: 0.9375rem;
+      color: var(--dark);
+      line-height: 1.5;
+    }
+
+    .mobile-card-message {
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .mobile-card-message-text {
+      font-size: 0.9375rem;
+      color: var(--gray);
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .mobile-resolved-notice {
+      background: rgba(40, 167, 69, 0.1);
+      border-left: 3px solid #28a745;
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .mobile-resolved-notice i {
+      color: #28a745;
+      font-size: 1.125rem;
+      margin-top: 0.125rem;
+    }
+
+    .mobile-resolved-notice strong {
+      color: #28a745;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .status-badge-mobile {
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-transform: capitalize;
+      display: inline-block;
+      color: white;
+    }
+
+    /* Desktop: Show table, hide cards */
+    @media (min-width: 769px) {
+      .table-wrapper {
+        display: block;
+      }
+
+      .table {
+        display: table;
+      }
+
+      .mobile-card-view {
+        display: none !important;
+      }
+    }
+
+    /* Mobile: Hide table, show cards */
+    @media (max-width: 768px) {
+      .client-inquiries-section {
+        padding: 1rem 0 2rem;
+      }
+
+      .dashboard-header {
+        flex-direction: column !important;
+        gap: 1rem !important;
+      }
+
+      .dashboard-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .dashboard-header p {
+        font-size: 0.875rem;
+      }
+
+      .dashboard-header .btn {
+        width: 100%;
+        justify-content: center;
+        min-height: 44px;
+      }
+
+      .filters-section {
+        padding: 1.25rem;
+        margin-top: 1.5rem;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .filter-group label {
+        font-size: 0.875rem;
+      }
+
+      .filter-input {
+        padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+        font-size: 0.875rem;
+        min-height: 44px;
+      }
+
+      .filter-select-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        min-height: 44px;
+      }
+
+      .filter-modal-content {
+        width: 95%;
+        max-height: 85vh;
+      }
+
+      .filter-modal-header {
+        padding: 1.25rem;
+      }
+
+      .filter-modal-header h3 {
+        font-size: 1.125rem;
+      }
+
+      .filter-modal-body {
+        padding: 0.75rem;
+        max-height: calc(85vh - 140px);
+      }
+
+      .filter-option {
+        padding: 0.875rem;
+      }
+
+      .filter-modal-footer {
+        padding: 1.25rem;
+        flex-direction: column;
+      }
+
+      .filter-modal-footer .btn-filter,
+      .filter-modal-footer .btn-filter-secondary {
+        width: 100%;
+        min-width: auto;
+      }
+
+      .filter-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .btn-filter {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        min-height: 44px;
+        justify-content: center;
+      }
+
+      /* Hide table, show cards */
+      .table-wrapper {
+        display: none !important;
+      }
+
+      .table {
+        display: none !important;
+      }
+
+      .mobile-card-view {
+        display: block !important;
+      }
+
+      /* Card container adjustments */
+      #inquiriesContainer > div {
+        padding: 1rem !important;
+        margin-top: 1.5rem !important;
+      }
+
+      .mobile-inquiry-card {
+        padding: 1rem;
+      }
+
+      .mobile-card-title h3 {
+        font-size: 1rem;
+      }
+
+      .mobile-card-value {
+        font-size: 0.875rem;
+      }
+
+      .mobile-card-message-text {
+        font-size: 0.875rem;
+      }
+
+      /* Empty state adjustments */
+      #inquiriesContainer > div > div[style*="text-align: center"] {
+        padding: 2rem 1rem !important;
+      }
+
+      #inquiriesContainer > div > div[style*="text-align: center"] i {
+        font-size: 3rem !important;
+        margin-bottom: 1rem !important;
+      }
+
+      #inquiriesContainer > div > div[style*="text-align: center"] h2 {
+        font-size: 1.5rem !important;
+      }
+
+      #inquiriesContainer > div > div[style*="text-align: center"] p {
+        font-size: 0.9375rem !important;
+        margin-bottom: 1.5rem !important;
+      }
+
+      #inquiriesContainer > div > div[style*="text-align: center"] .btn {
+        width: 100%;
+        min-height: 44px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .client-inquiries-section {
+        padding: 0.75rem 0 1.5rem;
+      }
+
+      .dashboard-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .filters-section {
+        padding: 1rem;
+      }
+
+      .mobile-inquiry-card {
+        padding: 0.875rem;
+        border-radius: 12px;
+      }
+
+      .mobile-card-title h3 {
+        font-size: 0.9375rem;
+      }
+
+      .mobile-card-value {
+        font-size: 0.8125rem;
+      }
+
+      .mobile-card-message-text {
+        font-size: 0.8125rem;
+      }
+
+      .status-badge-mobile {
+        font-size: 0.75rem;
+        padding: 0.4375rem 0.875rem;
+      }
+    }
+
+    /* Disable hover effects on touch devices */
+    @media (hover: none) and (pointer: coarse) {
+      .mobile-inquiry-card:hover {
+        transform: none;
+      }
+    }
+  </style>
+</body>
+</html>
+
+
+

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('../partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/projects'
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+  <style>
+    /* Improved back button on mobile */
+    @media (max-width: 768px) {
+      .back-button {
+        position: static !important;
+        transform: none !important;
+        margin-bottom: 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        padding: 0.75rem 1.5rem;
+        gap: 0.6rem;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 50px;
+        background: linear-gradient(135deg, var(--red), #ff4757) !important;
+        color: var(--white) !important;
+        border: none;
+      }
+      
+      .back-button:hover {
+        transform: translateY(-2px) !important;
+        background: linear-gradient(135deg, #a01628, var(--red)) !important;
+        box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+      }
+      
+      .project-detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .project-detail-center {
+        width: 100%;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <!-- Project Detail Hero -->
+  <section class="service-detail-hero">
+    <div class="flying-tech-icons">
+      <i class="fab fa-react" style="--i:1;"></i>
+      <i class="fab fa-python" style="--i:2;"></i>
+      <i class="fab fa-js-square" style="--i:3;"></i>
+      <i class="fab fa-node-js" style="--i:4;"></i>
+      <i class="fab fa-html5" style="--i:5;"></i>
+      <i class="fab fa-css3-alt" style="--i:6;"></i>
+      <i class="fab fa-vuejs" style="--i:7;"></i>
+      <i class="fab fa-angular" style="--i:8;"></i>
+      <i class="fab fa-java" style="--i:9;"></i>
+      <i class="fab fa-php" style="--i:10;"></i>
+      <i class="fab fa-laravel" style="--i:11;"></i>
+      <i class="fab fa-swift" style="--i:12;"></i>
+      <i class="fab fa-android" style="--i:13;"></i>
+      <i class="fas fa-database" style="--i:16;"></i>
+      <i class="fab fa-git-alt" style="--i:17;"></i>
+      <i class="fab fa-github" style="--i:18;"></i>
+      <i class="fab fa-npm" style="--i:19;"></i>
+      <i class="fab fa-bootstrap" style="--i:20;"></i>
+    </div>
+    <div class="container">
+      <div class="project-detail-header">
+        <a href="/projects" class="back-button">
+          <i class="fas fa-arrow-left"></i> Back to Projects
+        </a>
+        <div class="project-detail-center">
+          <h1 class="service-detail-title"><%= project.displayName %></h1>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="service-detail-content">
+    <div class="container">
+      <!-- Project Description -->
+      <% if (project.description) { %>
+        <div class="detail-card" style="margin-bottom: 3rem;">
+          <div class="detail-card-header">
+            <i class="fas fa-info-circle"></i>
+            <h3>About This Project</h3>
+          </div>
+          <div class="detail-card-content">
+            <p style="white-space: pre-wrap; line-height: 1.8; color: var(--text-secondary);"><%= project.description %></p>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Service Type, Project Link, and Technologies - Grid Layout -->
+      <div class="project-info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        <!-- Service Type -->
+        <% if (project.service_title) { %>
+          <div class="detail-card" style="margin-bottom: 0;">
+            <div class="detail-card-header">
+              <i class="fas fa-tag"></i>
+              <h3>Service</h3>
+            </div>
+            <div class="detail-card-content">
+              <a href="/services/<%= project.service_slug %>" class="service-link" style="display: inline-flex; align-items: center; gap: 0.75rem; color: var(--primary); text-decoration: none; font-weight: 500; padding: 0.5rem 0;">
+                <% if (project.service_icon) { %>
+                  <% if (project.service_icon.startsWith('/')) { %>
+                    <!-- Image icon -->
+                    <img src="<%= project.service_icon %>" alt="<%= project.service_title %>" style="width: 28px; height: 28px; object-fit: contain;">
+                  <% } else { %>
+                    <!-- Font Awesome icon -->
+                    <i class="fas fa-<%= project.service_icon %>" style="font-size: 1.5rem; color: var(--primary);"></i>
+                  <% } %>
+                <% } %>
+                <span><%= project.service_title %></span>
+              </a>
+            </div>
+          </div>
+        <% } %>
+
+        <!-- Project Link -->
+        <% if (project.projectLink) { %>
+          <div class="detail-card" style="margin-bottom: 0;">
+            <div class="detail-card-header">
+              <i class="fas fa-external-link-alt"></i>
+              <h3>Project Link</h3>
+            </div>
+            <div class="detail-card-content">
+              <a href="<%= project.projectLink %>" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; width: 100%; justify-content: center;">
+                <i class="fas fa-external-link-alt"></i>
+                View Project
+              </a>
+            </div>
+          </div>
+        <% } %>
+
+        <!-- Technologies Used -->
+        <% if (project.techStack && project.techStack.length > 0) { %>
+          <div class="detail-card" style="margin-bottom: 0;">
+            <div class="detail-card-header">
+              <i class="fas fa-code"></i>
+              <h3>Technologies</h3>
+            </div>
+            <div class="detail-card-content">
+              <div class="tech-badges">
+                <% 
+
+                  function getTechIcon(techName) {
+                    const iconMap = {
+                      'PHP': 'devicon-php-plain',
+                      'Laravel': 'devicon-laravel-plain',
+                      'Vue': 'devicon-vuejs-plain',
+                      'React': 'devicon-react-original',
+                      'React Native': 'devicon-react-original',
+                      'TypeScript': 'devicon-typescript-plain',
+                      'JavaScript': 'devicon-javascript-plain',
+                      'Livewire': 'devicon-livewire-plain-wordmark',
+                      'Supabase': 'devicon-supabase-plain',
+                      'EJS': 'fas fa-file-code',
+                      'MySQL': 'devicon-mysql-plain',
+                      'jQuery': 'devicon-jquery-plain',
+                      'Premire Pro': 'devicon-premierepro-plain',
+                      'PostgreSQL': 'devicon-postgresql-plain',
+                      'Google Workspace': 'fab fa-google',
+                      'Node.js': 'fab fa-node-js',
+                      'Node JS': 'fab fa-node-js',
+                      'Bootstrap': 'devicon-bootstrap-plain',
+                      'Express.js': 'devicon-express-original',
+                      'Express': 'devicon-express-original',
+                      'HTML': 'devicon-html5-plain',
+                      'HTML5': 'devicon-html5-plain',
+                      'CSS': 'devicon-css3-plain',
+                      'CSS3': 'devicon-css3-plain',
+                      'Python': 'devicon-python-plain',
+                      'Django': 'devicon-django-plain',
+                      'Flask': 'devicon-flask-original',
+                      'MongoDB': 'devicon-mongodb-plain',
+                      'Git': 'devicon-git-plain',
+                      'Docker': 'devicon-docker-plain',
+                      'AWS': 'devicon-amazonwebservices-plain-wordmark',
+                      'Firebase': 'devicon-firebase-plain',
+                      'Next.js': 'devicon-nextjs-plain',
+                      'Tailwind CSS': 'devicon-tailwindcss-plain',
+                      'Redux': 'devicon-redux-original',
+                      'GraphQL': 'devicon-graphql-plain',
+                      'Sass': 'devicon-sass-original',
+                      'Webpack': 'devicon-webpack-plain',
+                      'Figma': 'devicon-figma-plain',
+                      'Java': 'devicon-java-plain',
+                      'Spring': 'devicon-spring-plain',
+                      'C++': 'devicon-cplusplus-plain',
+                      'C#': 'devicon-csharp-plain',
+                      'Go': 'devicon-go-plain',
+                      'Ruby': 'devicon-ruby-plain',
+                      'Rails': 'devicon-rails-plain',
+                      'Angular': 'devicon-angularjs-plain',
+                      'Svelte': 'devicon-svelte-plain',
+                      'Chart JS': 'fas fa-chart-line',
+                      'ChartJS': 'fas fa-chart-line',
+                      'Sheet API': 'fas fa-table'
+                    };
+                    return iconMap[techName] || 'fas fa-code';
+                  }
+                  
+                  project.techStack.forEach(tech => { 
+                    const iconClass = getTechIcon(tech);
+                  %>
+                    <span class="tech-badge-icon">
+                      <i class="<%= iconClass %>"></i>
+                      <%= tech %>
+                    </span>
+                  <% }); %>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Video Section -->
+      <% if (project.video_url) { %>
+        <div class="detail-card" style="margin-bottom: 3rem;">
+          <div class="detail-card-header">
+            <i class="fas fa-video"></i>
+            <h3>Project Video</h3>
+          </div>
+          <div class="detail-card-content">
+            <div id="video-container" style="position: relative; width: 100%; max-width: 100%; background: #000; border-radius: 8px; overflow: hidden;">
+              <!-- Video wrapper that adapts to both 16:9 and 9:16 orientations -->
+              <div id="video-wrapper" style="position: relative; width: 100%; padding-bottom: 56.25%; /* Default 16:9 */">
+                <iframe id="video-iframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div id="video-error" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 2rem;">
+                  <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.7;"></i>
+                  <p style="margin-bottom: 1.5rem; text-align: center;">Unable to embed video from this platform</p>
+                  <a href="<%= project.video_url %>" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-external-link-alt"></i>
+                    Watch on Original Platform
+                  </a>
+                </div>
+              </div>
+            </div>
+            <style>
+              /* Responsive grid for project info */
+              .project-info-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1.5rem;
+              }
+              
+              @media (max-width: 768px) {
+                .project-info-grid {
+                  grid-template-columns: 1fr;
+                  gap: 1rem;
+                }
+              }
+              
+              /* Video container that adapts to both orientations */
+              #video-container[data-orientation="portrait"] #video-wrapper {
+                padding-bottom: 177.78% !important; /* 9:16 portrait */
+                max-width: 400px;
+                margin: 0 auto;
+              }
+              
+              #video-container[data-orientation="landscape"] #video-wrapper {
+                padding-bottom: 56.25% !important; /* 16:9 landscape */
+                max-width: 100%;
+              }
+              
+              @media (max-width: 768px) {
+                #video-container[data-orientation="portrait"] #video-wrapper {
+                  max-width: 100%;
+                }
+              }
+            </style>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Project Images Gallery -->
+      <div class="project-gallery-section">
+        <h2 style="text-align: center; margin-bottom: 3rem;">Project Pictures</h2>
+        <div class="project-gallery">
+          <% if (project.images && project.images.length > 0) { %>
+            <% project.images.forEach((image, index) => { %>
+              <div class="gallery-item">
+                <a href="#" class="gallery-link" data-image="<%= image %>" data-index="<%= index %>">
+                  <img src="<%= image %>" alt="<%= project.displayName %> - Screenshot <%= index + 1 %>" loading="lazy">
+                  <div class="gallery-overlay">
+                    <i class="fas fa-expand"></i>
+                  </div>
+                </a>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p style="text-align: center; color: var(--gray);">No images available for this project.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="service-cta">
+        <div class="cta-particles">
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+        </div>
+        <div class="cta-glow"></div>
+        <div class="cta-icon">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <h2>Interested in <span class="gradient-text">Similar Projects</span>?</h2>
+        <p>Let's discuss how we can help bring your vision to life</p>
+        <div class="cta-buttons">
+          <a href="/contact" class="btn btn-primary cta-btn-large">
+            <i class="fas fa-paper-plane"></i> Start Your Project
+          </a>
+          <a href="/projects" class="btn btn-secondary cta-btn-large">
+            <i class="fas fa-th"></i> View All Projects
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  
+  <!-- Image Lightbox Modal -->
+  <div id="imageModal" class="image-modal">
+    <div class="modal-header">
+      <div class="modal-counter"></div>
+      <span class="modal-close">&times;</span>
+    </div>
+    <span class="modal-prev"><i class="fas fa-chevron-left"></i></span>
+    <span class="modal-next"><i class="fas fa-chevron-right"></i></span>
+    <div class="modal-content">
+      <img id="modalImage" src="" alt="Project Image">
+      <div class="modal-zoom-controls">
+        <button class="zoom-btn" id="zoomIn"><i class="fas fa-search-plus"></i></button>
+        <button class="zoom-btn" id="zoomOut"><i class="fas fa-search-minus"></i></button>
+        <button class="zoom-btn" id="zoomReset"><i class="fas fa-compress"></i></button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scroll Animation Script -->
+  <script>
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.style.opacity = '1';
+      footer.style.visibility = 'visible';
+      footer.classList.add('visible');
+    }
+
+
+    <% if (project.video_url) { %>
+    (function() {
+      const videoUrl = '<%= project.video_url %>';
+      const videoIframe = document.getElementById('video-iframe');
+      const videoError = document.getElementById('video-error');
+      const videoContainer = document.getElementById('video-container');
+      
+      function convertToEmbedUrl(url) {
+
+        const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+        const youtubeMatch = url.match(youtubeRegex);
+        if (youtubeMatch) {
+          return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+        }
+        
+
+        const vimeoRegex = /(?:vimeo\.com\/)(?:.*\/)?(\d+)/;
+        const vimeoMatch = url.match(vimeoRegex);
+        if (vimeoMatch) {
+          return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+        }
+        
+
+        if (url.includes('youtube.com/embed') || url.includes('youtu.be') || url.includes('vimeo.com/video') || url.includes('player.vimeo.com')) {
+          return url;
+        }
+        
+        return null;
+      }
+      
+      const embedUrl = convertToEmbedUrl(videoUrl);
+      
+      if (embedUrl) {
+        videoIframe.src = embedUrl;
+        
+
+
+        let orientation = 'landscape'; 
+        const lowerUrl = videoUrl.toLowerCase();
+        
+
+        if (lowerUrl.includes('portrait') || 
+            lowerUrl.includes('vertical') || 
+            lowerUrl.includes('9:16') || 
+            lowerUrl.includes('shorts') || 
+            lowerUrl.includes('reels') || 
+            lowerUrl.includes('tiktok')) {
+          orientation = 'portrait'; 
+        }
+        
+        videoContainer.setAttribute('data-orientation', orientation);
+        
+
+        videoIframe.onload = function() {
+
+          videoError.style.display = 'none';
+        };
+        
+        videoIframe.onerror = function() {
+
+          videoIframe.style.display = 'none';
+          videoError.style.display = 'flex';
+        };
+      } else {
+
+        videoIframe.style.display = 'none';
+        videoError.style.display = 'flex';
+      }
+    })();
+    <% } %>
+
+
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const modalClose = document.querySelector('.modal-close');
+    const modalPrev = document.querySelector('.modal-prev');
+    const modalNext = document.querySelector('.modal-next');
+    const modalCounter = document.querySelector('.modal-counter');
+    const zoomInBtn = document.getElementById('zoomIn');
+    const zoomOutBtn = document.getElementById('zoomOut');
+    const zoomResetBtn = document.getElementById('zoomReset');
+    
+    let currentImageIndex = 0;
+    let images = [];
+    let zoomLevel = 1;
+
+
+    document.querySelectorAll('.gallery-link').forEach((link, index) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        images = Array.from(document.querySelectorAll('.gallery-link')).map(l => l.getAttribute('data-image'));
+        currentImageIndex = parseInt(link.getAttribute('data-index'));
+        openModal(currentImageIndex);
+      });
+    });
+
+    function openModal(index) {
+      currentImageIndex = index;
+      modalImg.src = images[index];
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      zoomLevel = 1;
+      updateZoom();
+      updateCounter();
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      zoomLevel = 1;
+      updateZoom();
+    }
+
+    function nextImage() {
+      currentImageIndex = (currentImageIndex + 1) % images.length;
+      modalImg.src = images[currentImageIndex];
+      zoomLevel = 1;
+      updateZoom();
+      updateCounter();
+    }
+
+    function prevImage() {
+      currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+      modalImg.src = images[currentImageIndex];
+      zoomLevel = 1;
+      updateZoom();
+      updateCounter();
+    }
+
+    function updateCounter() {
+      modalCounter.textContent = `${currentImageIndex + 1} / ${images.length}`;
+    }
+
+    function updateZoom() {
+      modalImg.style.transform = `scale(${zoomLevel})`;
+    }
+
+    function zoomIn() {
+      if (zoomLevel < 3) {
+        zoomLevel += 0.25;
+        updateZoom();
+      }
+    }
+
+    function zoomOut() {
+      if (zoomLevel > 0.5) {
+        zoomLevel -= 0.25;
+        updateZoom();
+      }
+    }
+
+    function resetZoom() {
+      zoomLevel = 1;
+      updateZoom();
+    }
+
+
+    modalClose.addEventListener('click', closeModal);
+    modalPrev.addEventListener('click', prevImage);
+    modalNext.addEventListener('click', nextImage);
+    zoomInBtn.addEventListener('click', zoomIn);
+    zoomOutBtn.addEventListener('click', zoomOut);
+    zoomResetBtn.addEventListener('click', resetZoom);
+
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+
+    document.addEventListener('keydown', (e) => {
+      if (modal.style.display === 'flex') {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowRight') nextImage();
+        if (e.key === 'ArrowLeft') prevImage();
+        if (e.key === '+' || e.key === '=') zoomIn();
+        if (e.key === '-') zoomOut();
+        if (e.key === '0') resetZoom();
+      }
+    });
+
+
+    modalImg.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (e.deltaY < 0) {
+        zoomIn();
+      } else {
+        zoomOut();
+      }
+    });
+
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let touchStartY = 0;
+    let touchEndY = 0;
+    const swipeThreshold = 50; 
+
+    modal.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    modal.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const swipeDistanceX = touchEndX - touchStartX;
+      const swipeDistanceY = touchEndY - touchStartY;
+      
+
+      if (Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY)) {
+
+        if (Math.abs(swipeDistanceX) > swipeThreshold) {
+          if (swipeDistanceX > 0) {
+
+            prevImage();
+          } else {
+
+            nextImage();
+          }
+        }
+      }
+    }
+
+
+    const modalContent = document.querySelector('.modal-content');
+    modalContent.addEventListener('touchmove', (e) => {
+
+      if (zoomLevel === 1) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  </script>
+</body>
+</html>
+

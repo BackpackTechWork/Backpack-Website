@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <!-- Devicon CSS for tech icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+  <style>
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      background: #f9fafb;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: #6b7280;
+      font-size: 0.9375rem;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .breadcrumb a {
+      color: #c51d34;
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .service-info-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: fadeInUp 0.6s ease-out 0.2s both;
+    }
+
+    .service-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .service-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      padding: 4px;
+    }
+
+    .service-details h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 0.25rem;
+    }
+
+    .service-details p {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .form-container {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.5s ease-out both;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.4s; }
+    .form-group:nth-child(2) { animation-delay: 0.45s; }
+    .form-group:nth-child(3) { animation-delay: 0.5s; }
+    .form-group:nth-child(4) { animation-delay: 0.55s; }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-container .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #111827 !important;
+      opacity: 1 !important;
+    }
+
+    .form-container .form-group label .required {
+      color: #c51d34;
+    }
+
+    .form-container .form-control,
+    .form-container input.form-control,
+    .form-container select.form-control,
+    .form-container textarea.form-control {
+      width: 100% !important;
+      padding: 0.75rem !important;
+      border: 2px solid #e5e7eb !important;
+      border-radius: 6px !important;
+      font-size: 0.875rem !important;
+      font-family: inherit !important;
+      background: #ffffff !important;
+      color: #111827 !important;
+      box-sizing: border-box !important;
+      transition: all 0.2s ease !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+    }
+
+    .form-container textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-container .form-control:focus,
+    .form-container input.form-control:focus,
+    .form-container select.form-control:focus,
+    .form-container textarea.form-control:focus {
+      outline: none !important;
+      border-color: #c51d34 !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+
+    .form-help {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.8125rem;
+      color: #6b7280;
+      opacity: 1 !important;
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .form-checkbox input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #c51d34;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .form-checkbox label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: #111827;
+      line-height: 1.5;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+      animation: fadeInUp 0.5s ease-out 1s both;
+    }
+
+    .form-container .btn {
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 1 !important;
+      width: 40px;
+      height: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container .btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .form-container .btn-primary:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .form-container .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .form-container .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .form-container .btn-submit {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+      width: auto;
+      padding: 0.75rem 1.5rem;
+    }
+
+    .form-container .btn-submit:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    /* Icon Upload Styles */
+    .icon-upload-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .icon-option-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .icon-tab {
+      flex: 1;
+      padding: 0.75rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      background: #ffffff;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    .icon-tab.active {
+      border-color: #c51d34;
+      background: #c51d34;
+      color: white;
+    }
+
+    .icon-option-content {
+      display: none;
+    }
+
+    .icon-option-content.active {
+      display: block;
+    }
+
+    .icon-preview-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .icon-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      border: 2px solid #e5e7eb;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .icon-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 10px;
+      padding: 4px;
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+    }
+
+    .icon-upload-input {
+      display: none;
+    }
+
+    .icon-upload-btn {
+      padding: 0.5rem 1rem;
+      background: #f9fafb;
+      border: 2px dashed #e5e7eb;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6b7280;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .icon-upload-btn:hover {
+      border-color: #c51d34;
+      background: #fef2f2;
+      color: #c51d34;
+    }
+
+    /* Drag and Drop Styles */
+    .icon-upload-dropzone {
+      position: relative;
+      min-height: 120px;
+      border: 2px dashed #e5e7eb;
+      border-radius: 8px;
+      padding: 1.5rem;
+      background: #f9fafb;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .icon-upload-dropzone:hover {
+      border-color: #c51d34;
+      background: #fef2f2;
+      transform: scale(1.02);
+      box-shadow: 0 0 0 4px rgba(197, 29, 52, 0.1),
+                  0 4px 20px rgba(197, 29, 52, 0.3),
+                  0 8px 30px rgba(197, 29, 52, 0.2),
+                  inset 0 0 20px rgba(197, 29, 52, 0.05);
+      animation: dragGlow 1.5s ease-in-out infinite;
+    }
+
+    .icon-upload-dropzone.drag-over {
+      border-color: #c51d34;
+      background: #fef2f2;
+      transform: scale(1.02);
+      box-shadow: 0 0 0 4px rgba(197, 29, 52, 0.1),
+                  0 4px 20px rgba(197, 29, 52, 0.3),
+                  0 8px 30px rgba(197, 29, 52, 0.2),
+                  inset 0 0 20px rgba(197, 29, 52, 0.05);
+      animation: dragGlow 1.5s ease-in-out infinite;
+    }
+
+    @keyframes dragGlow {
+      0%, 100% {
+        box-shadow: 0 0 0 4px rgba(197, 29, 52, 0.1),
+                    0 4px 20px rgba(197, 29, 52, 0.3),
+                    0 8px 30px rgba(197, 29, 52, 0.2),
+                    inset 0 0 20px rgba(197, 29, 52, 0.05);
+      }
+      50% {
+        box-shadow: 0 0 0 6px rgba(197, 29, 52, 0.15),
+                    0 4px 25px rgba(197, 29, 52, 0.4),
+                    0 10px 40px rgba(197, 29, 52, 0.3),
+                    inset 0 0 25px rgba(197, 29, 52, 0.08);
+      }
+    }
+
+    .icon-upload-dropzone:hover .dropzone-content,
+    .icon-upload-dropzone.drag-over .dropzone-content {
+      opacity: 1;
+    }
+
+    .icon-upload-dropzone:hover .dropzone-text {
+      color: #c51d34;
+    }
+
+
+    .dropzone-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      text-align: center;
+      transition: opacity 0.3s ease;
+    }
+
+    .dropzone-icon {
+      font-size: 2.5rem;
+      color: #c51d34;
+      margin-bottom: 0.5rem;
+    }
+
+    .dropzone-text {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #111827;
+      margin: 0;
+    }
+
+    .dropzone-hint {
+      font-size: 0.8125rem;
+      color: #6b7280;
+      margin: 0;
+    }
+
+    .dropzone-or {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin: 0.5rem 0;
+      font-weight: 500;
+    }
+
+    /* Features Dynamic Boxes */
+    .features-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      background: #f9fafb;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-item {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      background: white;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s;
+    }
+
+    .feature-item:hover {
+      border-color: #c51d34;
+      box-shadow: 0 2px 4px rgba(197, 29, 52, 0.1);
+    }
+
+    .feature-item input {
+      flex: 1;
+      border: none;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      background: transparent;
+    }
+
+    .feature-item input:focus {
+      outline: none;
+    }
+
+    .feature-remove-btn {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    }
+
+    .feature-remove-btn:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+
+    .feature-remove-btn i {
+      font-size: 0.875rem;
+      color: white !important;
+      line-height: 1;
+      margin: 0;
+      padding: 0;
+    }
+
+    .feature-add-btn {
+      padding: 0.75rem 1.5rem;
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: fit-content;
+    }
+
+    .feature-add-btn:hover {
+      background: #059669;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Select2 Custom Styling for Technologies */
+    .select2-container--default .select2-selection--multiple {
+      border: 2px solid #e5e7eb !important;
+      border-radius: 8px !important;
+      min-height: 52px !important;
+      padding: 0.375rem 0.75rem !important;
+      background: #ffffff !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+      border-color: #c51d34 !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+    }
+
+    /* Select2 Custom Styling for Icon Select (Single) */
+    .select2-container--default .select2-selection--single {
+      border: 2px solid #e5e7eb !important;
+      border-radius: 8px !important;
+      height: 48px !important;
+      padding: 0.375rem 0.75rem !important;
+      background: #ffffff !important;
+      transition: all 0.2s ease !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--single {
+      border-color: #c51d34 !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      display: flex !important;
+      align-items: center !important;
+      padding-left: 0 !important;
+      padding-right: 20px !important;
+      line-height: 1.5 !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 46px !important;
+      right: 8px !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%) !important;
+      border: none !important;
+      color: white !important;
+      padding: 0.5rem 0.75rem 0.5rem 1rem !important;
+      border-radius: 20px !important;
+      margin: 0.375rem 0.375rem 0.375rem 0 !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 0.5rem !important;
+      box-shadow: 0 2px 8px rgba(197, 29, 52, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      cursor: default !important;
+      line-height: 1.5 !important;
+    }
+
+    /* Ensure chip text is properly aligned */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+      display: flex !important;
+      align-items: center !important;
+      line-height: 1.5 !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%) !important;
+      transform: translateY(-2px) scale(1.02) !important;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.35), 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+      color: white !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      font-weight: 700 !important;
+      font-size: 1.1rem !important;
+      width: 20px !important;
+      height: 20px !important;
+      min-width: 20px !important;
+      min-height: 20px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 50% !important;
+      background: rgba(255, 255, 255, 0.25) !important;
+      transition: all 0.2s ease !important;
+      cursor: pointer !important;
+      line-height: 1 !important;
+      padding: 0 !important;
+      opacity: 0.9 !important;
+      flex-shrink: 0 !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      text-align: center !important;
+      vertical-align: middle !important;
+      box-sizing: border-box !important;
+      /* Fix for perfect centering */
+      position: relative !important;
+    }
+
+    /* Fix the × character positioning */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:before {
+      content: "×" !important;
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      line-height: 20px !important;
+      text-align: center !important;
+      font-size: 16px !important;
+      font-weight: bold !important;
+    }
+
+    /* Remove the default × character */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove > span {
+      display: none !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+      background: rgba(255, 255, 255, 0.95) !important;
+      opacity: 1 !important;
+      transform: scale(1.15) !important;
+      color: #c51d34 !important;
+      border-color: rgba(255, 255, 255, 0.4) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+      background-color: #c51d34 !important;
+      color: white !important;
+    }
+
+    .select2-container {
+      width: 100% !important;
+    }
+
+    .select2-dropdown {
+      border: 2px solid #e5e7eb !important;
+      border-radius: 8px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+      margin-top: 4px !important;
+    }
+
+    .select2-results__options {
+      max-height: 280px !important;
+      overflow-y: auto !important;
+    }
+
+    .select2-results__option {
+      padding: 0.625rem 1rem !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.75rem !important;
+      font-size: 0.875rem !important;
+      transition: all 0.15s ease !important;
+    }
+
+    .select2-results__option i {
+      font-size: 1.25rem !important;
+      width: 24px !important;
+      text-align: center !important;
+    }
+
+    .select2-search--dropdown {
+      padding: 0.75rem !important;
+      background: #f9fafb !important;
+      border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+      border: 2px solid #e5e7eb !important;
+      border-radius: 6px !important;
+      padding: 0.625rem 1rem !important;
+      font-size: 0.875rem !important;
+      background: white !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .select2-search--dropdown .select2-search__field:focus {
+      border-color: #c51d34 !important;
+      outline: none !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+    }
+
+    /* Success Modal */
+    .success-modal,
+    .confirmation-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .success-modal.show,
+    .confirmation-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .success-modal.show .modal-content-wrapper,
+    .confirmation-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    .modal-icon.error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .modal-icon.warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="breadcrumb">
+        <a href="/admin/dashboard">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="/admin/services">Services</a>
+        <i class="fas fa-chevron-right"></i>
+        <span><%= isEdit ? 'Edit' : 'Add' %> Service</span>
+      </div>
+
+      <div class="page-header">
+        <h1><%= isEdit ? 'Edit' : 'Add' %> Service</h1>
+        <p><%= isEdit ? 'Update service information' : 'Create a new service' %></p>
+      </div>
+
+      <% if (isEdit && service) { %>
+      <div class="service-info-card">
+        <div class="service-icon">
+          <% if (service.icon && service.icon.startsWith('/')) { %>
+            <img src="<%= service.icon %>" alt="Service Icon" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <i class="fas fa-cog" style="display: none;"></i>
+          <% } else { %>
+            <i class="fas fa-<%= service.icon || 'cog' %>"></i>
+          <% } %>
+        </div>
+        <div class="service-details">
+          <h3><%= service.title %></h3>
+          <p><%= service.slug %></p>
+        </div>
+      </div>
+      <% } %>
+
+      <div class="form-container">
+        <form method="POST" action="<%= isEdit ? `/admin/services/${service.id}` : '/admin/services/add' %>" id="serviceForm" enctype="multipart/form-data">
+          <div class="form-grid">
+            <!-- Title -->
+            <div class="form-group">
+              <label for="title">Title <span class="required">*</span></label>
+              <input type="text" id="title" name="title" class="form-control" required placeholder="Web Development" value="<%= isEdit && service ? (service.title || '') : '' %>">
+            </div>
+
+            <!-- Slug -->
+            <div class="form-group">
+              <label for="slug">Slug <span class="required">*</span></label>
+              <input type="text" id="slug" name="slug" class="form-control" required placeholder="web-development" value="<%= isEdit && service ? (service.slug || '') : '' %>">
+              <small class="form-help">URL-friendly identifier (auto-generated from title)</small>
+            </div>
+
+            <!-- Icon -->
+            <div class="form-group full-width">
+              <label>Icon</label>
+              <div class="icon-upload-container">
+                <div class="icon-option-tabs">
+                  <div class="icon-tab <%= isEdit && service && service.icon && !service.icon.startsWith('/') ? '' : 'active' %>" data-tab="upload">Upload Image</div>
+                  <div class="icon-tab <%= isEdit && service && service.icon && !service.icon.startsWith('/') ? 'active' : '' %>" data-tab="fontawesome">Font Awesome</div>
+                </div>
+                
+                <!-- Upload Image Option -->
+                <div class="icon-option-content <%= isEdit && service && service.icon && !service.icon.startsWith('/') ? '' : 'active' %>" id="iconUploadContent">
+                  <div class="icon-preview-container">
+                    <div class="icon-preview" id="iconPreview">
+                      <% if (isEdit && service && service.icon && service.icon.startsWith('/')) { %>
+                        <img src="<%= service.icon %>" alt="Icon Preview" id="iconPreviewImg" style="display: block;">
+                        <i class="fas fa-image" id="iconPreviewIcon" style="display: none;"></i>
+                      <% } else { %>
+                        <img src="" alt="Icon Preview" id="iconPreviewImg" style="display: none;">
+                        <i class="fas fa-image" id="iconPreviewIcon" style="display: flex;"></i>
+                      <% } %>
+                    </div>
+                    <div style="flex: 1;">
+                      <div class="icon-upload-dropzone" id="iconUploadDropzone">
+                        <div class="dropzone-content">
+                          <i class="fas fa-cloud-upload-alt dropzone-icon"></i>
+                          <p class="dropzone-text">Drag & drop your icon image here</p>
+                          <p class="dropzone-hint">or</p>
+                          <label for="iconImage" class="icon-upload-btn">
+                            <i class="fas fa-upload"></i> Choose Icon Image
+                          </label>
+                          <input type="file" id="iconImage" name="iconImage" class="icon-upload-input" accept="image/*">
+                        </div>
+                      </div>
+                      <small class="form-help">Upload a custom icon image (PNG, JPG, SVG - max 2MB)</small>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Font Awesome Option -->
+                <div class="icon-option-content <%= isEdit && service && service.icon && !service.icon.startsWith('/') ? 'active' : '' %>" id="iconFontAwesomeContent">
+                  <select id="icon" name="icon" class="form-control icon-select">
+                    <option value="">Select Font Awesome Icon</option>
+                    <!-- Technology & Development -->
+                    <option value="code" data-icon="fas fa-code" <%= isEdit && service && service.icon === 'code' ? 'selected' : '' %>>Code</option>
+                    <option value="laptop-code" data-icon="fas fa-laptop-code" <%= isEdit && service && service.icon === 'laptop-code' ? 'selected' : '' %>>Laptop Code</option>
+                    <option value="desktop" data-icon="fas fa-desktop" <%= isEdit && service && service.icon === 'desktop' ? 'selected' : '' %>>Desktop</option>
+                    <option value="mobile-screen-button" data-icon="fas fa-mobile-screen-button" <%= isEdit && service && service.icon === 'mobile-screen-button' || (isEdit && service && service.icon === 'mobile-alt') ? 'selected' : '' %>>Mobile</option>
+                    <option value="tablet-screen-button" data-icon="fas fa-tablet-screen-button" <%= isEdit && service && service.icon === 'tablet-screen-button' || (isEdit && service && service.icon === 'tablet-alt') ? 'selected' : '' %>>Tablet</option>
+                    <option value="server" data-icon="fas fa-server" <%= isEdit && service && service.icon === 'server' ? 'selected' : '' %>>Server</option>
+                    <option value="database" data-icon="fas fa-database" <%= isEdit && service && service.icon === 'database' ? 'selected' : '' %>>Database</option>
+                    <option value="cloud" data-icon="fas fa-cloud" <%= isEdit && service && service.icon === 'cloud' ? 'selected' : '' %>>Cloud</option>
+                    <option value="network-wired" data-icon="fas fa-network-wired" <%= isEdit && service && service.icon === 'network-wired' ? 'selected' : '' %>>Network</option>
+                    <option value="wifi" data-icon="fas fa-wifi" <%= isEdit && service && service.icon === 'wifi' ? 'selected' : '' %>>WiFi</option>
+                    <option value="microchip" data-icon="fas fa-microchip" <%= isEdit && service && service.icon === 'microchip' ? 'selected' : '' %>>Microchip</option>
+                    <option value="memory" data-icon="fas fa-memory" <%= isEdit && service && service.icon === 'memory' ? 'selected' : '' %>>Memory</option>
+                    <option value="hdd" data-icon="fas fa-hdd" <%= isEdit && service && service.icon === 'hdd' ? 'selected' : '' %>>Hard Drive</option>
+                    <option value="usb" data-icon="fab fa-usb" <%= isEdit && service && service.icon === 'usb' ? 'selected' : '' %>>USB</option>
+                    <!-- Design & Creative -->
+                    <option value="palette" data-icon="fas fa-palette" <%= isEdit && service && service.icon === 'palette' ? 'selected' : '' %>>Palette</option>
+                    <option value="paint-brush" data-icon="fas fa-paint-brush" <%= isEdit && service && service.icon === 'paint-brush' ? 'selected' : '' %>>Paint Brush</option>
+                    <option value="paint-roller" data-icon="fas fa-paint-roller" <%= isEdit && service && service.icon === 'paint-roller' ? 'selected' : '' %>>Paint Roller</option>
+                    <option value="image" data-icon="fas fa-image" <%= isEdit && service && service.icon === 'image' ? 'selected' : '' %>>Image</option>
+                    <option value="images" data-icon="fas fa-images" <%= isEdit && service && service.icon === 'images' ? 'selected' : '' %>>Images</option>
+                    <option value="video" data-icon="fas fa-video" <%= isEdit && service && service.icon === 'video' ? 'selected' : '' %>>Video</option>
+                    <option value="camera" data-icon="fas fa-camera" <%= isEdit && service && service.icon === 'camera' ? 'selected' : '' %>>Camera</option>
+                    <option value="film" data-icon="fas fa-film" <%= isEdit && service && service.icon === 'film' ? 'selected' : '' %>>Film</option>
+                    <option value="pen" data-icon="fas fa-pen" <%= isEdit && service && service.icon === 'pen' ? 'selected' : '' %>>Pen</option>
+                    <option value="pen-fancy" data-icon="fas fa-pen-fancy" <%= isEdit && service && service.icon === 'pen-fancy' ? 'selected' : '' %>>Pen Fancy</option>
+                    <option value="pencil" data-icon="fas fa-pencil" <%= isEdit && service && service.icon === 'pencil' || (isEdit && service && service.icon === 'pencil-alt') ? 'selected' : '' %>>Pencil</option>
+                    <option value="brush" data-icon="fas fa-brush" <%= isEdit && service && service.icon === 'brush' ? 'selected' : '' %>>Brush</option>
+                    <!-- Business & Finance -->
+                    <option value="briefcase" data-icon="fas fa-briefcase" <%= isEdit && service && service.icon === 'briefcase' ? 'selected' : '' %>>Briefcase</option>
+                    <option value="suitcase" data-icon="fas fa-suitcase" <%= isEdit && service && service.icon === 'suitcase' ? 'selected' : '' %>>Suitcase</option>
+                    <option value="chart-line" data-icon="fas fa-chart-line" <%= isEdit && service && service.icon === 'chart-line' ? 'selected' : '' %>>Chart Line</option>
+                    <option value="chart-bar" data-icon="fas fa-chart-bar" <%= isEdit && service && service.icon === 'chart-bar' ? 'selected' : '' %>>Chart Bar</option>
+                    <option value="chart-pie" data-icon="fas fa-chart-pie" <%= isEdit && service && service.icon === 'chart-pie' ? 'selected' : '' %>>Chart Pie</option>
+                    <option value="chart-area" data-icon="fas fa-chart-area" <%= isEdit && service && service.icon === 'chart-area' ? 'selected' : '' %>>Chart Area</option>
+                    <option value="dollar-sign" data-icon="fas fa-dollar-sign" <%= isEdit && service && service.icon === 'dollar-sign' ? 'selected' : '' %>>Dollar Sign</option>
+                    <option value="credit-card" data-icon="fas fa-credit-card" <%= isEdit && service && service.icon === 'credit-card' ? 'selected' : '' %>>Credit Card</option>
+                    <option value="wallet" data-icon="fas fa-wallet" <%= isEdit && service && service.icon === 'wallet' ? 'selected' : '' %>>Wallet</option>
+                    <option value="receipt" data-icon="fas fa-receipt" <%= isEdit && service && service.icon === 'receipt' ? 'selected' : '' %>>Receipt</option>
+                    <option value="handshake" data-icon="fas fa-handshake" <%= isEdit && service && service.icon === 'handshake' ? 'selected' : '' %>>Handshake</option>
+                    <option value="building" data-icon="fas fa-building" <%= isEdit && service && service.icon === 'building' ? 'selected' : '' %>>Building</option>
+                    <option value="store" data-icon="fas fa-store" <%= isEdit && service && service.icon === 'store' ? 'selected' : '' %>>Store</option>
+                    <option value="shopping-cart" data-icon="fas fa-shopping-cart" <%= isEdit && service && service.icon === 'shopping-cart' ? 'selected' : '' %>>Shopping Cart</option>
+                    <option value="shopping-bag" data-icon="fas fa-shopping-bag" <%= isEdit && service && service.icon === 'shopping-bag' ? 'selected' : '' %>>Shopping Bag</option>
+                    <!-- Security & Protection -->
+                    <option value="shield-halved" data-icon="fas fa-shield-halved" <%= isEdit && service && service.icon === 'shield-halved' || (isEdit && service && service.icon === 'shield-alt') ? 'selected' : '' %>>Shield Halved</option>
+                    <option value="shield" data-icon="fas fa-shield" <%= isEdit && service && service.icon === 'shield' ? 'selected' : '' %>>Shield</option>
+                    <option value="lock" data-icon="fas fa-lock" <%= isEdit && service && service.icon === 'lock' ? 'selected' : '' %>>Lock</option>
+                    <option value="unlock" data-icon="fas fa-unlock" <%= isEdit && service && service.icon === 'unlock' ? 'selected' : '' %>>Unlock</option>
+                    <option value="key" data-icon="fas fa-key" <%= isEdit && service && service.icon === 'key' ? 'selected' : '' %>>Key</option>
+                    <option value="fingerprint" data-icon="fas fa-fingerprint" <%= isEdit && service && service.icon === 'fingerprint' ? 'selected' : '' %>>Fingerprint</option>
+                    <option value="user-shield" data-icon="fas fa-user-shield" <%= isEdit && service && service.icon === 'user-shield' ? 'selected' : '' %>>User Shield</option>
+                    <option value="eye" data-icon="fas fa-eye" <%= isEdit && service && service.icon === 'eye' ? 'selected' : '' %>>Eye</option>
+                    <option value="eye-slash" data-icon="fas fa-eye-slash" <%= isEdit && service && service.icon === 'eye-slash' ? 'selected' : '' %>>Eye Slash</option>
+                    <!-- Communication -->
+                    <option value="envelope" data-icon="fas fa-envelope" <%= isEdit && service && service.icon === 'envelope' ? 'selected' : '' %>>Envelope</option>
+                    <option value="envelope-open" data-icon="fas fa-envelope-open" <%= isEdit && service && service.icon === 'envelope-open' ? 'selected' : '' %>>Envelope Open</option>
+                    <option value="mail-bulk" data-icon="fas fa-mail-bulk" <%= isEdit && service && service.icon === 'mail-bulk' ? 'selected' : '' %>>Mail Bulk</option>
+                    <option value="phone" data-icon="fas fa-phone" <%= isEdit && service && service.icon === 'phone' ? 'selected' : '' %>>Phone</option>
+                    <option value="phone-flip" data-icon="fas fa-phone-flip" <%= isEdit && service && service.icon === 'phone-flip' || (isEdit && service && service.icon === 'phone-alt') ? 'selected' : '' %>>Phone Flip</option>
+                    <option value="comments" data-icon="fas fa-comments" <%= isEdit && service && service.icon === 'comments' ? 'selected' : '' %>>Comments</option>
+                    <option value="comment" data-icon="fas fa-comment" <%= isEdit && service && service.icon === 'comment' ? 'selected' : '' %>>Comment</option>
+                    <option value="comment-dots" data-icon="fas fa-comment-dots" <%= isEdit && service && service.icon === 'comment-dots' ? 'selected' : '' %>>Comment Dots</option>
+                    <option value="sms" data-icon="fas fa-sms" <%= isEdit && service && service.icon === 'sms' ? 'selected' : '' %>>SMS</option>
+                    <option value="paper-plane" data-icon="fas fa-paper-plane" <%= isEdit && service && service.icon === 'paper-plane' ? 'selected' : '' %>>Paper Plane</option>
+                    <option value="bullhorn" data-icon="fas fa-bullhorn" <%= isEdit && service && service.icon === 'bullhorn' ? 'selected' : '' %>>Bullhorn</option>
+                    <!-- Web & Internet -->
+                    <option value="globe" data-icon="fas fa-globe" <%= isEdit && service && service.icon === 'globe' ? 'selected' : '' %>>Globe</option>
+                    <option value="link" data-icon="fas fa-link" <%= isEdit && service && service.icon === 'link' ? 'selected' : '' %>>Link</option>
+                    <option value="unlink" data-icon="fas fa-unlink" <%= isEdit && service && service.icon === 'unlink' ? 'selected' : '' %>>Unlink</option>
+                    <option value="rss" data-icon="fas fa-rss" <%= isEdit && service && service.icon === 'rss' ? 'selected' : '' %>>RSS</option>
+                    <option value="sitemap" data-icon="fas fa-sitemap" <%= isEdit && service && service.icon === 'sitemap' ? 'selected' : '' %>>Sitemap</option>
+                    <option value="search" data-icon="fas fa-search" <%= isEdit && service && service.icon === 'search' ? 'selected' : '' %>>Search</option>
+                    <option value="search-plus" data-icon="fas fa-search-plus" <%= isEdit && service && service.icon === 'search-plus' ? 'selected' : '' %>>Search Plus</option>
+                    <option value="search-minus" data-icon="fas fa-search-minus" <%= isEdit && service && service.icon === 'search-minus' ? 'selected' : '' %>>Search Minus</option>
+                    <option value="filter" data-icon="fas fa-filter" <%= isEdit && service && service.icon === 'filter' ? 'selected' : '' %>>Filter</option>
+                    <!-- Tools & Settings -->
+                    <option value="cog" data-icon="fas fa-cog" <%= isEdit && service && service.icon === 'cog' ? 'selected' : '' %>>Cog</option>
+                    <option value="cogs" data-icon="fas fa-cogs" <%= isEdit && service && service.icon === 'cogs' ? 'selected' : '' %>>Cogs</option>
+                    <option value="wrench" data-icon="fas fa-wrench" <%= isEdit && service && service.icon === 'wrench' ? 'selected' : '' %>>Wrench</option>
+                    <option value="tools" data-icon="fas fa-tools" <%= isEdit && service && service.icon === 'tools' ? 'selected' : '' %>>Tools</option>
+                    <option value="hammer" data-icon="fas fa-hammer" <%= isEdit && service && service.icon === 'hammer' ? 'selected' : '' %>>Hammer</option>
+                    <option value="screwdriver" data-icon="fas fa-screwdriver" <%= isEdit && service && service.icon === 'screwdriver' ? 'selected' : '' %>>Screwdriver</option>
+                    <option value="toolbox" data-icon="fas fa-toolbox" <%= isEdit && service && service.icon === 'toolbox' ? 'selected' : '' %>>Toolbox</option>
+                    <option value="sliders" data-icon="fas fa-sliders" <%= isEdit && service && service.icon === 'sliders' || (isEdit && service && service.icon === 'sliders-h') ? 'selected' : '' %>>Sliders</option>
+                    <option value="toggle-on" data-icon="fas fa-toggle-on" <%= isEdit && service && service.icon === 'toggle-on' ? 'selected' : '' %>>Toggle On</option>
+                    <option value="toggle-off" data-icon="fas fa-toggle-off" <%= isEdit && service && service.icon === 'toggle-off' ? 'selected' : '' %>>Toggle Off</option>
+                    <!-- Users & People -->
+                    <option value="users" data-icon="fas fa-users" <%= isEdit && service && service.icon === 'users' ? 'selected' : '' %>>Users</option>
+                    <option value="user" data-icon="fas fa-user" <%= isEdit && service && service.icon === 'user' ? 'selected' : '' %>>User</option>
+                    <option value="user-friends" data-icon="fas fa-user-friends" <%= isEdit && service && service.icon === 'user-friends' ? 'selected' : '' %>>User Friends</option>
+                    <option value="user-plus" data-icon="fas fa-user-plus" <%= isEdit && service && service.icon === 'user-plus' ? 'selected' : '' %>>User Plus</option>
+                    <option value="user-tie" data-icon="fas fa-user-tie" <%= isEdit && service && service.icon === 'user-tie' ? 'selected' : '' %>>User Tie</option>
+                    <option value="user-cog" data-icon="fas fa-user-cog" <%= isEdit && service && service.icon === 'user-cog' ? 'selected' : '' %>>User Cog</option>
+                    <option value="user-md" data-icon="fas fa-user-md" <%= isEdit && service && service.icon === 'user-md' ? 'selected' : '' %>>User MD</option>
+                    <option value="user-graduate" data-icon="fas fa-user-graduate" <%= isEdit && service && service.icon === 'user-graduate' ? 'selected' : '' %>>User Graduate</option>
+                    <option value="id-card" data-icon="fas fa-id-card" <%= isEdit && service && service.icon === 'id-card' ? 'selected' : '' %>>ID Card</option>
+                    <!-- Time & Calendar -->
+                    <option value="clock" data-icon="fas fa-clock" <%= isEdit && service && service.icon === 'clock' ? 'selected' : '' %>>Clock</option>
+                    <option value="calendar" data-icon="fas fa-calendar" <%= isEdit && service && service.icon === 'calendar' ? 'selected' : '' %>>Calendar</option>
+                    <option value="calendar-days" data-icon="fas fa-calendar-days" <%= isEdit && service && service.icon === 'calendar-days' || (isEdit && service && service.icon === 'calendar-alt') ? 'selected' : '' %>>Calendar Days</option>
+                    <option value="calendar-check" data-icon="fas fa-calendar-check" <%= isEdit && service && service.icon === 'calendar-check' ? 'selected' : '' %>>Calendar Check</option>
+                    <option value="stopwatch" data-icon="fas fa-stopwatch" <%= isEdit && service && service.icon === 'stopwatch' ? 'selected' : '' %>>Stopwatch</option>
+                    <option value="hourglass" data-icon="fas fa-hourglass" <%= isEdit && service && service.icon === 'hourglass' ? 'selected' : '' %>>Hourglass</option>
+                    <option value="hourglass-half" data-icon="fas fa-hourglass-half" <%= isEdit && service && service.icon === 'hourglass-half' ? 'selected' : '' %>>Hourglass Half</option>
+                    <!-- Status & Feedback -->
+                    <option value="check-circle" data-icon="fas fa-check-circle" <%= isEdit && service && service.icon === 'check-circle' ? 'selected' : '' %>>Check Circle</option>
+                    <option value="check" data-icon="fas fa-check" <%= isEdit && service && service.icon === 'check' ? 'selected' : '' %>>Check</option>
+                    <option value="times-circle" data-icon="fas fa-times-circle" <%= isEdit && service && service.icon === 'times-circle' ? 'selected' : '' %>>Times Circle</option>
+                    <option value="times" data-icon="fas fa-times" <%= isEdit && service && service.icon === 'times' ? 'selected' : '' %>>Times</option>
+                    <option value="exclamation-circle" data-icon="fas fa-exclamation-circle" <%= isEdit && service && service.icon === 'exclamation-circle' ? 'selected' : '' %>>Exclamation Circle</option>
+                    <option value="exclamation-triangle" data-icon="fas fa-exclamation-triangle" <%= isEdit && service && service.icon === 'exclamation-triangle' ? 'selected' : '' %>>Exclamation Triangle</option>
+                    <option value="info-circle" data-icon="fas fa-info-circle" <%= isEdit && service && service.icon === 'info-circle' ? 'selected' : '' %>>Info Circle</option>
+                    <option value="question-circle" data-icon="fas fa-question-circle" <%= isEdit && service && service.icon === 'question-circle' ? 'selected' : '' %>>Question Circle</option>
+                    <option value="ban" data-icon="fas fa-ban" <%= isEdit && service && service.icon === 'ban' ? 'selected' : '' %>>Ban</option>
+                    <option value="spinner" data-icon="fas fa-spinner" <%= isEdit && service && service.icon === 'spinner' ? 'selected' : '' %>>Spinner</option>
+                    <!-- Media & Playback -->
+                    <option value="play-circle" data-icon="fas fa-play-circle" <%= isEdit && service && service.icon === 'play-circle' ? 'selected' : '' %>>Play Circle</option>
+                    <option value="pause-circle" data-icon="fas fa-pause-circle" <%= isEdit && service && service.icon === 'pause-circle' ? 'selected' : '' %>>Pause Circle</option>
+                    <option value="stop-circle" data-icon="fas fa-stop-circle" <%= isEdit && service && service.icon === 'stop-circle' ? 'selected' : '' %>>Stop Circle</option>
+                    <option value="play" data-icon="fas fa-play" <%= isEdit && service && service.icon === 'play' ? 'selected' : '' %>>Play</option>
+                    <option value="pause" data-icon="fas fa-pause" <%= isEdit && service && service.icon === 'pause' ? 'selected' : '' %>>Pause</option>
+                    <option value="stop" data-icon="fas fa-stop" <%= isEdit && service && service.icon === 'stop' ? 'selected' : '' %>>Stop</option>
+                    <option value="volume-up" data-icon="fas fa-volume-up" <%= isEdit && service && service.icon === 'volume-up' ? 'selected' : '' %>>Volume Up</option>
+                    <option value="volume-down" data-icon="fas fa-volume-down" <%= isEdit && service && service.icon === 'volume-down' ? 'selected' : '' %>>Volume Down</option>
+                    <option value="volume-mute" data-icon="fas fa-volume-mute" <%= isEdit && service && service.icon === 'volume-mute' ? 'selected' : '' %>>Volume Mute</option>
+                    <option value="music" data-icon="fas fa-music" <%= isEdit && service && service.icon === 'music' ? 'selected' : '' %>>Music</option>
+                    <!-- Arrows & Navigation -->
+                    <option value="arrow-right" data-icon="fas fa-arrow-right" <%= isEdit && service && service.icon === 'arrow-right' ? 'selected' : '' %>>Arrow Right</option>
+                    <option value="arrow-left" data-icon="fas fa-arrow-left" <%= isEdit && service && service.icon === 'arrow-left' ? 'selected' : '' %>>Arrow Left</option>
+                    <option value="arrow-up" data-icon="fas fa-arrow-up" <%= isEdit && service && service.icon === 'arrow-up' ? 'selected' : '' %>>Arrow Up</option>
+                    <option value="arrow-down" data-icon="fas fa-arrow-down" <%= isEdit && service && service.icon === 'arrow-down' ? 'selected' : '' %>>Arrow Down</option>
+                    <option value="chevron-right" data-icon="fas fa-chevron-right" <%= isEdit && service && service.icon === 'chevron-right' ? 'selected' : '' %>>Chevron Right</option>
+                    <option value="chevron-left" data-icon="fas fa-chevron-left" <%= isEdit && service && service.icon === 'chevron-left' ? 'selected' : '' %>>Chevron Left</option>
+                    <option value="chevron-up" data-icon="fas fa-chevron-up" <%= isEdit && service && service.icon === 'chevron-up' ? 'selected' : '' %>>Chevron Up</option>
+                    <option value="chevron-down" data-icon="fas fa-chevron-down" <%= isEdit && service && service.icon === 'chevron-down' ? 'selected' : '' %>>Chevron Down</option>
+                    <option value="angle-right" data-icon="fas fa-angle-right" <%= isEdit && service && service.icon === 'angle-right' ? 'selected' : '' %>>Angle Right</option>
+                    <option value="angle-left" data-icon="fas fa-angle-left" <%= isEdit && service && service.icon === 'angle-left' ? 'selected' : '' %>>Angle Left</option>
+                    <option value="angle-up" data-icon="fas fa-angle-up" <%= isEdit && service && service.icon === 'angle-up' ? 'selected' : '' %>>Angle Up</option>
+                    <option value="angle-down" data-icon="fas fa-angle-down" <%= isEdit && service && service.icon === 'angle-down' ? 'selected' : '' %>>Angle Down</option>
+                    <!-- Social & Interaction -->
+                    <option value="thumbs-up" data-icon="fas fa-thumbs-up" <%= isEdit && service && service.icon === 'thumbs-up' ? 'selected' : '' %>>Thumbs Up</option>
+                    <option value="thumbs-down" data-icon="fas fa-thumbs-down" <%= isEdit && service && service.icon === 'thumbs-down' ? 'selected' : '' %>>Thumbs Down</option>
+                    <option value="heart" data-icon="fas fa-heart" <%= isEdit && service && service.icon === 'heart' ? 'selected' : '' %>>Heart</option>
+                    <option value="star" data-icon="fas fa-star" <%= isEdit && service && service.icon === 'star' ? 'selected' : '' %>>Star</option>
+                    <option value="star-half" data-icon="fas fa-star-half" <%= isEdit && service && service.icon === 'star-half' ? 'selected' : '' %>>Star Half</option>
+                    <option value="share" data-icon="fas fa-share" <%= isEdit && service && service.icon === 'share' ? 'selected' : '' %>>Share</option>
+                    <option value="share-alt" data-icon="fas fa-share-alt" <%= isEdit && service && service.icon === 'share-alt' ? 'selected' : '' %>>Share Alt</option>
+                    <option value="retweet" data-icon="fas fa-retweet" <%= isEdit && service && service.icon === 'retweet' ? 'selected' : '' %>>Retweet</option>
+                    <!-- Notifications & Alerts -->
+                    <option value="bell" data-icon="fas fa-bell" <%= isEdit && service && service.icon === 'bell' ? 'selected' : '' %>>Bell</option>
+                    <option value="bell-slash" data-icon="fas fa-bell-slash" <%= isEdit && service && service.icon === 'bell-slash' ? 'selected' : '' %>>Bell Slash</option>
+                    <option value="exclamation" data-icon="fas fa-exclamation" <%= isEdit && service && service.icon === 'exclamation' ? 'selected' : '' %>>Exclamation</option>
+                    <option value="flag" data-icon="fas fa-flag" <%= isEdit && service && service.icon === 'flag' ? 'selected' : '' %>>Flag</option>
+                    <option value="flag-checkered" data-icon="fas fa-flag-checkered" <%= isEdit && service && service.icon === 'flag-checkered' ? 'selected' : '' %>>Flag Checkered</option>
+                    <!-- Files & Documents -->
+                    <option value="file" data-icon="fas fa-file" <%= isEdit && service && service.icon === 'file' ? 'selected' : '' %>>File</option>
+                    <option value="file-alt" data-icon="fas fa-file-alt" <%= isEdit && service && service.icon === 'file-alt' ? 'selected' : '' %>>File Alt</option>
+                    <option value="file-code" data-icon="fas fa-file-code" <%= isEdit && service && service.icon === 'file-code' ? 'selected' : '' %>>File Code</option>
+                    <option value="file-pdf" data-icon="fas fa-file-pdf" <%= isEdit && service && service.icon === 'file-pdf' ? 'selected' : '' %>>File PDF</option>
+                    <option value="file-image" data-icon="fas fa-file-image" <%= isEdit && service && service.icon === 'file-image' ? 'selected' : '' %>>File Image</option>
+                    <option value="file-video" data-icon="fas fa-file-video" <%= isEdit && service && service.icon === 'file-video' ? 'selected' : '' %>>File Video</option>
+                    <option value="file-archive" data-icon="fas fa-file-archive" <%= isEdit && service && service.icon === 'file-archive' ? 'selected' : '' %>>File Archive</option>
+                    <option value="folder" data-icon="fas fa-folder" <%= isEdit && service && service.icon === 'folder' ? 'selected' : '' %>>Folder</option>
+                    <option value="folder-open" data-icon="fas fa-folder-open" <%= isEdit && service && service.icon === 'folder-open' ? 'selected' : '' %>>Folder Open</option>
+                    <option value="archive" data-icon="fas fa-archive" <%= isEdit && service && service.icon === 'archive' ? 'selected' : '' %>>Archive</option>
+                    <option value="download" data-icon="fas fa-download" <%= isEdit && service && service.icon === 'download' ? 'selected' : '' %>>Download</option>
+                    <option value="upload" data-icon="fas fa-upload" <%= isEdit && service && service.icon === 'upload' ? 'selected' : '' %>>Upload</option>
+                    <option value="save" data-icon="fas fa-save" <%= isEdit && service && service.icon === 'save' ? 'selected' : '' %>>Save</option>
+                    <!-- Actions & Operations -->
+                    <option value="rocket" data-icon="fas fa-rocket" <%= isEdit && service && service.icon === 'rocket' ? 'selected' : '' %>>Rocket</option>
+                    <option value="lightbulb" data-icon="fas fa-lightbulb" <%= isEdit && service && service.icon === 'lightbulb' ? 'selected' : '' %>>Lightbulb</option>
+                    <option value="fire" data-icon="fas fa-fire" <%= isEdit && service && service.icon === 'fire' ? 'selected' : '' %>>Fire</option>
+                    <option value="bolt" data-icon="fas fa-bolt" <%= isEdit && service && service.icon === 'bolt' ? 'selected' : '' %>>Bolt</option>
+                    <option value="magic" data-icon="fas fa-magic" <%= isEdit && service && service.icon === 'magic' ? 'selected' : '' %>>Magic</option>
+                    <option value="gem" data-icon="fas fa-gem" <%= isEdit && service && service.icon === 'gem' ? 'selected' : '' %>>Gem</option>
+                    <option value="trophy" data-icon="fas fa-trophy" <%= isEdit && service && service.icon === 'trophy' ? 'selected' : '' %>>Trophy</option>
+                    <option value="medal" data-icon="fas fa-medal" <%= isEdit && service && service.icon === 'medal' ? 'selected' : '' %>>Medal</option>
+                    <option value="award" data-icon="fas fa-award" <%= isEdit && service && service.icon === 'award' ? 'selected' : '' %>>Award</option>
+                    <option value="certificate" data-icon="fas fa-certificate" <%= isEdit && service && service.icon === 'certificate' ? 'selected' : '' %>>Certificate</option>
+                    <!-- Location & Maps -->
+                    <option value="map" data-icon="fas fa-map" <%= isEdit && service && service.icon === 'map' ? 'selected' : '' %>>Map</option>
+                    <option value="location-dot" data-icon="fas fa-location-dot" <%= isEdit && service && service.icon === 'location-dot' || (isEdit && service && service.icon === 'map-marker-alt') ? 'selected' : '' %>>Location Dot</option>
+                    <option value="location-arrow" data-icon="fas fa-location-arrow" <%= isEdit && service && service.icon === 'location-arrow' ? 'selected' : '' %>>Location Arrow</option>
+                    <option value="compass" data-icon="fas fa-compass" <%= isEdit && service && service.icon === 'compass' ? 'selected' : '' %>>Compass</option>
+                    <option value="route" data-icon="fas fa-route" <%= isEdit && service && service.icon === 'route' ? 'selected' : '' %>>Route</option>
+                    <!-- Miscellaneous -->
+                    <option value="home" data-icon="fas fa-home" <%= isEdit && service && service.icon === 'home' ? 'selected' : '' %>>Home</option>
+                    <option value="tag" data-icon="fas fa-tag" <%= isEdit && service && service.icon === 'tag' ? 'selected' : '' %>>Tag</option>
+                    <option value="tags" data-icon="fas fa-tags" <%= isEdit && service && service.icon === 'tags' ? 'selected' : '' %>>Tags</option>
+                    <option value="bookmark" data-icon="fas fa-bookmark" <%= isEdit && service && service.icon === 'bookmark' ? 'selected' : '' %>>Bookmark</option>
+                    <option value="book" data-icon="fas fa-book" <%= isEdit && service && service.icon === 'book' ? 'selected' : '' %>>Book</option>
+                    <option value="graduation-cap" data-icon="fas fa-graduation-cap" <%= isEdit && service && service.icon === 'graduation-cap' ? 'selected' : '' %>>Graduation Cap</option>
+                    <option value="university" data-icon="fas fa-university" <%= isEdit && service && service.icon === 'university' ? 'selected' : '' %>>University</option>
+                    <option value="gift" data-icon="fas fa-gift" <%= isEdit && service && service.icon === 'gift' ? 'selected' : '' %>>Gift</option>
+                    <option value="box" data-icon="fas fa-box" <%= isEdit && service && service.icon === 'box' ? 'selected' : '' %>>Box</option>
+                    <option value="cube" data-icon="fas fa-cube" <%= isEdit && service && service.icon === 'cube' ? 'selected' : '' %>>Cube</option>
+                    <option value="cubes" data-icon="fas fa-cubes" <%= isEdit && service && service.icon === 'cubes' ? 'selected' : '' %>>Cubes</option>
+                    <option value="puzzle-piece" data-icon="fas fa-puzzle-piece" <%= isEdit && service && service.icon === 'puzzle-piece' ? 'selected' : '' %>>Puzzle Piece</option>
+                    <option value="gamepad" data-icon="fas fa-gamepad" <%= isEdit && service && service.icon === 'gamepad' ? 'selected' : '' %>>Gamepad</option>
+                    <option value="dice" data-icon="fas fa-dice" <%= isEdit && service && service.icon === 'dice' ? 'selected' : '' %>>Dice</option>
+                    <option value="chess-pawn" data-icon="fas fa-chess-pawn" <%= isEdit && service && service.icon === 'chess-pawn' || (isEdit && service && service.icon === 'chess') ? 'selected' : '' %>>Chess Pawn</option>
+                  </select>
+                  <small class="form-help">Search and select a Font Awesome icon from the dropdown</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Display Order is auto-set, hidden field -->
+            <input type="hidden" id="display_order" name="display_order" value="<%= isEdit && service ? (service.display_order || 0) : 0 %>">
+
+            <!-- Short Description -->
+            <div class="form-group full-width">
+              <label for="short_description">Short Description</label>
+              <textarea id="short_description" name="short_description" class="form-control" placeholder="Brief description of the service..."><%= isEdit && service ? (service.short_description || '') : '' %></textarea>
+              <small class="form-help">A brief summary displayed in listings</small>
+            </div>
+
+            <!-- Full Description -->
+            <div class="form-group full-width">
+              <label for="full_description">Full Description</label>
+              <textarea id="full_description" name="full_description" class="form-control" placeholder="Detailed description of the service..."><%= isEdit && service ? (service.full_description || '') : '' %></textarea>
+              <small class="form-help">Detailed information about the service</small>
+            </div>
+
+            <!-- Features -->
+            <div class="form-group full-width">
+              <label>Features</label>
+              <div class="features-container" id="featuresContainer">
+                <% 
+                  let featuresArray = [];
+                  if (isEdit && service && service.features) {
+                    try {
+                      featuresArray = Array.isArray(service.features) ? service.features : JSON.parse(service.features);
+                    } catch (e) {
+                      featuresArray = [];
+                    }
+                  }
+                  if (featuresArray.length > 0) {
+                    featuresArray.forEach((feature, index) => {
+                %>
+                  <div class="feature-item">
+                    <input type="text" name="features[]" class="form-control" placeholder="Enter feature" value="<%= feature %>">
+                    <button type="button" class="feature-remove-btn" data-action="remove" title="Remove feature">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                <% 
+                    });
+                  } else {
+                %>
+                  <div class="feature-item">
+                    <input type="text" name="features[]" class="form-control" placeholder="Enter feature">
+                    <button type="button" class="feature-remove-btn" data-action="remove" title="Remove feature">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                <% } %>
+              </div>
+              <button type="button" class="feature-add-btn" id="addFeatureBtn">
+                <i class="fas fa-plus"></i> Add Feature
+              </button>
+              <small class="form-help">Click "Add Feature" to add more feature boxes</small>
+            </div>
+
+            <!-- Technologies -->
+            <div class="form-group full-width">
+              <label for="technologies">Technologies</label>
+              <% 
+                let technologiesArray = [];
+                if (isEdit && service && service.technologies) {
+                  try {
+                    technologiesArray = Array.isArray(service.technologies) ? service.technologies : JSON.parse(service.technologies);
+                  } catch (e) {
+                    technologiesArray = [];
+                  }
+                }
+              %>
+              <select id="technologies" name="technologies" class="form-control technologies-select" multiple="multiple">
+                <option value="PHP" data-icon="devicon-php-plain" <%= technologiesArray.includes('PHP') ? 'selected' : '' %>>PHP</option>
+                <option value="Laravel" data-icon="devicon-laravel-plain" <%= technologiesArray.includes('Laravel') ? 'selected' : '' %>>Laravel</option>
+                <option value="Vue" data-icon="devicon-vuejs-plain" <%= technologiesArray.includes('Vue') ? 'selected' : '' %>>Vue</option>
+                <option value="React" data-icon="devicon-react-original" <%= technologiesArray.includes('React') ? 'selected' : '' %>>React</option>
+                <option value="React Native" data-icon="devicon-react-original" <%= technologiesArray.includes('React Native') ? 'selected' : '' %>>React Native</option>
+                <option value="TypeScript" data-icon="devicon-typescript-plain" <%= technologiesArray.includes('TypeScript') ? 'selected' : '' %>>TypeScript</option>
+                <option value="JavaScript" data-icon="devicon-javascript-plain" <%= technologiesArray.includes('JavaScript') ? 'selected' : '' %>>JavaScript</option>
+                <option value="Livewire" data-icon="devicon-livewire-plain-wordmark" <%= technologiesArray.includes('Livewire') ? 'selected' : '' %>>Livewire</option>
+                <option value="Supabase" data-icon="devicon-supabase-plain" <%= technologiesArray.includes('Supabase') ? 'selected' : '' %>>Supabase</option>
+                <option value="EJS" data-icon="fas fa-file-code" <%= technologiesArray.includes('EJS') ? 'selected' : '' %>>EJS</option>
+                <option value="MySQL" data-icon="devicon-mysql-plain" <%= technologiesArray.includes('MySQL') ? 'selected' : '' %>>MySQL</option>
+                <option value="jQuery" data-icon="devicon-jquery-plain" <%= technologiesArray.includes('jQuery') ? 'selected' : '' %>>jQuery</option>
+                <option value="Premire Pro" data-icon="devicon-premierepro-plain" <%= technologiesArray.includes('Premire Pro') ? 'selected' : '' %>>Premire Pro</option>
+                <option value="PostgreSQL" data-icon="devicon-postgresql-plain" <%= technologiesArray.includes('PostgreSQL') ? 'selected' : '' %>>PostgreSQL</option>
+                <option value="Google Workspace" data-icon="fab fa-google" <%= technologiesArray.includes('Google Workspace') ? 'selected' : '' %>>Google Workspace</option>
+                <option value="Node.js" data-icon="fab fa-node-js" <%= technologiesArray.includes('Node.js') ? 'selected' : '' %>>Node.js</option>
+                <option value="Bootstrap" data-icon="devicon-bootstrap-plain" <%= technologiesArray.includes('Bootstrap') ? 'selected' : '' %>>Bootstrap</option>
+                <option value="Express.js" data-icon="devicon-express-original" <%= technologiesArray.includes('Express.js') ? 'selected' : '' %>>Express.js</option>
+                <option value="HTML" data-icon="devicon-html5-plain" <%= technologiesArray.includes('HTML') ? 'selected' : '' %>>HTML</option>
+                <option value="CSS" data-icon="devicon-css3-plain" <%= technologiesArray.includes('CSS') ? 'selected' : '' %>>CSS</option>
+                <option value="Python" data-icon="devicon-python-plain" <%= technologiesArray.includes('Python') ? 'selected' : '' %>>Python</option>
+                <option value="Django" data-icon="devicon-django-plain" <%= technologiesArray.includes('Django') ? 'selected' : '' %>>Django</option>
+                <option value="Flask" data-icon="devicon-flask-original" <%= technologiesArray.includes('Flask') ? 'selected' : '' %>>Flask</option>
+                <option value="MongoDB" data-icon="devicon-mongodb-plain" <%= technologiesArray.includes('MongoDB') ? 'selected' : '' %>>MongoDB</option>
+                <option value="Git" data-icon="devicon-git-plain" <%= technologiesArray.includes('Git') ? 'selected' : '' %>>Git</option>
+                <option value="Docker" data-icon="devicon-docker-plain" <%= technologiesArray.includes('Docker') ? 'selected' : '' %>>Docker</option>
+                <option value="AWS" data-icon="devicon-amazonwebservices-plain-wordmark" <%= technologiesArray.includes('AWS') ? 'selected' : '' %>>AWS</option>
+                <option value="Firebase" data-icon="devicon-firebase-plain" <%= technologiesArray.includes('Firebase') ? 'selected' : '' %>>Firebase</option>
+                <option value="Next.js" data-icon="devicon-nextjs-plain" <%= technologiesArray.includes('Next.js') ? 'selected' : '' %>>Next.js</option>
+                <option value="Tailwind CSS" data-icon="devicon-tailwindcss-plain" <%= technologiesArray.includes('Tailwind CSS') ? 'selected' : '' %>>Tailwind CSS</option>
+                <option value="Redux" data-icon="devicon-redux-original" <%= technologiesArray.includes('Redux') ? 'selected' : '' %>>Redux</option>
+                <option value="GraphQL" data-icon="devicon-graphql-plain" <%= technologiesArray.includes('GraphQL') ? 'selected' : '' %>>GraphQL</option>
+                <option value="Sass" data-icon="devicon-sass-original" <%= technologiesArray.includes('Sass') ? 'selected' : '' %>>Sass</option>
+                <option value="Webpack" data-icon="devicon-webpack-plain" <%= technologiesArray.includes('Webpack') ? 'selected' : '' %>>Webpack</option>
+                <option value="Figma" data-icon="devicon-figma-plain" <%= technologiesArray.includes('Figma') ? 'selected' : '' %>>Figma</option>
+                <option value="Java" data-icon="devicon-java-plain" <%= technologiesArray.includes('Java') ? 'selected' : '' %>>Java</option>
+                <option value="Spring" data-icon="devicon-spring-plain" <%= technologiesArray.includes('Spring') ? 'selected' : '' %>>Spring</option>
+                <option value="C++" data-icon="devicon-cplusplus-plain" <%= technologiesArray.includes('C++') ? 'selected' : '' %>>C++</option>
+                <option value="C#" data-icon="devicon-csharp-plain" <%= technologiesArray.includes('C#') ? 'selected' : '' %>>C#</option>
+                <option value="Go" data-icon="devicon-go-plain" <%= technologiesArray.includes('Go') ? 'selected' : '' %>>Go</option>
+                <option value="Ruby" data-icon="devicon-ruby-plain" <%= technologiesArray.includes('Ruby') ? 'selected' : '' %>>Ruby</option>
+                <option value="Rails" data-icon="devicon-rails-plain" <%= technologiesArray.includes('Rails') ? 'selected' : '' %>>Rails</option>
+                <option value="Angular" data-icon="devicon-angularjs-plain" <%= technologiesArray.includes('Angular') ? 'selected' : '' %>>Angular</option>
+                <option value="Svelte" data-icon="devicon-svelte-plain" <%= technologiesArray.includes('Svelte') ? 'selected' : '' %>>Svelte</option>
+              </select>
+              <small class="form-help">Select multiple technologies (searchable)</small>
+            </div>
+
+            <!-- Active Status -->
+            <div class="form-group full-width">
+              <div class="form-checkbox">
+                <input type="checkbox" id="is_active" name="is_active" value="true" <%= isEdit && service ? (service.is_active ? 'checked' : '') : 'checked' %>>
+                <label for="is_active">Active</label>
+              </div>
+              <small class="form-help">Only active services are displayed on the website</small>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <a href="/admin/services" class="btn btn-secondary" title="Cancel">
+              <i class="fas fa-times"></i>
+            </a>
+            <button type="submit" class="btn btn-submit" id="submitBtn" title="<%= isEdit ? 'Update' : 'Add' %> Service">
+              <i class="fas fa-<%= isEdit ? 'save' : 'plus' %>"></i> <%= isEdit ? 'Update' : 'Add' %> Service
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title"><%= isEdit ? 'Service Updated!' : 'Service Created!' %></h3>
+      <p class="modal-message"><%= isEdit ? 'The service has been successfully updated.' : 'The service has been successfully added to the system.' %></p>
+      <div class="modal-actions">
+        <a href="/admin/services" class="modal-btn modal-btn-secondary">View Services</a>
+        <% if (!isEdit) { %>
+        <a href="/admin/services/add" class="modal-btn modal-btn-primary">Add Another</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="success-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon error">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error Occurred</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong. Please try again.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('errorModal')" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon warning">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 class="modal-title">Confirm Action</h3>
+      <p class="modal-message" id="confirmationMessage">Are you sure you want to proceed?</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('confirmationModal')" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirmBtn" class="modal-btn modal-btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery (required for Select2) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <script>
+
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isEditMode = <%= JSON.stringify(isEdit) %>;
+      <% if (isEdit && service && service.icon) { %>
+      const serviceIcon = <%- JSON.stringify(service.icon) %>;
+      <% } else { %>
+      const serviceIcon = null;
+      <% } %>
+      
+
+      if (isEditMode && serviceIcon && !serviceIcon.startsWith('/')) {
+        const faTab = document.querySelector('.icon-tab[data-tab="fontawesome"]');
+        const uploadTab = document.querySelector('.icon-tab[data-tab="upload"]');
+        if (faTab && uploadTab) {
+          uploadTab.classList.remove('active');
+          faTab.classList.add('active');
+          document.getElementById('iconUploadContent').classList.remove('active');
+          document.getElementById('iconFontAwesomeContent').classList.add('active');
+        }
+      }
+      
+      if (urlParams.get('success') === 'true') {
+        showModal('successModal');
+        
+
+        if (!isEditMode) {
+          setTimeout(function() {
+            const form = document.getElementById('serviceForm');
+            if (form) {
+              form.reset();
+            }
+          }, 100);
+        }
+      } else if (urlParams.get('error') === 'true') {
+        const errorMsg = decodeURIComponent(urlParams.get('message') || 'Something went wrong. Please try again.');
+        document.getElementById('errorMessage').textContent = errorMsg;
+        showModal('errorModal');
+      }
+    });
+
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('success-modal') || e.target.classList.contains('confirmation-modal')) {
+        closeModal(e.target.id);
+      }
+    });
+
+
+    document.getElementById('title')?.addEventListener('input', function() {
+      const slugInput = document.getElementById('slug');
+      if (slugInput && !slugInput.dataset.manualEdit) {
+        const slug = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        slugInput.value = slug;
+      }
+    });
+
+
+    document.getElementById('slug')?.addEventListener('input', function() {
+      this.dataset.manualEdit = 'true';
+    });
+
+
+    document.querySelectorAll('.icon-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        const tabType = this.dataset.tab;
+        
+
+        document.querySelectorAll('.icon-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+
+        document.querySelectorAll('.icon-option-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        
+        if (tabType === 'upload') {
+          document.getElementById('iconUploadContent').classList.add('active');
+        } else {
+          document.getElementById('iconFontAwesomeContent').classList.add('active');
+
+          const iconImageInput = document.getElementById('iconImage');
+          if (iconImageInput) {
+            iconImageInput.value = '';
+          }
+
+
+          const iconSelect = document.getElementById('icon');
+          if (iconSelect && iconSelect.value) {
+            const iconPreview = document.getElementById('iconPreview');
+            const iconPreviewImg = document.getElementById('iconPreviewImg');
+            const iconPreviewIcon = document.getElementById('iconPreviewIcon');
+            
+            if (iconPreview && iconPreviewIcon) {
+              if (iconPreviewImg) {
+                iconPreviewImg.style.display = 'none';
+              }
+
+              var selectedOption = iconSelect.options[iconSelect.selectedIndex];
+              var iconClass = selectedOption ? selectedOption.getAttribute('data-icon') : null;
+              
+              if (iconClass) {
+                iconPreviewIcon.className = iconClass;
+              } else {
+
+                iconPreviewIcon.className = 'fas fa-' + iconSelect.value;
+              }
+              iconPreviewIcon.style.display = 'flex';
+            }
+          }
+        }
+      });
+    });
+
+
+    const iconImageInput = document.getElementById('iconImage');
+    const iconPreview = document.getElementById('iconPreview');
+    const iconPreviewImg = document.getElementById('iconPreviewImg');
+    const iconPreviewIcon = document.getElementById('iconPreviewIcon');
+    const iconUploadDropzone = document.getElementById('iconUploadDropzone');
+
+
+    function processIconFile(file) {
+      if (!file) return;
+
+
+      if (file.size > 2 * 1024 * 1024) {
+        showModal('errorModal');
+        const errorMessageEl = document.getElementById('errorMessage');
+        if (errorMessageEl) {
+          errorMessageEl.textContent = 'File size must be less than 2MB';
+        }
+        setTimeout(() => closeModal('errorModal'), 3000);
+        if (iconImageInput) {
+          iconImageInput.value = '';
+        }
+        return;
+      }
+
+
+      if (!file.type.startsWith('image/')) {
+        showModal('errorModal');
+        const errorMessageEl = document.getElementById('errorMessage');
+        if (errorMessageEl) {
+          errorMessageEl.textContent = 'Please select an image file';
+        }
+        setTimeout(() => closeModal('errorModal'), 3000);
+        if (iconImageInput) {
+          iconImageInput.value = '';
+        }
+        return;
+      }
+
+
+      if (iconImageInput) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        iconImageInput.files = dataTransfer.files;
+      }
+
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (iconPreviewImg) {
+          iconPreviewImg.src = e.target.result;
+          iconPreviewImg.style.display = 'block';
+        }
+        if (iconPreviewIcon) {
+          iconPreviewIcon.style.display = 'none';
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+
+    if (iconImageInput && iconPreview) {
+      iconImageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        processIconFile(file);
+      });
+    }
+
+
+    if (iconUploadDropzone) {
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        iconUploadDropzone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        iconUploadDropzone.addEventListener(eventName, highlight, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        iconUploadDropzone.addEventListener(eventName, unhighlight, false);
+      });
+
+      function highlight(e) {
+        iconUploadDropzone.classList.add('drag-over');
+      }
+
+      function unhighlight(e) {
+        iconUploadDropzone.classList.remove('drag-over');
+      }
+
+
+      iconUploadDropzone.addEventListener('drop', handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+          processIconFile(files[0]);
+        }
+        
+        iconUploadDropzone.classList.remove('drag-over');
+      }
+    }
+
+
+    window.addFeature = function() {
+      const container = document.getElementById('featuresContainer');
+      const newFeature = document.createElement('div');
+      newFeature.className = 'feature-item';
+      newFeature.innerHTML = `
+        <input type="text" name="features[]" class="form-control" placeholder="Enter feature">
+        <button type="button" class="feature-remove-btn" data-action="remove" title="Remove feature">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      container.appendChild(newFeature);
+      
+
+      const removeBtn = newFeature.querySelector('.feature-remove-btn');
+      removeBtn.addEventListener('click', function() {
+        window.removeFeature(this);
+      });
+    };
+
+    function showConfirmation(message, onConfirm) {
+      const modal = document.getElementById('confirmationModal');
+      const messageEl = document.getElementById('confirmationMessage');
+      const confirmBtn = document.getElementById('confirmBtn');
+      
+      if (modal && messageEl) {
+        messageEl.textContent = message;
+        modal.classList.add('show');
+        
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        newConfirmBtn.onclick = function() {
+          closeModal('confirmationModal');
+          if (onConfirm) onConfirm();
+        };
+      }
+    }
+
+    window.removeFeature = function(btn) {
+      const container = document.getElementById('featuresContainer');
+      if (container.children.length > 1) {
+        showConfirmation('Are you sure you want to remove this feature?', function() {
+          btn.closest('.feature-item').remove();
+        });
+      } else {
+        showModal('errorModal');
+        const errorMessageEl = document.getElementById('errorMessage');
+        if (errorMessageEl) {
+          errorMessageEl.textContent = 'At least one feature is required';
+        }
+        setTimeout(() => closeModal('errorModal'), 3000);
+      }
+    };
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+      const addFeatureBtn = document.getElementById('addFeatureBtn');
+      if (addFeatureBtn) {
+        addFeatureBtn.addEventListener('click', window.addFeature);
+      }
+
+
+      document.querySelectorAll('.feature-remove-btn[data-action="remove"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          window.removeFeature(this);
+        });
+      });
+    });
+
+
+    $(document).ready(function() {
+
+      $('.technologies-select').select2({
+        placeholder: 'Search and select technologies...',
+        allowClear: true,
+        closeOnSelect: false,
+        width: '100%',
+        templateResult: formatTechnology,
+        templateSelection: formatTechnologySelection
+      });
+
+      $('.technologies-select').on('select2:select', function (e) {
+        setTimeout(function() {
+          $('.select2-search__field').val('');
+        }, 50);
+      });
+
+      function formatTechnology(tech) {
+        if (!tech.id) {
+          return tech.text;
+        }
+        
+        var iconClass = $(tech.element).data('icon');
+        if (!iconClass) {
+          return tech.text;
+        }
+        
+        var $tech = $(
+          '<span><i class="' + iconClass + '"></i> ' + tech.text + '</span>'
+        );
+        return $tech;
+      }
+
+      function formatTechnologySelection(tech) {
+        return tech.text;
+      }
+
+
+      $('.icon-select').select2({
+        placeholder: 'Search and select an icon...',
+        allowClear: true,
+        width: '100%',
+        templateResult: formatIcon,
+        templateSelection: formatIconSelection
+      });
+
+
+      $('.icon-select').on('select2:select', function (e) {
+        var selectedIcon = $(this).val();
+        if (selectedIcon) {
+          updateIconPreview(selectedIcon);
+        }
+      });
+
+
+      var initialIcon = $('.icon-select').val();
+      if (initialIcon) {
+        updateIconPreview(initialIcon);
+      }
+
+      function formatIcon(icon) {
+        if (!icon.id) {
+          return icon.text;
+        }
+        
+        var iconClass = $(icon.element).data('icon');
+        if (!iconClass) {
+          return icon.text;
+        }
+        
+        var $icon = $(
+          '<span><i class="' + iconClass + '"></i> ' + icon.text + '</span>'
+        );
+        return $icon;
+      }
+
+      function formatIconSelection(icon) {
+        var iconClass = $(icon.element).data('icon');
+        if (iconClass) {
+          return $('<span><i class="' + iconClass + '"></i> ' + icon.text + '</span>');
+        }
+        return icon.text;
+      }
+
+      function updateIconPreview(iconName) {
+        var iconPreview = document.getElementById('iconPreview');
+        var iconPreviewImg = document.getElementById('iconPreviewImg');
+        var iconPreviewIcon = document.getElementById('iconPreviewIcon');
+        
+        if (iconPreview && iconPreviewIcon) {
+
+          if (iconPreviewImg) {
+            iconPreviewImg.style.display = 'none';
+          }
+          
+
+          var selectedOption = $('.icon-select option[value="' + iconName + '"]');
+          var iconClass = selectedOption.data('icon');
+          
+
+          if (iconClass) {
+            iconPreviewIcon.className = iconClass;
+          } else {
+
+            iconPreviewIcon.className = 'fas fa-' + iconName;
+          }
+          iconPreviewIcon.style.display = 'flex';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+
+

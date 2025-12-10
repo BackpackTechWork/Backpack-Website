@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('../partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/team'
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/theme/eclipse.css">
+  <style>
+    :root {
+      --accent: #c51d34;
+      --accent-dark: #9e1528;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --card-bg: #ffffff;
+    }
+
+    body {
+      background: var(--gray-50);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .team-detail-container {
+      padding: 1rem 1rem 4rem;
+    }
+
+    .team-detail-header {
+      margin-bottom: 2rem;
+    }
+
+    .team-detail-header h1 {
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: #0f172a;
+    }
+
+    .team-detail-header p {
+      color: var(--gray-500);
+    }
+
+    .team-detail-main-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 2rem;
+      margin-top: 0;
+    }
+
+    .team-detail-sidebar {
+      position: sticky;
+      top: 2rem;
+      height: fit-content;
+      width: 100%;
+    }
+
+    .team-detail-sidebar .profile-section-card {
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-section-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 0.5rem 1rem 1rem;
+      box-shadow: 0 20px 35px -25px rgba(14, 30, 37, 0.25);
+    }
+
+    .profile-section-card h3 {
+      margin-bottom: 0.35rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .profile-picture-section {
+      text-align: center;
+    }
+
+    .profile-img-wrapper-large {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      border-radius: 50%;
+      width: 240px;
+      height: 240px;
+    }
+
+    .profile-img-wrapper-large .member-detail-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .profile-img-wrapper-large .member-main-image {
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .profile-img-wrapper-large .member-alter-ego-image {
+      opacity: 0;
+      z-index: 1;
+      filter: grayscale(0.2) contrast(1.15) brightness(1.05);
+      transform: scale(1.1) rotate(2deg);
+    }
+
+    .profile-img-wrapper-large:hover .member-main-image {
+      opacity: 0;
+      transform: scale(0.9) rotate(-2deg);
+      filter: blur(3px);
+    }
+
+    .profile-img-wrapper-large:hover .member-alter-ego-image {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+      filter: grayscale(0) contrast(1.1) brightness(1);
+    }
+
+    .social-icons-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .social-icon-link {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: var(--gray-500);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .social-icon-link:hover {
+      background: var(--accent);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .team-detail-content {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+      box-shadow: 0 20px 35px -25px rgba(14, 30, 37, 0.25);
+    }
+
+    .member-name {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .member-position {
+      font-size: 1rem;
+      color: var(--gray-500);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-align: center;
+    }
+
+    .bio-section {
+      margin-bottom: 2rem;
+    }
+
+    .bio-section p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--gray-700);
+    }
+
+    .profile-markdown-editor {
+      background: var(--gray-50);
+      border-radius: 14px;
+      border: 1px solid var(--gray-200);
+      /* Visually match admin profile card width */
+      width: 100%;
+      max-width: 800px;
+      box-sizing: border-box;
+      overflow: visible;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      margin: 0 auto 2rem;
+    }
+
+    .markdown-tabs {
+      display: flex;
+      background: var(--gray-100);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .markdown-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.75rem;
+      cursor: pointer;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      border-bottom: 3px solid transparent;
+      transition: color 0.2s ease, border 0.2s ease, background 0.2s ease;
+    }
+
+    .markdown-tab.active {
+      color: #0f172a;
+      border-bottom-color: var(--accent);
+      background: #fff;
+    }
+
+    .markdown-pane {
+      padding: 0;
+      background: #fff;
+      position: relative;
+      overflow-x: auto;
+      overflow-y: hidden;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .markdown-pane.markdown-preview {
+      overflow-y: visible;
+      min-height: auto;
+    }
+
+    #markdownCodeEditor {
+      width: 100%;
+      min-height: 400px;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .CodeMirror {
+      min-height: 400px !important;
+      height: auto !important;
+      font-size: 14px !important;
+      line-height: 1.6 !important;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      overflow-x: auto !important;
+      border: none !important;
+      border-radius: 0 !important;
+      background: #ffffff !important;
+      color: #24292e !important;
+    }
+    
+    .CodeMirror-scroll {
+      max-width: 100% !important;
+      overflow-x: auto !important;
+      overflow-y: auto !important;
+    }
+    
+    .CodeMirror-sizer {
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    .CodeMirror-lines {
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    .CodeMirror-line {
+      word-wrap: break-word !important;
+      word-break: break-all !important;
+      white-space: pre-wrap !important;
+    }
+
+    .CodeMirror-readonly .CodeMirror-cursor {
+      display: none !important;
+    }
+
+    .markdown-preview {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      font-size: 16px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      color: #24292e;
+    }
+
+    .github-markdown {
+      padding: 1.5rem;
+    }
+
+    /* Custom scrollbar for preview pane */
+    .markdown-preview::-webkit-scrollbar,
+    .github-markdown::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .markdown-preview::-webkit-scrollbar-track,
+    .github-markdown::-webkit-scrollbar-track {
+      background: var(--gray-100);
+      border-radius: 5px;
+    }
+
+    .markdown-preview::-webkit-scrollbar-thumb,
+    .github-markdown::-webkit-scrollbar-thumb {
+      background: var(--gray-300);
+      border-radius: 5px;
+    }
+
+    .markdown-preview::-webkit-scrollbar-thumb:hover,
+    .github-markdown::-webkit-scrollbar-thumb:hover {
+      background: var(--gray-500);
+    }
+
+    .github-markdown h1,
+    .github-markdown h2,
+    .github-markdown h3,
+    .github-markdown h4,
+    .github-markdown h5,
+    .github-markdown h6 {
+      margin-top: 24px;
+      margin-bottom: 16px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .github-markdown h1 {
+      font-size: 2em;
+      border-bottom: 1px solid #eaecef;
+      padding-bottom: 0.3em;
+    }
+
+    .github-markdown h2 {
+      font-size: 1.5em;
+      border-bottom: 1px solid #eaecef;
+      padding-bottom: 0.3em;
+    }
+
+    .github-markdown h3 {
+      font-size: 1.25em;
+    }
+
+    .github-markdown h4 {
+      font-size: 1em;
+    }
+
+    .github-markdown h5 {
+      font-size: 0.875em;
+    }
+
+    .github-markdown h6 {
+      font-size: 0.85em;
+      color: #6a737d;
+    }
+
+    .github-markdown p {
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    .github-markdown ul,
+    .github-markdown ol {
+      margin-top: 0;
+      margin-bottom: 16px;
+      padding-left: 2em;
+    }
+
+    .github-markdown li {
+      margin-top: 0.25em;
+    }
+
+    .github-markdown li > p {
+      margin-top: 16px;
+    }
+
+    .github-markdown blockquote {
+      padding: 0 1em;
+      color: #6a737d;
+      border-left: 0.25em solid #dfe2e5;
+      margin: 0;
+      margin-bottom: 16px;
+    }
+
+    .github-markdown code {
+      padding: 0.2em 0.4em;
+      margin: 0;
+      font-size: 85%;
+      background-color: rgba(27, 31, 35, 0.05);
+      border-radius: 3px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    .github-markdown pre {
+      padding: 16px;
+      overflow: auto;
+      font-size: 85%;
+      line-height: 1.45;
+      background-color: #f6f8fa;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+
+    .github-markdown pre code {
+      display: inline;
+      max-width: auto;
+      padding: 0;
+      margin: 0;
+      overflow: visible;
+      line-height: inherit;
+      word-wrap: normal;
+      background-color: transparent;
+      border: 0;
+    }
+
+    .github-markdown pre > code {
+      padding: 0;
+      margin: 0;
+      font-size: 100%;
+      word-break: normal;
+      white-space: pre;
+      background: transparent;
+      border: 0;
+    }
+
+    .github-markdown table {
+      border-spacing: 0;
+      border-collapse: collapse;
+      margin-top: 0;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+
+    .github-markdown table th,
+    .github-markdown table td {
+      padding: 6px 13px;
+      border: 1px solid #dfe2e5;
+    }
+
+    .github-markdown table th {
+      font-weight: 600;
+      background-color: #f6f8fa;
+    }
+
+    .github-markdown table tr {
+      background-color: #fff;
+      border-top: 1px solid #c6cbd1;
+    }
+
+    .github-markdown table tr:nth-child(2n) {
+      background-color: #f6f8fa;
+    }
+
+    .github-markdown img {
+      max-width: 100%;
+      box-sizing: content-box;
+      background-color: #fff;
+      border-style: none;
+    }
+
+    .github-markdown a {
+      color: #0366d6;
+      text-decoration: none;
+    }
+
+    .github-markdown a:hover {
+      text-decoration: underline;
+    }
+
+    .github-markdown hr {
+      height: 0.25em;
+      padding: 0;
+      margin: 24px 0;
+      background-color: #e1e4e8;
+      border: 0;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: var(--gray-200);
+      margin: 2rem 0;
+    }
+
+    .skills-section,
+    .experience-section,
+    .education-section,
+    .languages-section,
+    .licenses-section,
+    .my-projects-section {
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-title i {
+      color: var(--accent);
+    }
+
+    .tech-badges-with-icons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .tech-badge-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: white;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(197, 29, 52, 0.25);
+    }
+
+    .tech-badge-icon i {
+      font-size: 1.1rem;
+      color: white;
+    }
+
+    .tech-badge-icon i,
+.tech-badge-icon i::before {
+  color: white !important;
+}
+
+    .experience-item,
+    .education-item,
+    .language-item,
+    .license-item,
+    .project-item {
+      background: var(--gray-50);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--gray-200);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .experience-item:hover,
+    .education-item:hover,
+    .language-item:hover,
+    .license-item:hover,
+    .project-item:hover {
+      background: #ffffff;
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px rgba(197, 29, 52, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .experience-item:hover .item-title,
+    .education-item:hover .item-title,
+    .language-item:hover .item-title,
+    .license-item:hover .item-title,
+    .project-item:hover .item-title {
+      color: var(--accent);
+      transition: color 0.3s ease;
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .item-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 0.25rem;
+    }
+
+    .item-subtitle {
+      font-size: 1rem;
+      color: var(--gray-500);
+      margin-bottom: 0.5rem;
+    }
+
+    .item-date {
+      font-size: 0.9rem;
+      color: var(--gray-500);
+      font-style: italic;
+    }
+
+    .item-description {
+      margin-top: 1rem;
+      color: var(--gray-700);
+      line-height: 1.6;
+    }
+
+    .item-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--accent);
+      color: white;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .back-to-team {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      background: var(--gray-100);
+      color: var(--gray-700);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-top: -0.25rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s ease;
+    }
+
+    .back-to-team:hover {
+      background: var(--accent);
+      color: white;
+      transform: translateX(-4px);
+    }
+
+    @media (max-width: 1024px) {
+      .team-detail-main-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .team-detail-sidebar {
+        position: relative;
+        top: 0;
+        max-width: 100%;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <div class="team-detail-container">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 1rem;">
+      <div class="team-detail-main-layout">
+        <!-- Sidebar -->
+        <div class="team-detail-sidebar">
+          <div class="profile-section-card">
+            <a href="/team" class="back-to-team" title="Back to Team">
+              <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="profile-picture-section">
+              <div class="profile-img-wrapper-large member-image-wrapper">
+                <%
+                  let profileImgSrc = member.avatar || '/images/default-avatar.png';
+                  if (profileImgSrc && profileImgSrc.includes('googleusercontent.com')) {
+                    profileImgSrc = profileImgSrc.replace(/=s\d+-c$/, '');
+                    profileImgSrc += '=s256-c';
+                    const cacheBuster = Math.floor(Date.now() / (1000 * 60 * 60));
+                    profileImgSrc = '/avatar-proxy?url=' + encodeURIComponent(profileImgSrc) + '&t=' + cacheBuster;
+                  }
+                  
+                  let alterEgoSrc = member.alter_ego || null;
+                  if (alterEgoSrc && !alterEgoSrc.startsWith('http')) {
+                    alterEgoSrc = alterEgoSrc + '?v=' + Math.floor(Date.now() / (1000 * 60 * 60));
+                  }
+                %>
+                <img src="<%= profileImgSrc %>" alt="<%= member.name %>" class="profile-img-large member-detail-image member-main-image">
+                <% if (alterEgoSrc) { %>
+                  <img src="<%= alterEgoSrc %>" alt="<%= member.name %> - Alter Ego" class="profile-img-large member-detail-image member-alter-ego-image">
+                <% } %>
+              </div>
+            </div>
+            
+            <h1 class="member-name"><%= member.name %></h1>
+            <p class="member-position">
+              <i class="fas fa-briefcase"></i> <%= member.position %>
+            </p>
+
+            <!-- Bio Section -->
+            <% if (member.bio) { %>
+              <p style="color: var(--gray-700); line-height: 1.6; text-align: center; margin-bottom: 1.5rem; white-space: pre-line;"><%= member.bio %></p>
+            <% } %>
+
+            <!-- Social Links -->
+            <% if (member.linkedin || member.github || member.twitter || member.instagram || member.facebook) { %>
+              <div class="social-icons-container">
+                <% if (member.linkedin) { %>
+                  <a href="<%= member.linkedin %>" target="_blank" class="social-icon-link" title="LinkedIn">
+                    <i class="fab fa-linkedin-in"></i>
+                  </a>
+                <% } %>
+                <% if (member.github) { %>
+                  <a href="<%= member.github %>" target="_blank" class="social-icon-link" title="GitHub">
+                    <i class="fab fa-github"></i>
+                  </a>
+                <% } %>
+                <% if (member.twitter) { %>
+                  <a href="<%= member.twitter %>" target="_blank" class="social-icon-link" title="Twitter">
+                    <i class="fab fa-x-twitter"></i>
+                  </a>
+                <% } %>
+                <% if (member.instagram) { %>
+                  <a href="<%= member.instagram %>" target="_blank" class="social-icon-link" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                  </a>
+                <% } %>
+                <% if (member.facebook) { %>
+                  <a href="<%= member.facebook %>" target="_blank" class="social-icon-link" title="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                  </a>
+                <% } %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="team-detail-content">
+          <!-- Markdown Mode -->
+          <% if (member.profile_type === 'markdown' && member.bio_markdown) { %>
+            <div class="profile-section-card profile-mode-content full-width" id="markdownMode"<% if (teamMember?.profile_type !== 'markdown') { %> style="display: none !important;"<% } %>>
+              <h3>README.md</h3>
+              <div class="profile-markdown-editor">
+                <div class="markdown-tabs">
+                  <div class="markdown-tab" data-tab="write">Write</div>
+                  <div class="markdown-tab active" data-tab="preview">Preview</div>
+                </div>
+                <div class="markdown-pane" id="markdownWritePane" style="display: none;">
+                  <textarea id="bioMarkdown" placeholder="Write your README.md here..."><%= teamMember?.bio_markdown || '' %></textarea>
+                </div>
+                <div class="markdown-pane markdown-preview github-markdown" id="markdownPreviewPane"></div>
+              </div>
+            </div>
+          <% } %>
+
+          <!-- Builder Mode Sections -->
+          <% if (member.profile_type !== 'markdown' || !member.bio_markdown) { %>
+            <%
+
+              const skillIcons = {
+                'PHP': 'devicon-php-plain',
+                'Laravel': 'devicon-laravel-plain',
+                'Vue': 'devicon-vuejs-plain',
+                'React': 'devicon-react-original',
+                'React Native': 'devicon-react-original',
+                'TypeScript': 'devicon-typescript-plain',
+                'JavaScript': 'devicon-javascript-plain',
+                'Livewire': 'devicon-livewire-plain-wordmark',
+                'Supabase': 'devicon-supabase-plain',
+                'EJS': 'fas fa-file-code',
+                'MySQL': 'devicon-mysql-plain',
+                'jQuery': 'devicon-jquery-plain',
+                'Premire Pro': 'devicon-premierepro-plain',
+                'PostgreSQL': 'devicon-postgresql-plain',
+                'Google Workspace': 'fab fa-google',
+                'Node.js': 'fab fa-node-js',
+                'Bootstrap': 'devicon-bootstrap-plain',
+                'Express.js': 'devicon-express-original',
+                'HTML': 'devicon-html5-plain',
+                'CSS': 'devicon-css3-plain',
+                'Python': 'devicon-python-plain',
+                'Django': 'devicon-django-plain',
+                'Flask': 'devicon-flask-original',
+                'MongoDB': 'devicon-mongodb-plain',
+                'Git': 'devicon-git-plain',
+                'Docker': 'devicon-docker-plain',
+                'AWS': 'devicon-amazonwebservices-plain-wordmark',
+                'Firebase': 'devicon-firebase-plain',
+                'Next.js': 'devicon-nextjs-plain',
+                'Tailwind CSS': 'devicon-tailwindcss-plain',
+                'Redux': 'devicon-redux-original',
+                'GraphQL': 'devicon-graphql-plain',
+                'Sass': 'devicon-sass-original',
+                'Webpack': 'devicon-webpack-plain',
+                'Figma': 'devicon-figma-plain',
+                'Java': 'devicon-java-plain',
+                'Spring': 'devicon-spring-plain',
+                'C++': 'devicon-cplusplus-plain',
+                'C#': 'devicon-csharp-plain',
+                'Go': 'devicon-go-plain',
+                'Ruby': 'devicon-ruby-plain',
+                'Rails': 'devicon-rails-plain',
+                'Angular': 'devicon-angularjs-plain',
+                'Svelte': 'devicon-svelte-plain'
+              };
+            %>
+            <!-- Skills Section -->
+            <% if (member.skills && member.skills.length > 0) { %>
+              <div class="skills-section">
+                <div class="section-title">
+                  <i class="fas fa-code"></i>
+                  <span>Skills & Expertise</span>
+                </div>
+                <div class="tech-badges-with-icons">
+                  <% member.skills.forEach(skill => {
+                      const icon = skillIcons[skill] || 'fas fa-code';
+                  %>
+                    <span class="tech-badge-icon">
+                      <i class="<%= icon %>"></i> <%= skill %>
+                    </span>
+                  <% }) %>
+                </div>
+              </div>
+              <div class="section-divider"></div>
+            <% } %>
+
+            <!-- Experience Section -->
+            <% if (experiences && experiences.length > 0) { %>
+              <%
+
+                const calculateDuration = (startDate, endDate) => {
+                  if (!startDate) return '';
+                  
+                  const start = new Date(startDate);
+                  const end = endDate ? new Date(endDate) : new Date();
+                  
+                  let years = end.getFullYear() - start.getFullYear();
+                  let months = end.getMonth() - start.getMonth();
+                  
+                  if (months < 0) {
+                    years--;
+                    months += 12;
+                  }
+                  
+
+                  if (end.getDate() < start.getDate()) {
+                    months--;
+                    if (months < 0) {
+                      years--;
+                      months += 12;
+                    }
+                  }
+                  
+                  const parts = [];
+                  if (years > 0) {
+                    parts.push(`${years} ${years === 1 ? 'yr' : 'yrs'}`);
+                  }
+                  if (months > 0) {
+                    parts.push(`${months} ${months === 1 ? 'mo' : 'mos'}`);
+                  }
+                  
+                  return parts.length > 0 ? parts.join(' ') : 'Less than 1 mo';
+                };
+                
+                const sortedExperiences = [...experiences].sort((a, b) => {
+
+                  if (a.is_current && !b.is_current) return -1;
+                  if (!a.is_current && b.is_current) return 1;
+
+                  const dateA = a.start_date ? new Date(a.start_date).getTime() : 0;
+                  const dateB = b.start_date ? new Date(b.start_date).getTime() : 0;
+                  return dateB - dateA;
+                });
+              %>
+              <div class="experience-section">
+                <div class="section-title">
+                  <i class="fas fa-briefcase"></i>
+                  <span>Experience</span>
+                </div>
+                <% sortedExperiences.forEach(exp => { %>
+                  <%
+                    const duration = calculateDuration(exp.start_date, exp.is_current ? null : exp.end_date);
+                  %>
+                  <div class="experience-item">
+                    <div class="item-header">
+                      <div>
+                        <div class="item-title"><%= exp.title %></div>
+                        <div class="item-subtitle"><%= exp.company %></div>
+                        <div class="item-date">
+                          <%= exp.start_date ? new Date(exp.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : '' %>
+                          <% if (exp.start_date || exp.end_date) { %> - <% } %>
+                          <% if (exp.is_current) { %>
+                            Present
+                          <% } else if (exp.end_date) { %>
+                            <%= new Date(exp.end_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) %>
+                          <% } %>
+                          <% if (duration) { %>
+                            <span style="color: var(--gray-500);"> · <%= duration %></span>
+                          <% } %>
+                        </div>
+                        <% if (exp.is_current) { %>
+                          <span class="item-badge">Current</span>
+                        <% } %>
+                      </div>
+                    </div>
+                    <% if (exp.description) { %>
+                      <div class="item-description"><%= exp.description %></div>
+                    <% } %>
+                  </div>
+                <% }) %>
+              </div>
+              <div class="section-divider"></div>
+            <% } %>
+
+            <!-- Education Section -->
+            <% if (education && education.length > 0) { %>
+              <%
+                const sortedEducation = [...education].sort((a, b) => {
+
+                  const dateA = a.start_date ? new Date(a.start_date).getTime() : 0;
+                  const dateB = b.start_date ? new Date(b.start_date).getTime() : 0;
+                  return dateB - dateA;
+                });
+              %>
+              <div class="education-section">
+                <div class="section-title">
+                  <i class="fas fa-graduation-cap"></i>
+                  <span>Education</span>
+                </div>
+                <% sortedEducation.forEach(edu => { %>
+                  <div class="education-item">
+                    <div class="item-header">
+                      <div>
+                        <div class="item-title"><%= edu.degree %></div>
+                        <div class="item-subtitle"><%= edu.institution %></div>
+                        <% if (edu.field_of_study) { %>
+                          <div class="item-subtitle" style="font-size: 0.9rem; color: var(--gray-500);"><%= edu.field_of_study %></div>
+                        <% } %>
+                        <div class="item-date">
+                          <%= edu.start_date ? new Date(edu.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : '' %>
+                          <% if (edu.start_date || edu.end_date) { %> - <% } %>
+                          <%= edu.end_date ? new Date(edu.end_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : '' %>
+                        </div>
+                      </div>
+                    </div>
+                    <% if (edu.description) { %>
+                      <div class="item-description"><%= edu.description %></div>
+                    <% } %>
+                  </div>
+                <% }) %>
+              </div>
+              <div class="section-divider"></div>
+            <% } %>
+
+            <!-- Languages Section -->
+            <% if (languages && languages.length > 0) { %>
+              <%
+                const proficiencyOrder = {
+                  'native': 0,
+                  'advanced': 1,
+                  'intermediate': 2,
+                  'beginner': 3
+                };
+                const sortedLanguages = [...languages].sort((a, b) => {
+                  const levelA = (a.proficiency_level || '').toLowerCase();
+                  const levelB = (b.proficiency_level || '').toLowerCase();
+                  const orderA = proficiencyOrder[levelA] !== undefined ? proficiencyOrder[levelA] : 999;
+                  const orderB = proficiencyOrder[levelB] !== undefined ? proficiencyOrder[levelB] : 999;
+                  return orderA - orderB;
+                });
+              %>
+              <div class="languages-section">
+                <div class="section-title">
+                  <i class="fas fa-language"></i>
+                  <span>Languages</span>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+                  <% sortedLanguages.forEach(lang => { %>
+                    <div class="experience-item" style="flex: 1; min-width: 200px;">
+                      <div class="item-title"><%= lang.language %></div>
+                      <div class="item-subtitle" style="text-transform: capitalize;"><%= lang.proficiency_level %></div>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+              <div class="section-divider"></div>
+            <% } %>
+
+            <!-- Licenses Section -->
+            <% if (licenses && licenses.length > 0) { %>
+              <%
+                const sortedLicenses = [...licenses].sort((a, b) => {
+
+                  const dateA = a.issue_date ? new Date(a.issue_date).getTime() : 0;
+                  const dateB = b.issue_date ? new Date(b.issue_date).getTime() : 0;
+                  return dateB - dateA;
+                });
+              %>
+              <div class="licenses-section">
+                <div class="section-title">
+                  <i class="fas fa-certificate"></i>
+                  <span>Licenses & Certifications</span>
+                </div>
+                <% sortedLicenses.forEach(license => { %>
+                  <div class="license-item">
+                    <div class="item-header">
+                      <div>
+                        <div class="item-title"><%= license.name %></div>
+                        <% if (license.issuing_organization) { %>
+                          <div class="item-subtitle"><%= license.issuing_organization %></div>
+                        <% } %>
+                        <div class="item-date">
+                          <%= license.issue_date ? new Date(license.issue_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : '' %>
+                          <% if (license.issue_date && license.expiry_date) { %> - <% } %>
+                          <%= license.expiry_date ? new Date(license.expiry_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'No expiry' %>
+                        </div>
+                        <% if (license.credential_id) { %>
+                          <div class="item-subtitle" style="font-size: 0.85rem;">Credential ID: <%= license.credential_id %></div>
+                        <% } %>
+                      </div>
+                    </div>
+                    <% if (license.credential_url) { %>
+                      <div style="margin-top: 0.5rem;">
+                        <a href="<%= license.credential_url %>" target="_blank" class="social-link">View Credential <i class="fas fa-external-link-alt" style="font-size: 0.8rem;"></i></a>
+                      </div>
+                    <% } %>
+                  </div>
+                <% }) %>
+              </div>
+              <div class="section-divider"></div>
+            <% } %>
+
+            <!-- Projects Section -->
+            <% if (projects && projects.length > 0) { %>
+              <%
+                const sortedProjects = [...projects].sort((a, b) => {
+
+                  const dateA = a.start_date ? new Date(a.start_date).getTime() : 0;
+                  const dateB = b.start_date ? new Date(b.start_date).getTime() : 0;
+                  return dateB - dateA;
+                });
+              %>
+              <div class="my-projects-section">
+                <div class="section-title">
+                  <i class="fas fa-project-diagram"></i>
+                  <span>Personal Projects</span>
+                </div>
+                <% sortedProjects.forEach(project => { %>
+                  <div class="project-item">
+                    <div class="item-header">
+                      <div>
+                        <div class="item-title">
+                          <% if (project.url) { %>
+                            <a href="<%= project.url %>" target="_blank" style="color: #0f172a; text-decoration: none;">
+                              <%= project.name %> <i class="fas fa-external-link-alt" style="font-size: 0.8rem;"></i>
+                            </a>
+                          <% } else { %>
+                            <%= project.name %>
+                          <% } %>
+                        </div>
+                        <div class="item-date">
+                          <%= project.start_date ? new Date(project.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : '' %>
+                          <% if (project.start_date || project.end_date) { %> - <% } %>
+                          <%= project.end_date ? new Date(project.end_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'Ongoing' %>
+                        </div>
+                      </div>
+                    </div>
+                    <% if (project.description) { %>
+                      <div class="item-description"><%= project.description %></div>
+                    <% } %>
+                    <% if (project.technologies && project.technologies.length > 0) { %>
+                      <div style="margin-top: 1rem;">
+                        <div class="tech-badges-with-icons">
+                          <% project.technologies.forEach(tech => {
+                            const icon = skillIcons[tech] || 'fas fa-code';
+                          %>
+                            <span class="tech-badge-icon" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+                              <i class="<%= icon %>"></i> <%= tech %>
+                            </span>
+                          <% }) %>
+                        </div>
+                      </div>
+                    <% } %>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/mode/markdown/markdown.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const markdownTabs = document.querySelectorAll('.markdown-tab')
+      const markdownPreviewPane = document.getElementById('markdownPreviewPane')
+      const markdownWritePane = document.getElementById('markdownWritePane')
+      const bioMarkdownTextarea = document.getElementById('bioMarkdown')
+
+      let codeMirrorEditor = null
+
+
+      if (typeof marked !== 'undefined') {
+        marked.setOptions({
+          gfm: true,
+          breaks: true,
+          headerIds: true,
+        })
+      }
+      
+      if (markdownTabs.length > 0 && markdownWritePane && markdownPreviewPane && bioMarkdownTextarea) {
+
+        if (typeof CodeMirror !== 'undefined') {
+
+          const markdownContent = bioMarkdownTextarea.value || bioMarkdownTextarea.textContent || ''
+          
+
+          const codeEditorContainer = document.createElement('div')
+          codeEditorContainer.id = 'markdownCodeEditor'
+          codeEditorContainer.style.width = '100%'
+          codeEditorContainer.style.minHeight = '400px'
+          
+
+          bioMarkdownTextarea.style.display = 'none'
+          markdownWritePane.appendChild(codeEditorContainer)
+          
+
+          codeMirrorEditor = CodeMirror(codeEditorContainer, {
+            value: markdownContent,
+            mode: 'markdown',
+            theme: 'eclipse',
+            lineNumbers: true,
+            lineWrapping: true,
+            readOnly: true,
+            indentUnit: 2,
+            tabSize: 2,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            styleActiveLine: true,
+            viewportMargin: Infinity,
+          })
+          
+
+          codeMirrorEditor.setSize(null, 'auto')
+          const updateCodeMirrorHeight = () => {
+            const scrollHeight = codeMirrorEditor.getScrollInfo().height
+            codeEditorContainer.style.height = Math.max(400, scrollHeight + 20) + 'px'
+            codeMirrorEditor.setSize(null, Math.max(400, scrollHeight + 20))
+          }
+          codeMirrorEditor.on('change', updateCodeMirrorHeight)
+          setTimeout(updateCodeMirrorHeight, 100)
+        }
+
+
+        const renderPreview = () => {
+          if (markdownPreviewPane && typeof marked !== 'undefined' && bioMarkdownTextarea) {
+            const markdownContent = bioMarkdownTextarea.value || bioMarkdownTextarea.textContent || ''
+            markdownPreviewPane.innerHTML = marked.parse(markdownContent)
+
+            markdownPreviewPane.style.height = 'auto'
+            markdownPreviewPane.style.minHeight = 'auto'
+          }
+        }
+
+
+        renderPreview()
+
+
+        if (markdownPreviewPane) {
+          markdownPreviewPane.style.display = 'block'
+        }
+        if (markdownWritePane) {
+          markdownWritePane.style.display = 'none'
+        }
+        markdownTabs.forEach(tab => {
+          if (tab.dataset.tab === 'preview') {
+            tab.classList.add('active')
+          } else {
+            tab.classList.remove('active')
+          }
+        })
+
+
+        markdownTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            markdownTabs.forEach(t => t.classList.remove('active'))
+            tab.classList.add('active')
+
+            if (tab.dataset.tab === 'preview') {
+              if (markdownPreviewPane) {
+                markdownPreviewPane.style.display = 'block'
+                renderPreview() 
+
+                markdownPreviewPane.style.height = 'auto'
+                markdownPreviewPane.style.minHeight = 'auto'
+              }
+              if (markdownWritePane) {
+                markdownWritePane.style.display = 'none'
+              }
+            } else {
+              if (markdownPreviewPane) {
+                markdownPreviewPane.style.display = 'none'
+              }
+              if (markdownWritePane) {
+                markdownWritePane.style.display = 'block'
+              }
+              if (codeMirrorEditor) {
+                setTimeout(() => {
+                  codeMirrorEditor.refresh()
+
+                  const scrollHeight = codeMirrorEditor.getScrollInfo().height
+                  const container = document.getElementById('markdownCodeEditor')
+                  if (container) {
+                    container.style.height = Math.max(400, scrollHeight + 20) + 'px'
+                    codeMirrorEditor.setSize(null, Math.max(400, scrollHeight + 20))
+                  }
+                }, 100)
+              }
+            }
+          })
+        })
+      }
+
+
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible')
+          }
+        })
+      }, observerOptions)
+
+      document.querySelectorAll('section').forEach(section => observer.observe(section))
+
+      const footer = document.querySelector('footer')
+      if (footer) {
+        observer.observe(footer)
+      }
+    })
+  </script>
+</body>
+</html>

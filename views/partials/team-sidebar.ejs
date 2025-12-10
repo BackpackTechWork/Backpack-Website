@@ -1,0 +1,211 @@
+<aside class="dashboard-sidebar team-sidebar" id="dashboardSidebar">
+  <div class="sidebar-header">
+    <a href="/" class="sidebar-logo">
+      <img src="/Backpack.ico" alt="Backpack Logo" class="sidebar-logo-img">
+      <span class="sidebar-logo-text">Backpack</span>
+    </a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="/team/dashboard" class="sidebar-nav-item" data-path="/team/dashboard">
+      <div class="nav-item-bg"></div>
+      <i class="fas fa-tachometer-alt"></i>
+      <span>Dashboard</span>
+      <div class="nav-item-indicator"></div>
+    </a>
+    <a href="/team" class="sidebar-nav-item">
+      <div class="nav-item-bg"></div>
+      <i class="fas fa-users"></i>
+      <span>Team Members</span>
+      <div class="nav-item-indicator"></div>
+    </a>
+    <a href="/services" class="sidebar-nav-item">
+      <div class="nav-item-bg"></div>
+      <i class="fas fa-briefcase"></i>
+      <span>Services</span>
+      <div class="nav-item-indicator"></div>
+    </a>
+    <a href="/projects" class="sidebar-nav-item">
+      <div class="nav-item-bg"></div>
+      <i class="fas fa-folder-open"></i>
+      <span>Projects</span>
+      <div class="nav-item-indicator"></div>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <% if (user) { %>
+      <a href="/team/profile" class="sidebar-profile sidebar-profile-link">
+        <div class="profile-img-wrapper">
+          <div class="profile-pulse"></div>
+          <% 
+            let sidebarImgSrc = user.avatar || '/images/default-avatar.png';
+
+            if (sidebarImgSrc && sidebarImgSrc.includes('googleusercontent.com')) {
+
+              sidebarImgSrc = sidebarImgSrc.replace(/=s\d+-c$/, '');
+
+              sidebarImgSrc += '=s96-c';
+
+              const cacheBuster = Math.floor(Date.now() / (1000 * 60 * 60)); 
+
+              sidebarImgSrc = '/avatar-proxy?url=' + encodeURIComponent(sidebarImgSrc) + '&t=' + cacheBuster;
+            }
+          %>
+          <img src="<%= sidebarImgSrc %>" alt="<%= user.name %>" class="sidebar-profile-img" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+        </div>
+        <div class="sidebar-profile-info">
+          <p class="sidebar-profile-name"><%= user.name %></p>
+          <p class="sidebar-profile-role"><%= (typeof userMember !== 'undefined' && userMember && userMember.position) || (typeof member !== 'undefined' && member && member.position) || 'Team Member' %></p>
+        </div>
+      </a>
+      <div class="sidebar-actions">
+        <a href="/" class="sidebar-action-btn">
+          <i class="fas fa-globe"></i>
+          <span>Back to Main Site</span>
+          <div class="btn-ripple"></div>
+        </a>
+        <a href="/staff/logout" class="sidebar-action-btn logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+          <div class="btn-ripple"></div>
+        </a>
+      </div>
+    <% } else { %>
+      <div class="sidebar-actions">
+        <a href="/" class="sidebar-action-btn">
+          <i class="fas fa-globe"></i>
+          <span>Back to Main Site</span>
+          <div class="btn-ripple"></div>
+        </a>
+        <a href="/staff/login" class="sidebar-action-btn">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Login</span>
+          <div class="btn-ripple"></div>
+        </a>
+      </div>
+    <% } %>
+  </div>
+</aside>
+
+<div class="sidebar-mobile-overlay" id="sidebarOverlay"></div>
+<button class="sidebar-mobile-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+  <i class="fas fa-bars"></i>
+</button>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const navItems = document.querySelectorAll('.sidebar-nav-item');
+    
+    navItems.forEach((item, index) => {
+      const itemPath = item.getAttribute('data-path') || item.getAttribute('href');
+      if (currentPath === itemPath || (itemPath !== '/' && currentPath.startsWith(itemPath))) {
+        item.classList.add('active');
+      }
+      
+
+      item.style.animationDelay = `${index * 0.1}s`;
+      item.classList.add('animate-in');
+    });
+
+
+    const sidebar = document.getElementById('dashboardSidebar');
+    const toggle = document.getElementById('sidebarToggle');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    if (toggle && sidebar && overlay) {
+
+      function updateTogglePosition() {
+        if (sidebar.classList.contains('mobile-open')) {
+          toggle.classList.remove('sidebar-closed');
+        } else {
+          toggle.classList.add('sidebar-closed');
+        }
+      }
+
+
+      function openSidebar() {
+        sidebar.classList.add('mobile-open');
+        overlay.classList.add('active');
+        updateTogglePosition();
+      }
+
+
+      function closeSidebar() {
+        sidebar.classList.remove('mobile-open');
+        overlay.classList.remove('active');
+        updateTogglePosition();
+      }
+
+
+      updateTogglePosition();
+
+      toggle.addEventListener('click', function() {
+        if (sidebar.classList.contains('mobile-open')) {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
+      });
+
+      overlay.addEventListener('click', function() {
+        closeSidebar();
+      });
+
+
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchEndX = 0;
+      let touchEndY = 0;
+      const swipeThreshold = 50;
+      const swipeZoneWidth = 30; 
+
+      document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
+
+      document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+      }, { passive: true });
+
+      function handleSwipe() {
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+        const absDeltaX = Math.abs(deltaX);
+        const absDeltaY = Math.abs(deltaY);
+
+
+        if (absDeltaX > absDeltaY && absDeltaX > swipeThreshold) {
+
+          if (deltaX > 0 && touchStartX < swipeZoneWidth && !sidebar.classList.contains('mobile-open')) {
+            openSidebar();
+          }
+
+          else if (deltaX < 0 && sidebar.classList.contains('mobile-open')) {
+            closeSidebar();
+          }
+        }
+      }
+    }
+
+
+    document.querySelectorAll('.sidebar-action-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const ripple = this.querySelector('.btn-ripple');
+        if (ripple) {
+          const rect = this.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          ripple.style.left = x + 'px';
+          ripple.style.top = y + 'px';
+          ripple.classList.add('active');
+          setTimeout(() => ripple.classList.remove('active'), 600);
+        }
+      });
+    });
+  });
+</script>

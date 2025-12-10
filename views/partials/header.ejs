@@ -1,0 +1,282 @@
+<header>
+  <div class="container-wide">
+    <nav class="navbar">
+      <a href="/" class="logo">
+        <img src="/Backpack.ico" alt="Backpack Logo" class="logo-img" draggable="false" oncontextmenu="return false;">
+        <span class="logo-text">Backpack</span>
+      </a>
+      
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/services">Services</a></li>
+        <li><a href="/projects">Projects</a></li>
+        <li><a href="/team">Team</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <% if (user) { %>
+          <% if (user.role === 'admin') { %>
+            <a href="/admin/dashboard" class="btn btn-outline">Admin</a>
+            <a href="/staff/logout" class="btn btn-secondary">Logout</a>
+          <% } else if (user.role === 'team_member') { %>
+            <a href="/team/profile" class="header-profile-link" title="Profile">
+              <% 
+                let headerProfileImgSrc = user.avatar || '/images/default-avatar.png';
+
+                if (headerProfileImgSrc && headerProfileImgSrc.includes('googleusercontent.com')) {
+
+                  headerProfileImgSrc = headerProfileImgSrc.replace(/=s\d+-c$/, '');
+
+                  headerProfileImgSrc += '=s64-c';
+
+                  const cacheBuster = Math.floor(Date.now() / (1000 * 60 * 60)); 
+
+                  headerProfileImgSrc = '/avatar-proxy?url=' + encodeURIComponent(headerProfileImgSrc) + '&t=' + cacheBuster;
+                }
+              %>
+              <img src="<%= headerProfileImgSrc %>" alt="<%= user.name %>" class="header-profile-img" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+            </a>
+            <a href="/staff/logout" class="btn btn-secondary">Logout</a>
+          <% } else if (user.role === 'client') { %>
+            <a href="/client/profile" class="btn btn-outline">My Portfolio</a>
+            <a href="/auth/logout" class="btn btn-secondary">Logout</a>
+          <% } %>
+        <% } else { %>
+          <a href="/auth/login" class="btn btn-outline">Login</a>
+          <a href="/auth/signup" class="btn btn-primary">Sign Up</a>
+        <% } %>
+      </div>
+
+      <!-- Mobile User Menu Button -->
+      <button class="mobile-user-menu-btn" id="mobileUserMenuBtn" aria-label="Toggle user menu" aria-expanded="false">
+        <% if (user && user.role === 'team_member') { %>
+          <% 
+            let mobileProfileImgSrc = user.avatar || '/images/default-avatar.png';
+
+            if (mobileProfileImgSrc && mobileProfileImgSrc.includes('googleusercontent.com')) {
+              mobileProfileImgSrc = mobileProfileImgSrc.replace(/=s\d+-c$/, '');
+              mobileProfileImgSrc += '=s48-c';
+              const cacheBuster = Math.floor(Date.now() / (1000 * 60 * 60));
+              mobileProfileImgSrc = '/avatar-proxy?url=' + encodeURIComponent(mobileProfileImgSrc) + '&t=' + cacheBuster;
+            }
+          %>
+          <img src="<%= mobileProfileImgSrc %>" alt="<%= user.name %>" class="mobile-profile-img" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+        <% } else if (user) { %>
+          <i class="fas fa-user-circle"></i>
+        <% } else { %>
+          <i class="fas fa-user"></i>
+        <% } %>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- Mobile User Menu Dropdown -->
+<div class="mobile-user-menu" id="mobileUserMenu">
+  <% if (user) { %>
+    <% if (user.role === 'admin') { %>
+      <a href="/admin/dashboard" class="mobile-menu-item">
+        <i class="fas fa-user-shield"></i>
+        <span>Admin Dashboard</span>
+      </a>
+      <a href="/staff/logout" class="mobile-menu-item">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+    <% } else if (user.role === 'team_member') { %>
+      <a href="/team/profile" class="mobile-menu-item">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </a>
+      <a href="/staff/logout" class="mobile-menu-item">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+    <% } else if (user.role === 'client') { %>
+      <a href="/client/profile" class="mobile-menu-item">
+        <i class="fas fa-user-circle"></i>
+        <span>My Portfolio</span>
+      </a>
+      <a href="/auth/logout" class="mobile-menu-item">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+    <% } %>
+  <% } else { %>
+    <a href="/auth/login" class="mobile-menu-item">
+      <i class="fas fa-sign-in-alt"></i>
+      <span>Login</span>
+    </a>
+    <a href="/auth/signup" class="mobile-menu-item">
+      <i class="fas fa-user-plus"></i>
+      <span>Sign Up</span>
+    </a>
+  <% } %>
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="mobile-bottom-nav">
+  <a href="/" class="mobile-nav-item">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+  <a href="/services" class="mobile-nav-item">
+    <i class="fas fa-briefcase"></i>
+    <span>Services</span>
+  </a>
+  <a href="/projects" class="mobile-nav-item">
+    <i class="fas fa-folder-open"></i>
+    <span>Projects</span>
+  </a>
+  <a href="/team" class="mobile-nav-item">
+    <i class="fas fa-users"></i>
+    <span>Team</span>
+  </a>
+  <a href="/contact" class="mobile-nav-item">
+    <i class="fas fa-envelope"></i>
+    <span>Contact</span>
+  </a>
+</nav>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuBtn = document.getElementById('mobileUserMenuBtn');
+    const menu = document.getElementById('mobileUserMenu');
+    
+    if (menuBtn && menu) {
+      menuBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = menu.classList.toggle('active');
+        menuBtn.setAttribute('aria-expanded', isActive);
+      });
+      
+
+      document.addEventListener('click', function(e) {
+        if (!menu.contains(e.target) && !menuBtn.contains(e.target)) {
+          menu.classList.remove('active');
+          menuBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+      
+
+      menu.querySelectorAll('.mobile-menu-item').forEach(item => {
+        item.addEventListener('click', function() {
+          menu.classList.remove('active');
+          menuBtn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+    
+
+    const currentPath = window.location.pathname;
+    
+
+    const desktopNavLinks = document.querySelectorAll('.nav-links a');
+    desktopNavLinks.forEach(link => {
+      const href = link.getAttribute('href');
+      if (currentPath === href || (currentPath === '/' && href === '/')) {
+        link.style.color = '#8B1A1A';
+        link.style.fontWeight = 'bold';
+        link.style.textShadow = '0 0 8px rgba(139, 26, 26, 0.3)';
+      } else if (href !== '/' && currentPath.startsWith(href)) {
+        link.style.color = '#8B1A1A';
+        link.style.fontWeight = 'bold';
+        link.style.textShadow = '0 0 8px rgba(139, 26, 26, 0.3)';
+      }
+    });
+    
+
+    const navItems = document.querySelectorAll('.mobile-nav-item');
+    navItems.forEach(item => {
+      const href = item.getAttribute('href');
+      if (currentPath === href || (currentPath === '/' && href === '/')) {
+        item.classList.add('active');
+        item.style.color = '#8B1A1A';
+      } else if (href !== '/' && currentPath.startsWith(href)) {
+        item.classList.add('active');
+        item.style.color = '#8B1A1A';
+      }
+    });
+  });
+
+
+  if (typeof window.preventImageInteraction === 'undefined') {
+    window.preventImageInteraction = (img) => {
+    if (!img) return;
+    
+
+    ['dragstart', 'drag', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(eventType => {
+      img.addEventListener(eventType, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }, { passive: false });
+    });
+    
+
+    ['click', 'mousedown', 'mouseup', 'mousemove', 'dblclick'].forEach(eventType => {
+      img.addEventListener(eventType, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }, { passive: false });
+    });
+    
+
+    img.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }, { passive: false });
+    
+
+    ['selectstart', 'select', 'copy'].forEach(eventType => {
+      img.addEventListener(eventType, (e) => {
+        e.preventDefault();
+        return false;
+      }, { passive: false });
+    });
+    
+
+    img.addEventListener('auxclick', (e) => {
+      if (e.button === 1) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }, { passive: false });
+    
+
+    img.style.pointerEvents = 'none';
+    img.style.userSelect = 'none';
+    img.style.webkitUserDrag = 'none';
+    img.style.MozUserSelect = 'none';
+    img.style.msUserSelect = 'none';
+    img.setAttribute('draggable', 'false');
+    img.setAttribute('oncontextmenu', 'return false;');
+    };
+  }
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.preventImageInteraction) {
+      document.querySelectorAll('.logo-img, .header-profile-img, .mobile-profile-img').forEach(window.preventImageInteraction);
+    }
+  });
+</script>
+
+<style>
+  .logo-img,
+  .header-profile-img,
+  .mobile-profile-img {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+</style>
+

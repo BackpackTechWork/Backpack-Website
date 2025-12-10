@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      background: #f9fafb;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: #6b7280;
+      font-size: 0.9375rem;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .breadcrumb a {
+      color: #c51d34;
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .user-info-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: fadeInUp 0.6s ease-out 0.2s both;
+    }
+
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-details h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 0.25rem;
+    }
+
+    .user-details p {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .form-container {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+      position: relative;
+      overflow: visible;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.5s ease-out both;
+      position: relative;
+      overflow: visible;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.4s; }
+    .form-group:nth-child(2) { animation-delay: 0.45s; }
+    .form-group:nth-child(3) { animation-delay: 0.5s; }
+    .form-group:nth-child(4) { animation-delay: 0.55s; }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    /* Extra spacing for projects dropdown to prevent overlap with buttons */
+    .form-group:has(.searchable-dropdown) {
+      margin-bottom: 3.5rem;
+    }
+
+    .form-container .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #111827 !important;
+      opacity: 1 !important;
+    }
+
+    .form-container .form-group label .required {
+      color: #c51d34;
+    }
+
+    .form-container .form-control,
+    .form-container input.form-control,
+    .form-container select.form-control {
+      width: 100% !important;
+      padding: 0.75rem !important;
+      border: 2px solid #e5e7eb !important;
+      border-radius: 6px !important;
+      font-size: 0.875rem !important;
+      font-family: inherit !important;
+      background: #ffffff !important;
+      color: #111827 !important;
+      box-sizing: border-box !important;
+      transition: all 0.2s ease !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+    }
+
+    /* Searchable Dropdown Styles */
+    .searchable-dropdown {
+      position: relative;
+      width: 100%;
+      z-index: 10;
+    }
+
+    .dropdown-toggle {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #111827;
+      font-size: 0.875rem;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .dropdown-toggle:hover {
+      border-color: #c51d34;
+    }
+
+    .dropdown-toggle.active {
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .dropdown-toggle .toggle-text {
+      flex: 1;
+      color: #6b7280;
+    }
+
+    .dropdown-toggle .toggle-text.has-selection {
+      color: #111827;
+    }
+
+    .dropdown-toggle .toggle-icon {
+      color: #6b7280;
+      transition: transform 0.2s ease;
+    }
+
+    .dropdown-toggle.active .toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 10000;
+      display: none;
+      max-height: 250px;
+      overflow: hidden;
+      flex-direction: column;
+    }
+
+    .dropdown-menu.show {
+      display: flex;
+    }
+
+    .dropdown-search {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+      position: relative;
+    }
+
+    .dropdown-search input {
+      width: 100%;
+      padding: 0.5rem 0.5rem 0.5rem 2.25rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      color: #111827;
+      transition: border-color 0.2s ease;
+    }
+
+    .dropdown-search input:focus {
+      outline: none;
+      border-color: #c51d34;
+    }
+
+    .dropdown-search i {
+      position: absolute;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      font-size: 0.875rem;
+    }
+
+    .dropdown-options {
+      overflow-y: auto;
+      max-height: 190px;
+    }
+
+    .dropdown-options::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .dropdown-options::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    .dropdown-options::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+
+    .dropdown-options::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .dropdown-option {
+      padding: 0.625rem 1rem;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+      color: #111827;
+    }
+
+    .dropdown-option:hover {
+      background: #f3f4f6;
+    }
+
+    .dropdown-option.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #f9fafb;
+    }
+
+    .dropdown-option.disabled:hover {
+      background: #f9fafb;
+    }
+
+    .dropdown-option input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: #c51d34;
+      margin: 0;
+    }
+
+    .dropdown-option.disabled input[type="checkbox"] {
+      cursor: not-allowed;
+    }
+
+    .dropdown-option-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .option-badge {
+      font-size: 0.6875rem;
+      padding: 0.25rem 0.5rem;
+      background: rgba(239, 68, 68, 0.1);
+      color: #dc2626;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .no-results {
+      padding: 1.5rem;
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .no-projects-message {
+      color: #6b7280;
+      font-size: 0.875rem;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .form-container .form-control:focus,
+    .form-container input.form-control:focus,
+    .form-container select.form-control:focus {
+      outline: none !important;
+      border-color: #c51d34 !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+
+    .form-help {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.8125rem;
+      color: #6b7280;
+      opacity: 1 !important;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+      animation: fadeInUp 0.5s ease-out 1s both;
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-container .btn {
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 1 !important;
+      width: 40px;
+      height: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 0;
+    }
+
+    .form-container .btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .form-container .btn-primary:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .form-container .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .form-container .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .form-container .btn-submit {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+      width: auto;
+      padding: 0.75rem 1.5rem;
+    }
+
+    .form-container .btn-submit:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    /* Avatar Upload Styles */
+    .avatar-upload-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .avatar-preview {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid #e5e7eb;
+      cursor: default;
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-upload-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(197, 29, 52, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      color: white;
+      gap: 0.5rem;
+    }
+
+    .avatar-preview:hover .avatar-upload-overlay {
+      opacity: 1;
+    }
+
+    .avatar-upload-overlay i {
+      font-size: 2rem;
+    }
+
+    .avatar-upload-overlay span {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .avatar-input {
+      display: none;
+    }
+
+    /* Success Modal */
+    .success-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .success-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .success-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .avatar-preview {
+        width: 120px;
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="breadcrumb">
+        <a href="/admin/dashboard">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="/admin/clients">Clients</a>
+        <i class="fas fa-chevron-right"></i>
+        <span><%= isEdit ? 'Edit' : 'Add' %> Client</span>
+      </div>
+
+      <div class="page-header">
+        <h1><%= isEdit ? 'Edit' : 'Add' %> Client</h1>
+        <p><%= isEdit ? 'Update client information' : 'Create a new client account' %></p>
+      </div>
+
+      <% if (isEdit) { %>
+      <div class="user-info-card">
+        <img src="<%= client.avatar || '/images/default-avatar.png' %>" alt="<%= client.name %>" class="user-avatar" id="currentAvatar" onerror="this.onerror=null; this.src='/images/default-avatar.png';" referrerpolicy="no-referrer">
+        <div class="user-details">
+          <h3><%= client.name %></h3>
+          <p><%= client.email %></p>
+        </div>
+      </div>
+      <% } %>
+
+      <div class="form-container">
+        <form method="POST" action="<%= isEdit ? `/admin/clients/${client.id}` : '/admin/clients/add' %>" enctype="multipart/form-data" id="clientForm">
+          <div class="form-grid">
+            <!-- Avatar Display Section (Read-only) -->
+            <% if (isEdit && client.avatar) { %>
+            <div class="form-group full-width">
+              <label>Profile Picture</label>
+              <div class="avatar-upload-container">
+                <div class="avatar-preview" style="cursor: default;">
+                  <img src="<%= client.avatar || '/images/default-avatar.png' %>" alt="Profile Picture" id="avatarPreviewImg" onerror="this.onerror=null; this.src='/images/default-avatar.png';" referrerpolicy="no-referrer">
+                </div>
+              </div>
+              <small class="form-help">Profile picture cannot be changed</small>
+            </div>
+            <% } %>
+
+            <% if (!isEdit) { %>
+            <!-- Name -->
+            <div class="form-group">
+              <label for="name">Name <span class="required">*</span></label>
+              <input type="text" id="name" name="name" class="form-control" required placeholder="John Doe">
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+              <label for="email">Email <span class="required">*</span></label>
+              <input type="email" id="email" name="email" class="form-control" required placeholder="john@example.com">
+            </div>
+
+            <!-- Provider Selection -->
+            <div class="form-group">
+              <label for="provider">OAuth Provider <span class="required">*</span></label>
+              <select id="provider" name="provider" class="form-control" required>
+                <option value="">Select Provider</option>
+                <option value="google">Google</option>
+                <option value="github">GitHub</option>
+              </select>
+              <small class="form-help">Select the OAuth provider the client will use to sign in</small>
+            </div>
+
+            <!-- Brand Selection -->
+            <div class="form-group full-width">
+              <label for="brand_id">Brand (Optional)</label>
+              <select id="brand_id" name="brand_id" class="form-control">
+                <option value="">No Brand</option>
+                <% if (brands && brands.length > 0) { %>
+                  <% brands.forEach(brand => { %>
+                    <option value="<%= brand.id %>"><%= brand.name %></option>
+                  <% }) %>
+                <% } %>
+              </select>
+              <small class="form-help">Select a brand to associate with this client</small>
+            </div>
+
+            <!-- Projects Assignment -->
+            <div class="form-group full-width">
+              <label for="project_ids">Assign Projects</label>
+              <div class="searchable-dropdown" id="projectsDropdown">
+                <div class="dropdown-toggle" id="dropdownToggle">
+                  <span class="toggle-text" id="toggleText">Select projects...</span>
+                  <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                  <div class="dropdown-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="projectSearch" placeholder="Search projects...">
+                  </div>
+                  <div class="dropdown-options" id="dropdownOptions">
+                    <% if (projects && projects.length > 0) { %>
+                      <% projects.forEach(project => { %>
+                        <div class="dropdown-option <%= project.client_id ? 'disabled' : '' %>" 
+                             data-project-id="<%= project.id %>"
+                             data-project-title="<%= project.title.toLowerCase() %>">
+                          <input type="checkbox" 
+                                 id="project_<%= project.id %>" 
+                                 value="<%= project.id %>"
+                                 <%= project.client_id ? 'disabled' : '' %>>
+                          <label for="project_<%= project.id %>" class="dropdown-option-label">
+                            <span><%= project.title %></span>
+                            <% if (project.client_id) { %>
+                              <span class="option-badge">Assigned</span>
+                            <% } %>
+                          </label>
+                        </div>
+                      <% }) %>
+                    <% } else { %>
+                      <div class="no-projects-message">No projects available</div>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="project_ids" name="project_ids" value="">
+              <small class="form-help">Search and select projects to assign. Projects already assigned to other clients cannot be selected.</small>
+            </div>
+            <% } else { %>
+            <!-- Edit Mode: Name -->
+            <div class="form-group">
+              <label for="name">Name <span class="required">*</span></label>
+              <input type="text" id="name" name="name" class="form-control" required placeholder="John Doe" value="<%= client.name || '' %>">
+            </div>
+
+            <!-- Edit Mode: Email -->
+            <div class="form-group">
+              <label for="email">Email <span class="required">*</span></label>
+              <input type="email" id="email" name="email" class="form-control" required placeholder="john@example.com" value="<%= client.email || '' %>">
+            </div>
+
+            <!-- Edit Mode: Provider Selection -->
+            <div class="form-group">
+              <label for="provider">OAuth Provider <span class="required">*</span></label>
+              <select id="provider" name="provider" class="form-control" required>
+                <option value="">Select Provider</option>
+                <option value="google" <%= client.provider === 'google' ? 'selected' : '' %>>Google</option>
+                <option value="github" <%= client.provider === 'github' ? 'selected' : '' %>>GitHub</option>
+              </select>
+              <small class="form-help">Select the OAuth provider the client will use to sign in</small>
+            </div>
+
+            <!-- Brand Selection -->
+            <div class="form-group full-width">
+              <label for="brand_id">Brand (Optional)</label>
+              <select id="brand_id" name="brand_id" class="form-control">
+                <option value="">No Brand</option>
+                <% if (brands && brands.length > 0) { %>
+                  <% brands.forEach(brand => { %>
+                    <option value="<%= brand.id %>" <%= client.brand_id == brand.id ? 'selected' : '' %>><%= brand.name %></option>
+                  <% }) %>
+                <% } %>
+              </select>
+              <small class="form-help">Select a brand to associate with this client</small>
+            </div>
+
+            <!-- Projects Assignment -->
+            <div class="form-group full-width">
+              <label for="project_ids">Assign Projects</label>
+              <div class="searchable-dropdown" id="projectsDropdown">
+                <div class="dropdown-toggle" id="dropdownToggle">
+                  <span class="toggle-text" id="toggleText">Select projects...</span>
+                  <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                  <div class="dropdown-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="projectSearch" placeholder="Search projects...">
+                  </div>
+                  <div class="dropdown-options" id="dropdownOptions">
+                    <% if (projects && projects.length > 0) { %>
+                      <% projects.forEach(project => { %>
+                        <div class="dropdown-option <%= (project.client_id && project.client_id != client.id) ? 'disabled' : '' %>" 
+                             data-project-id="<%= project.id %>"
+                             data-project-title="<%= project.title.toLowerCase() %>">
+                          <input type="checkbox" 
+                                 id="project_<%= project.id %>" 
+                                 value="<%= project.id %>"
+                                 <%= (assignedProjectIds && assignedProjectIds.includes(project.id)) ? 'checked' : '' %>
+                                 <%= (project.client_id && project.client_id != client.id) ? 'disabled' : '' %>>
+                          <label for="project_<%= project.id %>" class="dropdown-option-label">
+                            <span><%= project.title %></span>
+                            <% if (project.client_id && project.client_id != client.id) { %>
+                              <span class="option-badge">Assigned to Another Client</span>
+                            <% } %>
+                          </label>
+                        </div>
+                      <% }) %>
+                    <% } else { %>
+                      <div class="no-projects-message">No projects available</div>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="project_ids" name="project_ids" value="<%= assignedProjectIds ? assignedProjectIds.join(',') : '' %>">
+              <small class="form-help">Search and select projects to assign. Currently assigned projects are pre-selected.</small>
+            </div>
+            <% } %>
+          </div>
+
+          <div class="form-actions">
+            <a href="/admin/clients" class="btn btn-secondary" title="Cancel">
+              <i class="fas fa-times"></i>
+            </a>
+            <button type="submit" class="btn btn-submit" id="submitBtn" title="<%= isEdit ? 'Update' : 'Add' %> Client">
+              <i class="fas fa-<%= isEdit ? 'save' : 'plus' %>"></i> <%= isEdit ? 'Update' : 'Add' %> Client
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title"><%= isEdit ? 'Client Updated!' : 'Client Created!' %></h3>
+      <p class="modal-message"><%= isEdit ? 'The client has been successfully updated.' : 'The client has been successfully added to the system.' %></p>
+      <div class="modal-actions">
+        <a href="/admin/clients" class="modal-btn modal-btn-secondary">View Clients</a>
+        <% if (!isEdit) { %>
+        <a href="/admin/clients/add" class="modal-btn modal-btn-primary">Add Another</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="success-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error Occurred</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong. Please try again.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('errorModal')" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isEditMode = <%= JSON.stringify(isEdit) %>;
+      
+      if (urlParams.get('success') === 'true') {
+        showModal('successModal');
+        
+
+        if (!isEditMode) {
+          setTimeout(function() {
+            const form = document.getElementById('clientForm');
+            if (form) {
+              form.reset();
+            }
+          }, 100);
+        }
+      } else if (urlParams.get('error') === 'true') {
+        const errorMsg = decodeURIComponent(urlParams.get('message') || 'Something went wrong. Please try again.');
+        document.getElementById('errorMessage').textContent = errorMsg;
+        showModal('errorModal');
+      }
+    });
+
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('success-modal')) {
+        closeModal(e.target.id);
+      }
+    });
+
+
+    function validateAvatarImage(img) {
+      if (!img) return;
+      
+
+      const src = img.src || img.getAttribute('src');
+      if (src && (src.startsWith('http://') || src.startsWith('https://'))) {
+
+        const testImg = new Image();
+        testImg.onerror = function() {
+          img.src = '/images/default-avatar.png';
+        };
+        testImg.onload = function() {
+
+        };
+        testImg.src = src;
+      }
+    }
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const avatarPreviewImg = document.getElementById('avatarPreviewImg');
+      const currentAvatar = document.getElementById('currentAvatar');
+      
+      if (avatarPreviewImg) {
+        validateAvatarImage(avatarPreviewImg);
+      }
+      if (currentAvatar) {
+        validateAvatarImage(currentAvatar);
+      }
+    });
+
+
+
+
+    function initializeSearchableDropdown() {
+      const dropdown = document.getElementById('projectsDropdown');
+      const toggle = document.getElementById('dropdownToggle');
+      const menu = document.getElementById('dropdownMenu');
+      const searchInput = document.getElementById('projectSearch');
+      const options = document.getElementById('dropdownOptions');
+      const hiddenInput = document.getElementById('project_ids');
+      const toggleText = document.getElementById('toggleText');
+      
+      if (!dropdown || !toggle || !menu || !searchInput || !options || !hiddenInput) return;
+
+
+      const allOptions = Array.from(options.querySelectorAll('.dropdown-option'));
+      const checkboxes = Array.from(options.querySelectorAll('input[type="checkbox"]'));
+
+
+      function updateHiddenInput() {
+        const selectedIds = checkboxes
+          .filter(cb => cb.checked && !cb.disabled)
+          .map(cb => cb.value);
+        hiddenInput.value = selectedIds.join(',');
+        updateToggleText();
+      }
+
+
+      function updateToggleText() {
+        const selectedCount = checkboxes.filter(cb => cb.checked && !cb.disabled).length;
+        if (selectedCount === 0) {
+          toggleText.textContent = 'Select projects...';
+          toggleText.classList.remove('has-selection');
+        } else {
+          toggleText.textContent = `${selectedCount} project${selectedCount > 1 ? 's' : ''} selected`;
+          toggleText.classList.add('has-selection');
+        }
+      }
+
+
+      function filterOptions(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        let visibleCount = 0;
+
+        allOptions.forEach(option => {
+          const title = option.dataset.projectTitle || '';
+          const matches = title.includes(term);
+          option.style.display = matches ? '' : 'none';
+          if (matches) visibleCount++;
+        });
+
+
+        let noResults = options.querySelector('.no-results');
+        if (visibleCount === 0 && term !== '') {
+          if (!noResults) {
+            noResults = document.createElement('div');
+            noResults.className = 'no-results';
+            options.appendChild(noResults);
+          }
+          noResults.textContent = 'No projects found';
+        } else if (noResults) {
+          noResults.remove();
+        }
+      }
+
+
+      function adjustDropdownHeight() {
+        adjustDropdownHeightDynamic();
+      }
+
+
+      function toggleDropdown() {
+        const isOpen = menu.classList.contains('show');
+        if (isOpen) {
+          menu.classList.remove('show');
+          toggle.classList.remove('active');
+          searchInput.value = '';
+          filterOptions('');
+        } else {
+          menu.classList.add('show');
+          toggle.classList.add('active');
+          adjustDropdownHeight();
+          setTimeout(() => searchInput.focus(), 100);
+        }
+      }
+
+
+      document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target)) {
+          menu.classList.remove('show');
+          toggle.classList.remove('active');
+          searchInput.value = '';
+          filterOptions('');
+        }
+      });
+
+
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleDropdown();
+      });
+
+
+      searchInput.addEventListener('input', function(e) {
+        filterOptions(e.target.value);
+      });
+
+
+      searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          toggleDropdown();
+        }
+      });
+
+
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          updateHiddenInput();
+        });
+      });
+
+
+      allOptions.forEach(option => {
+        option.addEventListener('click', function(e) {
+          if (option.classList.contains('disabled')) return;
+          const checkbox = option.querySelector('input[type="checkbox"]');
+          if (checkbox && !checkbox.disabled) {
+            checkbox.checked = !checkbox.checked;
+            updateHiddenInput();
+          }
+        });
+      });
+
+
+      menu.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+
+
+      updateToggleText();
+    }
+
+
+    function adjustDropdownHeightDynamic() {
+      const menu = document.getElementById('dropdownMenu');
+      if (!menu || !menu.classList.contains('show')) return;
+      
+      const dropdown = document.getElementById('projectsDropdown');
+      const options = document.getElementById('dropdownOptions');
+      if (!dropdown || !options) return;
+      
+      const dropdownRect = dropdown.getBoundingClientRect();
+      const formActions = document.querySelector('.form-actions');
+      const viewportHeight = window.innerHeight;
+      
+      let maxAvailableHeight = viewportHeight - dropdownRect.bottom - 20;
+      
+      if (formActions) {
+        const formActionsRect = formActions.getBoundingClientRect();
+        const spaceAboveActions = formActionsRect.top - dropdownRect.bottom - 20;
+        maxAvailableHeight = Math.min(maxAvailableHeight, spaceAboveActions);
+      }
+      
+      const calculatedHeight = Math.max(150, Math.min(250, maxAvailableHeight));
+      menu.style.maxHeight = calculatedHeight + 'px';
+      options.style.maxHeight = (calculatedHeight - 60) + 'px';
+    }
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+      initializeSearchableDropdown();
+      
+
+      window.addEventListener('resize', adjustDropdownHeightDynamic);
+    });
+  </script>
+</body>
+</html>
+

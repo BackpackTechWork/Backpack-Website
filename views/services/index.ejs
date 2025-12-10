@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('../partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/services'
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <!-- Services Hero -->
+  <section class="services-hero">
+    <div class="flying-tech-icons">
+      <i class="fab fa-react" style="--i:1;"></i>
+      <i class="fab fa-python" style="--i:2;"></i>
+      <i class="fab fa-js-square" style="--i:3;"></i>
+      <i class="fab fa-node-js" style="--i:4;"></i>
+      <i class="fab fa-html5" style="--i:5;"></i>
+      <i class="fab fa-css3-alt" style="--i:6;"></i>
+      <i class="fab fa-vuejs" style="--i:7;"></i>
+      <i class="fab fa-angular" style="--i:8;"></i>
+      <i class="fab fa-java" style="--i:9;"></i>
+      <i class="fab fa-php" style="--i:10;"></i>
+      <i class="fab fa-laravel" style="--i:11;"></i>
+      <i class="fab fa-swift" style="--i:12;"></i>
+      <i class="fab fa-android" style="--i:13;"></i>
+      <i class="fas fa-database" style="--i:16;"></i>
+      <i class="fab fa-git-alt" style="--i:17;"></i>
+      <i class="fab fa-github" style="--i:18;"></i>
+      <i class="fab fa-npm" style="--i:19;"></i>
+      <i class="fab fa-bootstrap" style="--i:20;"></i>
+      <i class="devicon-typescript-plain" style="--i:19;"></i>
+      <i class="devicon-tailwindcss-original" style="--i:20;"></i>
+      <i class="devicon-nextjs-original" style="--i:21;"></i>
+      <i class="devicon-vercel-original" style="--i:22;"></i>
+    </div>
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">WHAT WE OFFER</div>
+        <h2>Expert <span class="highlight">Solutions</span> for Your Business</h2>
+        <p>Comprehensive software development solutions for modern businesses</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="services-list-section">
+    <div class="container">
+      <% if (services && services.length > 0) { %>
+        <div class="services-grid">
+          <% services.forEach(service => { %>
+            <div class="service-card">
+              <div class="service-icon-wrapper">
+                <div class="service-icon">
+                  <% if (service.icon) { %>
+                    <% if (service.icon.startsWith('/')) { %>
+                      <img src="<%= service.icon %>" alt="<%= service.title %> Icon" class="service-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                      <i class="fas fa-cog" style="display: none;"></i>
+                    <% } else { %>
+                      <i class="fas fa-<%= service.icon %>"></i>
+                    <% } %>
+                  <% } else { %>
+                    <i class="fas fa-cog"></i>
+                  <% } %>
+                </div>
+              </div>
+              <h3><%= service.title %></h3>
+              <p><%= service.short_description %></p>
+              <a href="/services/<%= service.slug %>" class="btn btn-outline">
+                Learn More <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-briefcase"></i>
+          </div>
+          <h3>Services Coming Soon</h3>
+          <p>We're updating our services. Check back soon to see what we offer!</p>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  
+  <!-- Scroll Animation Script -->
+  <script>
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+    const footer = document.querySelector('footer');
+    if (footer) {
+      observer.observe(footer);
+    }
+  </script>
+
+  <!-- White Image to Black Converter Script -->
+  <script>
+    function checkImageBrightness(img) {
+      return new Promise((resolve) => {
+
+        if (img.dataset.processed === 'true') {
+          resolve(false);
+          return;
+        }
+        
+
+        if (!img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
+          const checkLoaded = () => {
+            if (img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
+              analyzeImage(img).then(resolve);
+            } else {
+              setTimeout(checkLoaded, 100);
+            }
+          };
+          checkLoaded();
+          return;
+        }
+        
+        analyzeImage(img).then(resolve);
+      });
+    }
+    
+    function analyzeImage(img) {
+      return new Promise((resolve) => {
+        try {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          
+          if (canvas.width === 0 || canvas.height === 0) {
+            img.dataset.processed = 'true';
+            resolve(false);
+            return;
+          }
+          
+          ctx.drawImage(img, 0, 0);
+          
+
+          const samplePoints = [];
+          const gridSize = 5; 
+          
+          for (let i = 0; i <= gridSize; i++) {
+            for (let j = 0; j <= gridSize; j++) {
+              samplePoints.push({
+                x: (i / gridSize) * canvas.width,
+                y: (j / gridSize) * canvas.height
+              });
+            }
+          }
+          
+          let totalBrightness = 0;
+          let sampleCount = 0;
+          let whitePixelCount = 0;
+          
+          samplePoints.forEach(point => {
+            const x = Math.floor(point.x);
+            const y = Math.floor(point.y);
+            
+            if (x >= 0 && x < canvas.width && y >= 0 && y < canvas.height) {
+              try {
+                const pixelData = ctx.getImageData(x, y, 1, 1).data;
+                const r = pixelData[0];
+                const g = pixelData[1];
+                const b = pixelData[2];
+                const a = pixelData[3];
+                
+
+                if (a < 128) return;
+                
+
+                const brightness = (r + g + b) / 3;
+                totalBrightness += brightness;
+                sampleCount++;
+                
+
+                if (brightness > 200) {
+                  whitePixelCount++;
+                }
+              } catch (e) {
+
+              }
+            }
+          });
+          
+          if (sampleCount === 0) {
+            img.dataset.processed = 'true';
+            resolve(false);
+            return;
+          }
+          
+          const averageBrightness = totalBrightness / sampleCount;
+          const whitePixelRatio = whitePixelCount / sampleCount;
+          
+
+
+
+          const shouldConvert = averageBrightness > 200 || whitePixelRatio > 0.8;
+          
+          if (shouldConvert) {
+            img.style.filter = 'brightness(0)';
+            img.style.transition = 'filter 0.3s ease';
+          }
+          
+          img.dataset.processed = 'true';
+          resolve(shouldConvert);
+        } catch (e) {
+          console.warn('Error analyzing image:', e);
+          img.dataset.processed = 'true';
+          resolve(false);
+        }
+      });
+    }
+    
+    function processAllImages() {
+      const serviceImages = document.querySelectorAll('.service-icon-img:not([data-processed="true"])');
+      
+      if (serviceImages.length === 0) return;
+      
+      serviceImages.forEach(img => {
+        checkImageBrightness(img);
+      });
+    }
+    
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+
+        setTimeout(processAllImages, 100);
+        
+
+        setTimeout(processAllImages, 1000);
+        setTimeout(processAllImages, 2000);
+        
+
+        const observer = new MutationObserver(processAllImages);
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      });
+    } else {
+
+      setTimeout(processAllImages, 100);
+      setTimeout(processAllImages, 1000);
+      setTimeout(processAllImages, 2000);
+    }
+    
+
+    document.addEventListener('load', function(e) {
+      if (e.target.classList && e.target.classList.contains('service-icon-img')) {
+        checkImageBrightness(e.target);
+      }
+    }, true);
+  </script>
+</body>
+</html>

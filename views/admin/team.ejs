@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --border-primary: #e5e7eb;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --accent-red: #c51d34;
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      background: var(--bg-secondary);
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+    }
+
+    .btn-primary {
+      background: var(--accent-red);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      background: #a01628;
+    }
+
+    .filters-section {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-group label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .filter-input {
+      padding: 0.625rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-primary);
+      font-size: 0.875rem;
+      background: white;
+      transition: border-color 0.2s;
+    }
+
+    .filter-input:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .btn-filter {
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      background: var(--accent-red);
+      color: white;
+    }
+
+    .btn-filter:hover {
+      background: #a01628;
+    }
+
+    .table-container {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table thead {
+      background: var(--bg-secondary);
+    }
+
+    .table th {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .table td {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-primary);
+      color: var(--text-primary);
+    }
+
+    .table tbody tr:hover {
+      background: var(--bg-secondary);
+    }
+
+    .team-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+
+    .status-badge.active {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+
+    .status-badge.inactive {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-sm {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      width: 36px;
+      height: 36px;
+      justify-content: center;
+    }
+
+    .btn-icon-only {
+      padding: 0.5rem;
+      width: 36px;
+      height: 36px;
+      gap: 0;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    /* Reorder Modal Styles */
+    .reorder-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .reorder-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .reorder-modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .reorder-modal.show .reorder-modal-content {
+      transform: scale(1);
+    }
+
+    .reorder-modal-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .reorder-modal-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .reorder-modal-header p {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .reorder-list {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 1.5rem;
+      min-height: 300px;
+      max-height: 400px;
+    }
+
+    .reorder-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-primary);
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      cursor: move;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .reorder-item:hover {
+      border-color: var(--accent-red);
+      box-shadow: 0 2px 8px rgba(197, 29, 52, 0.1);
+    }
+
+    .reorder-item.dragging {
+      opacity: 0.5;
+      border-color: var(--accent-red);
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.2);
+    }
+
+    .reorder-item.drag-over {
+      border-color: var(--accent-red);
+      background: rgba(197, 29, 52, 0.05);
+    }
+
+    .reorder-handle {
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+      cursor: grab;
+    }
+
+    .reorder-handle:active {
+      cursor: grabbing;
+    }
+
+    .reorder-item-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .reorder-item-info {
+      flex: 1;
+    }
+
+    .reorder-item-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .reorder-item-position {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .reorder-item-order {
+      font-size: 0.875rem;
+      color: var(--accent-red);
+      font-weight: 600;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .reorder-modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-primary);
+    }
+
+    .reorder-modal-actions .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+    }
+
+    .reorder-modal-actions .btn-cancel {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-primary);
+    }
+
+    .reorder-modal-actions .btn-cancel:hover {
+      background: #e5e7eb;
+    }
+
+    .reorder-modal-actions .btn-save {
+      background: var(--accent-red);
+      color: white;
+    }
+
+    .reorder-modal-actions .btn-save:hover {
+      background: #a01628;
+    }
+
+    .reorder-modal-actions .btn-save:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .page-header > div:last-child {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .page-header > div:last-child > * {
+        width: 100%;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-group {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="page-header">
+        <div>
+          <h1>Manage Team</h1>
+          <p>Add and manage team members</p>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <% if (teamMembers && teamMembers.length > 0) { %>
+            <button onclick="openReorderModal()" class="btn-primary" style="background: #6b7280; padding: 1.1rem 1.5rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block;">
+              <i class="fas fa-sort"></i> Reorder Team
+            </button>
+          <% } %>
+          <a href="/admin/team/add" class="btn-primary">
+            <i class="fas fa-plus"></i> Add Team Member
+          </a>
+        </div>
+      </div>
+
+      <div class="filters-section">
+        <form method="GET" action="/admin/team" class="filters-grid">
+          <div class="filter-group">
+            <label for="search">Search by Name or Position</label>
+            <input 
+              type="text" 
+              id="search" 
+              name="search" 
+              class="filter-input" 
+              placeholder="Search team members..."
+              value="<%= filters.search %>"
+            >
+          </div>
+          <div class="filter-group">
+            <button type="submit" class="btn btn-filter">
+              <i class="fas fa-search"></i> Search
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="table-container">
+        <% if (teamMembers && teamMembers.length > 0) { %>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th>Position</th>
+                <th>Skills</th>
+                <th>Status</th>
+                <th>Order</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% teamMembers.forEach(member => { %>
+                <tr>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <img src="<%= member.avatar || '/images/default-avatar.png' %>" alt="<%= member.name %>" class="team-avatar">
+                      <div>
+                        <div style="font-weight: 600;"><%= member.name %></div>
+                        <div style="font-size: 0.8125rem; color: var(--text-secondary);"><%= member.email %></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><%= member.position %></td>
+                  <td>
+                    <% 
+                      const skills = member.skills ? (Array.isArray(member.skills) ? member.skills : JSON.parse(member.skills)) : [];
+                    %>
+                    <% if (skills.length > 0) { %>
+                      <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                        <% skills.slice(0, 3).forEach(skill => { %>
+                          <span style="font-size: 0.75rem; padding: 0.125rem 0.5rem; background: var(--bg-secondary); border-radius: 4px;"><%= skill %></span>
+                        <% }) %>
+                        <% if (skills.length > 3) { %>
+                          <span style="font-size: 0.75rem; color: var(--text-secondary);">+<%= skills.length - 3 %></span>
+                        <% } %>
+                      </div>
+                    <% } else { %>
+                      <span style="color: var(--text-secondary);">No skills</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <span class="status-badge <%= member.is_active ? 'active' : 'inactive' %>">
+                      <%= member.is_active ? 'Active' : 'Inactive' %>
+                    </span>
+                  </td>
+                  <td><%= member.display_order || 0 %></td>
+                  <td>
+                    <div class="action-buttons">
+                      <a href="/admin/team/edit/<%= member.id %>" class="btn btn-secondary btn-sm btn-icon-only" style="text-decoration: none; display: inline-flex;" title="Edit Team Member">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <div class="empty-state">
+            <i class="fas fa-users"></i>
+            <p>No team members found</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reorder Modal -->
+  <div class="reorder-modal" id="reorderModal">
+    <div class="reorder-modal-content">
+      <div class="reorder-modal-header">
+        <h2>Reorder Team Members</h2>
+        <p>Drag and drop team members to reorder them. The topmost member will have order 0.</p>
+      </div>
+      <div class="reorder-list" id="reorderList">
+        <!-- Team members will be populated here -->
+      </div>
+      <div class="reorder-modal-actions">
+        <button class="btn btn-cancel" onclick="closeReorderModal()">Cancel</button>
+        <button class="btn btn-save" id="saveReorderBtn" onclick="saveReorder()">Save Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="reorder-modal" id="successModal">
+    <div class="reorder-modal-content" style="max-width: 400px;">
+      <div style="text-align: center;">
+        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+          <i class="fas fa-check" style="color: white; font-size: 2.5rem;"></i>
+        </div>
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">Success!</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" id="successMessage">Team member order updated successfully.</p>
+        <button class="btn btn-save" style="display: block; margin: 0 auto;" onclick="closeSuccessModal()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="reorder-modal" id="errorModal">
+    <div class="reorder-modal-content" style="max-width: 400px;">
+      <div style="text-align: center;">
+        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+          <i class="fas fa-exclamation-triangle" style="color: white; font-size: 2.5rem;"></i>
+        </div>
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">Error</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" id="errorMessage">Something went wrong. Please try again.</p>
+        <button class="btn btn-save" onclick="closeErrorModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let teamMembers = <%- JSON.stringify(teamMembers || []) %>;
+    let reorderedMembers = [];
+
+    function openReorderModal() {
+      reorderedMembers = [...teamMembers];
+      renderReorderList();
+      document.getElementById('reorderModal').classList.add('show');
+    }
+
+    function closeReorderModal() {
+      document.getElementById('reorderModal').classList.remove('show');
+      reorderedMembers = [...teamMembers];
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('successModal').classList.remove('show');
+      closeReorderModal();
+      location.reload();
+    }
+
+    function closeErrorModal() {
+      document.getElementById('errorModal').classList.remove('show');
+    }
+
+    function renderReorderList() {
+      const list = document.getElementById('reorderList');
+      list.innerHTML = '';
+
+      reorderedMembers.forEach((member, index) => {
+        const item = document.createElement('div');
+        item.className = 'reorder-item';
+        item.draggable = true;
+        item.dataset.index = index;
+        item.dataset.id = member.id;
+
+        item.innerHTML = `
+          <div class="reorder-handle">
+            <i class="fas fa-grip-vertical"></i>
+          </div>
+          <img src="${member.avatar || '/images/default-avatar.png'}" alt="${member.name}" class="reorder-item-avatar">
+          <div class="reorder-item-info">
+            <div class="reorder-item-name">${member.name}</div>
+            <div class="reorder-item-position">${member.position || 'No position'}</div>
+          </div>
+          <div class="reorder-item-order">${index}</div>
+        `;
+
+
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragenter', handleDragEnter);
+        item.addEventListener('dragleave', handleDragLeave);
+
+        list.appendChild(item);
+      });
+    }
+
+    let draggedElement = null;
+    let draggedIndex = null;
+
+    function handleDragStart(e) {
+      draggedElement = this;
+      draggedIndex = parseInt(this.dataset.index);
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', this.innerHTML);
+    }
+
+    function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      document.querySelectorAll('.reorder-item').forEach(item => {
+        item.classList.remove('drag-over');
+      });
+    }
+
+    function handleDragOver(e) {
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+    }
+
+    function handleDragEnter(e) {
+      if (this !== draggedElement) {
+        this.classList.add('drag-over');
+      }
+    }
+
+    function handleDragLeave(e) {
+      this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+
+      if (draggedElement !== this) {
+        const dropIndex = parseInt(this.dataset.index);
+        const draggedMember = reorderedMembers[draggedIndex];
+        
+
+        reorderedMembers.splice(draggedIndex, 1);
+
+        reorderedMembers.splice(dropIndex, 0, draggedMember);
+        
+
+        renderReorderList();
+      }
+
+      this.classList.remove('drag-over');
+      return false;
+    }
+
+    async function saveReorder() {
+      const saveBtn = document.getElementById('saveReorderBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const teamMemberIds = reorderedMembers.map(member => member.id);
+        
+        const response = await fetch('/admin/team/reorder', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ teamMemberIds })
+        });
+
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await response.text();
+          console.error('Non-JSON response:', text.substring(0, 200));
+          throw new Error('Server returned non-JSON response. Please check the console for details.');
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById('successMessage').textContent = data.message || 'Team member order updated successfully.';
+          document.getElementById('reorderModal').classList.remove('show');
+          document.getElementById('successModal').classList.add('show');
+        } else {
+          document.getElementById('errorMessage').textContent = data.message || 'Error updating team member order.';
+          document.getElementById('errorModal').classList.add('show');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Order';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('errorMessage').textContent = error.message || 'An error occurred while updating the order.';
+        document.getElementById('errorModal').classList.add('show');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Order';
+      }
+    }
+
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('reorder-modal')) {
+        if (e.target.id === 'reorderModal') {
+          closeReorderModal();
+        } else if (e.target.id === 'successModal') {
+          closeSuccessModal();
+        } else if (e.target.id === 'errorModal') {
+          closeErrorModal();
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
+

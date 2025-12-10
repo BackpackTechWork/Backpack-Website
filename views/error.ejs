@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/error',
+    noindex: true
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * {
+      scroll-behavior: smooth;
+    }
+
+    .error-hero {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .error-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 0.8s ease-out 0.2s forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .error-icon {
+      font-size: 5rem;
+      color: var(--red);
+      margin-bottom: 1.5rem;
+      position: relative;
+      display: inline-block;
+      animation: gentlePulse 3s ease-in-out infinite, iconGlow 2s ease-in-out infinite alternate;
+      filter: drop-shadow(0 0 20px rgba(197, 29, 52, 0.3));
+    }
+
+    @keyframes gentlePulse {
+      0%, 100% {
+        transform: scale(1) rotate(0deg);
+      }
+      50% {
+        transform: scale(1.05) rotate(2deg);
+      }
+    }
+
+    @keyframes iconGlow {
+      0% {
+        filter: drop-shadow(0 0 15px rgba(197, 29, 52, 0.3));
+      }
+      100% {
+        filter: drop-shadow(0 0 25px rgba(197, 29, 52, 0.5));
+      }
+    }
+
+    .error-content h1 {
+      font-size: 2.5rem;
+      color: var(--dark-gray);
+      margin-bottom: 1rem;
+      font-weight: 700;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.4s forwards;
+      background: linear-gradient(135deg, var(--dark-gray) 0%, var(--gray) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .error-content .error-message {
+      font-size: 1.25rem;
+      color: var(--gray);
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.6s forwards;
+    }
+
+    .error-details-wrapper {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(197, 29, 52, 0.05);
+      overflow: hidden;
+      border: 1px solid rgba(197, 29, 52, 0.1);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease-out 0.8s forwards;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .error-details-wrapper:hover {
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(197, 29, 52, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .error-details-header {
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.08), rgba(197, 29, 52, 0.03));
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(197, 29, 52, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .error-details-header:hover {
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.12), rgba(197, 29, 52, 0.05));
+    }
+
+    .error-details-header h3 {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--dark-gray);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .error-details-header h3 i {
+      color: var(--red);
+      transition: transform 0.3s ease;
+    }
+
+    .error-details-header:hover h3 i {
+      transform: rotate(15deg);
+    }
+
+    .error-actions-bar {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .error-action-btn {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(197, 29, 52, 0.2);
+      color: var(--red);
+      padding: 0.625rem 1.25rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .error-action-btn i {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #toggleBtn i {
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #toggleBtn.active i {
+      transform: rotate(180deg);
+    }
+
+    .error-action-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(197, 29, 52, 0.1);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .error-action-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .error-action-btn:hover {
+      background: var(--red);
+      color: var(--white);
+      border-color: var(--red);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.35);
+    }
+
+    .error-action-btn:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+
+    .error-action-btn i,
+    .error-action-btn span {
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s ease;
+    }
+
+    .error-action-btn.copied {
+      background: #10b981;
+      border-color: #10b981;
+      color: var(--white);
+      animation: successPulse 0.5s ease;
+    }
+
+    @keyframes successPulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .error-stack {
+      padding: 0;
+      margin: 0;
+      background: linear-gradient(135deg, #1e1e1e 0%, #252525 100%);
+      color: #d4d4d4;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.875rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      text-align: left;
+      max-height: 0;
+      overflow-y: hidden;
+      opacity: 0;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                  padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .error-stack.show {
+      max-height: 500px;
+      opacity: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+
+    .error-stack::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    .error-stack::-webkit-scrollbar-track {
+      background: #2d2d2d;
+      border-radius: 5px;
+    }
+
+    .error-stack::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #555 0%, #666 100%);
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+
+    .error-stack::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #666 0%, #777 100%);
+    }
+
+    .error-stack pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .error-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 1s forwards;
+    }
+
+    .error-buttons .btn {
+      padding: 1rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .error-buttons .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .error-buttons .btn:hover::before {
+      width: 400px;
+      height: 400px;
+    }
+
+    .error-buttons .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .error-buttons .btn:active {
+      transform: translateY(-1px);
+    }
+
+    .error-buttons .btn i {
+      transition: transform 0.3s ease;
+    }
+
+    .error-buttons .btn:hover i {
+      transform: translateX(-3px);
+    }
+
+    .error-buttons .btn.btn-outline:hover i {
+      transform: translateX(-3px);
+    }
+
+    .error-simple {
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.08), rgba(197, 29, 52, 0.03));
+      border-left: 4px solid var(--red);
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px;
+      margin: 1.5rem auto;
+      max-width: 600px;
+      text-align: left;
+      box-shadow: 0 4px 20px rgba(197, 29, 52, 0.08);
+      transition: all 0.3s ease;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.8s forwards;
+    }
+
+    .error-simple:hover {
+      box-shadow: 0 6px 25px rgba(197, 29, 52, 0.12);
+      transform: translateX(5px);
+    }
+
+    .error-simple p {
+      margin: 0;
+      color: var(--dark-gray);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .error-simple strong {
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    /* Enhanced particles */
+    .particles span {
+      animation: particleFloat 20s linear infinite;
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+
+    .particles span:hover {
+      opacity: 1;
+    }
+
+    /* Smooth transitions for all interactive elements */
+    a, button {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (max-width: 768px) {
+      .error-content h1 {
+        font-size: 2rem;
+      }
+
+      .error-icon {
+        font-size: 4rem;
+      }
+
+      .error-details-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .error-actions-bar {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .error-stack {
+        font-size: 0.75rem;
+        padding: 1rem;
+        max-height: 400px;
+      }
+
+      .error-buttons {
+        flex-direction: column;
+      }
+
+      .error-buttons .btn {
+        width: 100%;
+      }
+
+      .error-details-wrapper {
+        border-radius: 16px;
+      }
+    }
+
+    /* Loading shimmer effect */
+    @keyframes shimmer {
+      0% {
+        background-position: -1000px 0;
+      }
+      100% {
+        background-position: 1000px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <section class="hero error-hero">
+    <!-- Tech Circuit Pattern Background -->
+    <div class="circuit-pattern"></div>
+    
+    <!-- Animated Data Particles -->
+    <div class="particles">
+      <span style="--i:1;"></span>
+      <span style="--i:2;"></span>
+      <span style="--i:3;"></span>
+      <span style="--i:4;"></span>
+      <span style="--i:5;"></span>
+    </div>
+    
+    <div class="container" style="text-align: center;">
+      <div style="font-size: 4rem; color: var(--red); margin-bottom: 1rem;">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h1>Oops! Something Went Wrong</h1>
+      <% if (error && error.stack) { %>
+        <div class="error-details-wrapper">
+          <div class="error-details-header">
+            <h3>
+              <i class="fas fa-code"></i>
+              Error Details
+            </h3>
+            <div class="error-actions-bar">
+              <button class="error-action-btn" onclick="copyError()" id="copyBtn">
+                <i class="fas fa-copy"></i>
+                <span>Copy Error</span>
+              </button>
+              <button class="error-action-btn" onclick="toggleErrorDetails()" id="toggleBtn">
+                <i class="fas fa-chevron-down"></i>
+                <span>Show Details</span>
+              </button>
+            </div>
+          </div>
+          <div class="error-stack" id="errorStack">
+            <pre id="errorText"><%= error.stack %></pre>
+          </div>
+        </div>
+      <% } %>
+      
+      <div class="error-buttons">
+        <a href="/" class="btn btn-primary">
+          <i class="fas fa-home"></i> Go Home
+        </a>
+        <a href="javascript:history.back()" class="btn btn-outline">
+          <i class="fas fa-arrow-left"></i> Go Back
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>
+
+  <script>
+
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+
+    const footer = document.querySelector('footer');
+    if (footer) {
+      observer.observe(footer);
+    }
+
+
+    function toggleErrorDetails() {
+      const errorStack = document.getElementById('errorStack');
+      const toggleBtn = document.getElementById('toggleBtn');
+      
+      if (errorStack) {
+        const isVisible = errorStack.classList.contains('show');
+        
+        if (isVisible) {
+
+          errorStack.classList.remove('show');
+          
+          if (toggleBtn) {
+            toggleBtn.classList.remove('active');
+            const icon = toggleBtn.querySelector('i');
+            const text = toggleBtn.querySelector('span');
+            icon.className = 'fas fa-chevron-down';
+            text.textContent = 'Show Details';
+          }
+        } else {
+
+          errorStack.classList.add('show');
+          
+          if (toggleBtn) {
+            toggleBtn.classList.add('active');
+            const icon = toggleBtn.querySelector('i');
+            const text = toggleBtn.querySelector('span');
+            icon.className = 'fas fa-chevron-up';
+            text.textContent = 'Hide Details';
+          }
+        }
+      }
+    }
+
+
+    function copyError() {
+      const errorText = document.getElementById('errorText');
+      const copyBtn = document.getElementById('copyBtn');
+      
+      if (errorText) {
+        const text = errorText.textContent || errorText.innerText;
+        
+        navigator.clipboard.writeText(text).then(() => {
+          if (copyBtn) {
+            const originalHTML = copyBtn.innerHTML;
+            copyBtn.classList.add('copied');
+            copyBtn.innerHTML = '<i class="fas fa-check"></i><span>Copied!</span>';
+            
+            setTimeout(() => {
+              copyBtn.classList.remove('copied');
+              copyBtn.innerHTML = originalHTML;
+            }, 2000);
+          }
+        }).catch(err => {
+          console.error('Failed to copy:', err);
+
+          const textArea = document.createElement('textarea');
+          textArea.value = text;
+          textArea.style.position = 'fixed';
+          textArea.style.opacity = '0';
+          document.body.appendChild(textArea);
+          textArea.select();
+          try {
+            document.execCommand('copy');
+            if (copyBtn) {
+              const originalHTML = copyBtn.innerHTML;
+              copyBtn.classList.add('copied');
+              copyBtn.innerHTML = '<i class="fas fa-check"></i><span>Copied!</span>';
+              setTimeout(() => {
+                copyBtn.classList.remove('copied');
+                copyBtn.innerHTML = originalHTML;
+              }, 2000);
+            }
+          } catch (err) {
+            alert('Failed to copy error. Please select and copy manually.');
+          }
+          document.body.removeChild(textArea);
+        });
+      }
+    }
+  </script>
+</body>
+</html>

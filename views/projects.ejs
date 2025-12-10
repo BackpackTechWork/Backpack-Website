@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/projects'
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+  <style>
+    /* Image Protection Styles */
+    .image-protection-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 15;
+      background: transparent;
+      cursor: pointer;
+      pointer-events: auto;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    
+    .project-overlay {
+      pointer-events: none;
+      z-index: 12;
+    }
+    
+    .project-card:hover .project-overlay {
+      pointer-events: none;
+    }
+    
+    /* Make sure clickable overlay is always on top and clickable */
+    .image-protection-overlay[data-project-url] {
+      z-index: 20;
+      pointer-events: auto;
+    }
+
+    .project-image,
+    .empty-state-image {
+      position: relative;
+      pointer-events: auto;
+      user-select: none;
+    }
+
+    .project-image img,
+    .empty-state-image img {
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+
+    /* Make project cards clickable on mobile */
+    .project-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+    
+    .project-card:hover,
+    .project-card:focus {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    /* Hide overlay entirely on mobile and tablet */
+    @media (max-width: 968px) {
+      .project-overlay {
+        display: none !important;
+      }
+    }
+    
+    /* Filter Modal Styles */
+    .filter-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      pointer-events: none;
+    }
+
+    .filter-modal.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
+    }
+
+    .filter-modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    .filter-modal-content {
+      position: relative;
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.3s ease;
+      z-index: 10001;
+    }
+
+    .filter-modal.active .filter-modal-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .filter-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .filter-modal-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .filter-modal-header h3 i {
+      color: var(--primary, #c51d34);
+    }
+
+    .filter-modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--gray);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+    }
+
+    .filter-modal-close:hover {
+      background: #f3f4f6;
+      color: var(--dark);
+    }
+
+    .filter-modal-body {
+      padding: 1rem;
+      overflow-y: auto;
+      flex: 1;
+      max-height: calc(90vh - 160px);
+    }
+
+    .filter-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 0.5rem;
+      border: 2px solid transparent;
+    }
+
+    .filter-option:hover {
+      background: #f8f9fa;
+      border-color: #e5e7eb;
+    }
+
+    .filter-option.active {
+      background: rgba(197, 29, 52, 0.1);
+      border-color: var(--primary, #c51d34);
+    }
+
+    .filter-option.active::after {
+      content: '✓';
+      color: var(--primary, #c51d34);
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .filter-option-content {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .filter-option-content i {
+      font-size: 0.875rem;
+      color: var(--primary, #c51d34);
+    }
+
+    .filter-option-content span {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    .filter-modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+      padding: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .btn-filter {
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #c51d34, #d93850);
+      color: white;
+      box-shadow: 0 4px 15px rgba(197, 29, 52, 0.25);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-filter:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.35);
+    }
+
+    .btn-filter-secondary {
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: var(--gray);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-filter-secondary:hover {
+      background: #f8f9fa;
+      border-color: #d1d5db;
+      color: var(--dark);
+    }
+
+    @media (max-width: 768px) {
+      .filter-modal-content {
+        width: 95%;
+        max-height: 85vh;
+      }
+
+      .filter-modal-header {
+        padding: 1.25rem;
+      }
+
+      .filter-modal-header h3 {
+        font-size: 1.125rem;
+      }
+
+      .filter-modal-body {
+        padding: 0.75rem;
+        max-height: calc(85vh - 140px);
+      }
+
+      .filter-option {
+        padding: 0.875rem;
+      }
+
+      .filter-modal-footer {
+        padding: 1.25rem;
+        flex-direction: column;
+      }
+
+      .filter-modal-footer .btn-filter,
+      .filter-modal-footer .btn-filter-secondary {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <!-- Projects Hero Section -->
+  <section class="projects-hero">
+    <div class="flying-tech-icons">
+      <i class="fab fa-react" style="--i:1;"></i>
+      <i class="fab fa-python" style="--i:2;"></i>
+      <i class="fab fa-js-square" style="--i:3;"></i>
+      <i class="fab fa-node-js" style="--i:4;"></i>
+      <i class="fab fa-html5" style="--i:5;"></i>
+      <i class="fab fa-css3-alt" style="--i:6;"></i>
+      <i class="fab fa-vuejs" style="--i:7;"></i>
+      <i class="fab fa-angular" style="--i:8;"></i>
+      <i class="fab fa-java" style="--i:9;"></i>
+      <i class="fab fa-php" style="--i:10;"></i>
+      <i class="fab fa-laravel" style="--i:11;"></i>
+      <i class="fab fa-swift" style="--i:12;"></i>
+      <i class="fab fa-android" style="--i:13;"></i>
+      <i class="fas fa-database" style="--i:16;"></i>
+      <i class="fab fa-git-alt" style="--i:17;"></i>
+      <i class="fab fa-github" style="--i:18;"></i>
+      <i class="fab fa-npm" style="--i:19;"></i>
+      <i class="fab fa-bootstrap" style="--i:20;"></i>
+    </div>
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">
+          OUR PROJECTS
+        </div>
+        <h2>Showcasing Our <span class="highlight">Best Work</span></h2>
+        <p class="hero-description">Discover the innovative solutions we've crafted for our clients across various industries</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Grid Section -->
+  <section class="projects-section">
+    <div class="container">
+      <!-- Filter Tabs -->
+      <div class="project-filters">
+        <button class="filter-btn active" data-filter="all" data-slug="all">
+          <i class="fas fa-th"></i> All Projects
+        </button>
+        <% 
+
+          const priorityServices = ['web-development', 'mobile-development', 'branding', 'ui-ux'];
+          const priorityServicesMap = {
+            'web-development': { icon: 'fas fa-laptop-code', label: 'Web Development' },
+            'mobile-development': { icon: 'fas fa-mobile-alt', label: 'Mobile Development' },
+            'branding': { icon: 'fas fa-palette', label: 'Branding' },
+            'ui-ux': { icon: 'fas fa-paint-brush', label: 'UI/UX' }
+          };
+          
+
+          const priorityServicesList = [];
+          const otherServices = [];
+          
+          if (services && services.length > 0) {
+            services.forEach(service => {
+              if (priorityServices.includes(service.slug)) {
+                priorityServicesList.push(service);
+              } else {
+                otherServices.push(service);
+              }
+            });
+            
+
+            priorityServicesList.sort((a, b) => {
+              return priorityServices.indexOf(a.slug) - priorityServices.indexOf(b.slug);
+            });
+          }
+          
+
+          priorityServicesList.forEach(service => {
+            const serviceInfo = priorityServicesMap[service.slug] || { icon: 'fas fa-briefcase', label: service.title };
+        %>
+          <button class="filter-btn" data-filter="<%= service.slug %>" data-slug="<%= service.slug %>">
+            <i class="<%= serviceInfo.icon %>"></i> <%= serviceInfo.label %>
+          </button>
+        <% }); %>
+        
+        <% 
+
+
+          const allServicesForModal = services || [];
+          if (allServicesForModal.length > priorityServicesList.length) { 
+        %>
+          <button class="filter-btn filter-btn-more" id="moreServicesBtn" data-filter="more">
+            <i class="fas fa-ellipsis-h"></i> More
+          </button>
+        <% } %>
+      </div>
+
+      <!-- Projects Grid -->
+      <div class="projects-grid">
+        <% if (projects && projects.length > 0) { %>
+          <% projects.forEach((project, index) => { %>
+            <a href="/projects/<%= project.slug %>" class="project-card" data-category="<%= project.service_slug || 'all' %>" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
+              <div class="project-image">
+                <% if (project.thumbnail) { %>
+                  <img src="<%= project.thumbnail %>" alt="<%= project.displayName %>" draggable="false" oncontextmenu="return false;" onerror="this.src='https://via.placeholder.com/600x400/c51d34/ffffff?text=<%= encodeURIComponent(project.displayName) %>'">
+                <% } else { %>
+                  <img src="https://via.placeholder.com/600x400/c51d34/ffffff?text=<%= encodeURIComponent(project.displayName) %>" alt="<%= project.displayName %>" draggable="false" oncontextmenu="return false;">
+                <% } %>
+                <div class="image-protection-overlay" data-project-url="/projects/<%= project.slug %>"></div>
+                <div class="project-overlay">
+                  <div class="project-links">
+                    <span class="project-link" title="View Details">
+                      <i class="fas fa-eye"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="project-badge">
+                  <i class="fas fa-star"></i> Featured
+                </div>
+              </div>
+              <div class="project-content">
+                <div class="project-meta">
+                  <span class="project-category">
+                    <i class="fas fa-folder"></i> <%= project.service_title || 'Project' %>
+                  </span>
+                  <span class="project-stats">
+                    <i class="fas fa-images"></i> <%= project.images ? project.images.length : 0 %>
+                  </span>
+                </div>
+                <h3><%= project.displayName %></h3>
+                <% if (project.techStack && project.techStack.length > 0) { %>
+                  <div class="project-tech-icons" style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem;">
+                    <% 
+
+                      function getTechIcon(techName) {
+                        const iconMap = {
+                          'PHP': 'devicon-php-plain',
+                          'Laravel': 'devicon-laravel-plain',
+                          'Vue': 'devicon-vuejs-plain',
+                          'React': 'devicon-react-original',
+                          'React Native': 'devicon-react-original',
+                          'TypeScript': 'devicon-typescript-plain',
+                          'JavaScript': 'devicon-javascript-plain',
+                          'Livewire': 'devicon-livewire-plain-wordmark',
+                          'Supabase': 'devicon-supabase-plain',
+                          'EJS': 'fas fa-file-code',
+                          'MySQL': 'devicon-mysql-plain',
+                          'jQuery': 'devicon-jquery-plain',
+                          'Premire Pro': 'devicon-premierepro-plain',
+                          'PostgreSQL': 'devicon-postgresql-plain',
+                          'Google Workspace': 'fab fa-google',
+                          'Node.js': 'fab fa-node-js',
+                          'Node JS': 'fab fa-node-js',
+                          'Bootstrap': 'devicon-bootstrap-plain',
+                          'Express.js': 'devicon-express-original',
+                          'Express': 'devicon-express-original',
+                          'HTML': 'devicon-html5-plain',
+                          'HTML5': 'devicon-html5-plain',
+                          'CSS': 'devicon-css3-plain',
+                          'CSS3': 'devicon-css3-plain',
+                          'Python': 'devicon-python-plain',
+                          'Django': 'devicon-django-plain',
+                          'Flask': 'devicon-flask-original',
+                          'MongoDB': 'devicon-mongodb-plain',
+                          'Git': 'devicon-git-plain',
+                          'Docker': 'devicon-docker-plain',
+                          'AWS': 'devicon-amazonwebservices-plain-wordmark',
+                          'Firebase': 'devicon-firebase-plain',
+                          'Next.js': 'devicon-nextjs-plain',
+                          'Tailwind CSS': 'devicon-tailwindcss-plain',
+                          'Redux': 'devicon-redux-original',
+                          'GraphQL': 'devicon-graphql-plain',
+                          'Sass': 'devicon-sass-original',
+                          'Webpack': 'devicon-webpack-plain',
+                          'Figma': 'devicon-figma-plain',
+                          'Java': 'devicon-java-plain',
+                          'Spring': 'devicon-spring-plain',
+                          'C++': 'devicon-cplusplus-plain',
+                          'C#': 'devicon-csharp-plain',
+                          'Go': 'devicon-go-plain',
+                          'Ruby': 'devicon-ruby-plain',
+                          'Rails': 'devicon-rails-plain',
+                          'Angular': 'devicon-angularjs-plain',
+                          'Svelte': 'devicon-svelte-plain',
+                          'Chart JS': 'fas fa-chart-line',
+                          'ChartJS': 'fas fa-chart-line',
+                          'Sheet API': 'fas fa-table'
+                        };
+                        return iconMap[techName] || 'fas fa-code';
+                      }
+                      
+                      project.techStack.forEach(tech => { 
+                        const iconClass = getTechIcon(tech);
+                    %>
+                      <span class="tech-badge-icon" style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, rgba(197, 29, 52, 0.1), rgba(66, 133, 244, 0.1)); transition: all 0.3s ease; cursor: pointer;" title="<%= tech %>">
+                        <i class="<%= iconClass %>" style="font-size: 1.25rem; color: var(--red); transition: all 0.3s ease;"></i>
+                      </span>
+                    <% }); %>
+                  </div>
+                <% } %>
+              </div>
+            </a>
+          <% }); %>
+        <% } %>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" style="display: none;">
+        <div class="empty-state-content">
+          <div class="empty-state-image">
+            <img src="/images/Assets/We will work on that.png" alt="Coming Soon" draggable="false" oncontextmenu="return false;">
+            <div class="image-protection-overlay"></div>
+          </div>
+          <h3>We'll Work On That!</h3>
+          <p>We don't have any projects in this category yet, but we're always ready for new challenges.</p>
+          <p class="empty-state-cta">
+            <strong>Maybe you'll be our first client!</strong> Let's create something amazing together.
+          </p>
+          <a href="/contact" class="empty-state-btn">
+            <i class="fas fa-rocket"></i> Start Your Project
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Filter Modal -->
+  <div id="servicesFilterModal" class="filter-modal">
+    <div class="filter-modal-overlay" id="servicesFilterModalOverlay"></div>
+    <div class="filter-modal-content">
+      <div class="filter-modal-header">
+        <h3><i class="fas fa-briefcase"></i> Filter by Service</h3>
+        <button type="button" class="filter-modal-close" id="servicesFilterModalClose">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="filter-modal-body">
+        <div class="filter-option" data-slug="all" data-filter="all">
+          <div class="filter-option-content">
+            <i class="fas fa-th"></i>
+            <span>All Projects</span>
+          </div>
+        </div>
+        <% if (services && services.length > 0) { %>
+          <% services.forEach(service => { %>
+            <div class="filter-option" data-slug="<%= service.slug %>" data-filter="<%= service.slug %>">
+              <div class="filter-option-content">
+                <i class="fas fa-briefcase"></i>
+                <span><%= service.title %></span>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p style="text-align: center; color: var(--gray); padding: 2rem;">No services available</p>
+        <% } %>
+      </div>
+      <div class="filter-modal-footer">
+        <button type="button" class="btn-filter-secondary" id="servicesFilterCancel">Cancel</button>
+        <button type="button" class="btn-filter" id="servicesFilterApply">Apply Filter</button>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <!-- Filter Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      const projectCards = document.querySelectorAll('.project-card');
+      const projectsGrid = document.querySelector('.projects-grid');
+      const emptyState = document.querySelector('.empty-state');
+      const totalProjects = projectCards.length;
+
+
+      if (totalProjects === 0) {
+        projectsGrid.style.display = 'none';
+        emptyState.style.display = 'block';
+      }
+
+
+      const moreServicesBtn = document.getElementById('moreServicesBtn');
+      const servicesFilterModal = document.getElementById('servicesFilterModal');
+      const servicesFilterModalOverlay = document.getElementById('servicesFilterModalOverlay');
+      const servicesFilterModalClose = document.getElementById('servicesFilterModalClose');
+      const servicesFilterCancel = document.getElementById('servicesFilterCancel');
+      const servicesFilterApply = document.getElementById('servicesFilterApply');
+      const servicesFilterOptions = document.querySelectorAll('#servicesFilterModal .filter-option');
+      
+      let selectedServiceSlug = 'all';
+      let originalSelectedSlug = 'all';
+
+
+      if (moreServicesBtn && servicesFilterModal) {
+        moreServicesBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          const activeBtn = document.querySelector('.filter-btn.active');
+          selectedServiceSlug = activeBtn ? activeBtn.getAttribute('data-slug') : 'all';
+          originalSelectedSlug = selectedServiceSlug;
+          
+
+          servicesFilterOptions.forEach(opt => {
+            opt.classList.remove('active');
+            if (opt.getAttribute('data-slug') === selectedServiceSlug) {
+              opt.classList.add('active');
+            }
+          });
+          servicesFilterModal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        });
+      }
+
+
+      const closeServicesModal = () => {
+        servicesFilterModal.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+
+      if (servicesFilterModalOverlay) {
+        servicesFilterModalOverlay.addEventListener('click', () => {
+          selectedServiceSlug = originalSelectedSlug;
+          closeServicesModal();
+        });
+      }
+
+      if (servicesFilterModalClose) {
+        servicesFilterModalClose.addEventListener('click', () => {
+          selectedServiceSlug = originalSelectedSlug;
+          closeServicesModal();
+        });
+      }
+
+      if (servicesFilterCancel) {
+        servicesFilterCancel.addEventListener('click', () => {
+          selectedServiceSlug = originalSelectedSlug;
+          closeServicesModal();
+        });
+      }
+
+
+      servicesFilterOptions.forEach(option => {
+        option.addEventListener('click', () => {
+
+          servicesFilterOptions.forEach(opt => opt.classList.remove('active'));
+
+          option.classList.add('active');
+          selectedServiceSlug = option.getAttribute('data-slug');
+        });
+      });
+
+
+      if (servicesFilterApply) {
+        servicesFilterApply.addEventListener('click', () => {
+          if (selectedServiceSlug) {
+
+            const matchingBtn = Array.from(filterBtns).find(btn => 
+              btn.getAttribute('data-slug') === selectedServiceSlug
+            );
+            
+            if (matchingBtn) {
+              matchingBtn.click();
+            } else {
+
+              filterBySlug(selectedServiceSlug);
+            }
+          }
+          closeServicesModal();
+        });
+      }
+
+
+      function filterBySlug(slug) {
+
+        filterBtns.forEach(b => b.classList.remove('active'));
+        
+
+        const matchingBtn = Array.from(filterBtns).find(btn => 
+          btn.getAttribute('data-slug') === slug
+        );
+        if (matchingBtn) {
+          matchingBtn.classList.add('active');
+        }
+
+        let visibleCount = 0;
+
+        projectCards.forEach(card => {
+          const cardSlug = card.getAttribute('data-category');
+          if (slug === 'all' || cardSlug === slug) {
+            card.style.display = 'block';
+            setTimeout(() => {
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0)';
+            }, 10);
+            visibleCount++;
+          } else {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+              card.style.display = 'none';
+            }, 300);
+          }
+        });
+
+
+        setTimeout(() => {
+          if (visibleCount === 0) {
+            projectsGrid.style.display = 'none';
+            emptyState.style.display = 'block';
+            emptyState.classList.add('fade-in');
+          } else {
+            projectsGrid.style.display = 'grid';
+            emptyState.style.display = 'none';
+            emptyState.classList.remove('fade-in');
+          }
+        }, 350);
+      }
+
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+
+          if (this.id === 'moreServicesBtn') {
+            return;
+          }
+          
+          e.preventDefault();
+          const slug = this.getAttribute('data-slug');
+          selectedServiceSlug = slug;
+          filterBySlug(slug);
+        });
+      });
+
+
+      projectCards.forEach(card => {
+
+        if (window.matchMedia('(hover: hover)').matches) {
+          card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px)';
+          });
+          
+          card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+          });
+        }
+        
+
+        card.addEventListener('click', function(e) {
+
+          if (window.innerWidth <= 968) {
+
+            return true;
+          }
+        });
+      });
+
+
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+
+      document.querySelectorAll('section').forEach(section => {
+        observer.observe(section);
+      });
+      
+
+      const footer = document.querySelector('footer');
+      if (footer) {
+        footer.style.opacity = '1';
+        footer.style.visibility = 'visible';
+        footer.classList.add('visible');
+      }
+
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-2px)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+      });
+    });
+
+
+    const preventImageInteraction = (img) => {
+      if (!img) return;
+      
+
+      ['dragstart', 'drag', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(eventType => {
+        img.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }, { passive: false });
+      });
+      
+
+      ['click', 'mousedown', 'mouseup', 'mousemove', 'dblclick'].forEach(eventType => {
+        img.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }, { passive: false });
+      });
+      
+
+      img.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }, { passive: false });
+      
+
+      ['selectstart', 'select', 'copy'].forEach(eventType => {
+        img.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          return false;
+        }, { passive: false });
+      });
+      
+
+      img.addEventListener('auxclick', (e) => {
+        if (e.button === 1) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, { passive: false });
+      
+
+      img.style.pointerEvents = 'none';
+      img.style.userSelect = 'none';
+      img.style.webkitUserDrag = 'none';
+      img.style.MozUserSelect = 'none';
+      img.style.msUserSelect = 'none';
+      img.setAttribute('draggable', 'false');
+      img.setAttribute('oncontextmenu', 'return false;');
+    };
+
+
+    const protectImageContainer = (container) => {
+      if (!container) return;
+      
+      // Don't prevent clicks on overlay elements that should be clickable
+      const isClickableOverlay = container.classList.contains('image-protection-overlay') && container.hasAttribute('data-project-url');
+      
+      // If this is a project-image container, check if it has a clickable overlay
+      const hasClickableOverlay = container.classList.contains('project-image') && 
+                                   container.querySelector('.image-protection-overlay[data-project-url]');
+      
+      // Prevent all drag and context menu events
+      ['dragstart', 'drag', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop',
+       'contextmenu', 'selectstart', 'select', 'copy', 'auxclick'].forEach(eventType => {
+        container.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          return false;
+        }, { passive: false, capture: true });
+      });
+      
+      // Only prevent click events on non-clickable overlays and containers without clickable overlays
+      // But check the target to allow clicks on clickable overlays
+      if (!isClickableOverlay && !hasClickableOverlay) {
+        container.addEventListener('click', (e) => {
+          // Don't prevent if clicking on a clickable overlay
+          if (e.target.closest && e.target.closest('.image-protection-overlay[data-project-url]')) {
+            return;
+          }
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          return false;
+        }, { passive: false, capture: false }); // Use bubble so clickable handler runs first
+      } else if (hasClickableOverlay) {
+        // For containers with clickable overlays, only prevent clicks that aren't on the overlay
+        container.addEventListener('click', (e) => {
+          // Allow clicks on clickable overlay to pass through
+          if (e.target.closest && e.target.closest('.image-protection-overlay[data-project-url]')) {
+            return;
+          }
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          return false;
+        }, { passive: false, capture: false });
+      }
+    };
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Make overlay clickable to navigate to project detail page - add FIRST with capture phase
+      document.querySelectorAll('.image-protection-overlay[data-project-url]').forEach(overlay => {
+        // Remove any existing protection
+        overlay.style.pointerEvents = 'auto';
+        overlay.style.cursor = 'pointer';
+        
+        overlay.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          const projectUrl = this.getAttribute('data-project-url');
+          if (projectUrl) {
+            window.location.href = projectUrl;
+          }
+          return false;
+        }, true); // Capture phase - runs before other handlers
+      });
+
+      document.querySelectorAll('.project-image img, .empty-state-image img').forEach(preventImageInteraction);
+      
+
+      // Protect containers but exclude clickable overlays
+      document.querySelectorAll('.project-image').forEach(container => {
+        // Only protect if it doesn't have a clickable overlay
+        if (!container.querySelector('.image-protection-overlay[data-project-url]')) {
+          protectImageContainer(container);
+        }
+      });
+      
+      document.querySelectorAll('.empty-state-image').forEach(protectImageContainer);
+      
+      // Only protect non-clickable overlays
+      document.querySelectorAll('.image-protection-overlay:not([data-project-url])').forEach(protectImageContainer);
+    });
+  </script>
+</body>
+</html>
+
+
+

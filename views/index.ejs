@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#C51D34">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/'
+  }) %>
+  
+  <!-- Resource Hints for Performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/css/style.css" as="style">
+  <link rel="preload" href="/Backpack.png" as="image" fetchpriority="high">
+  <link rel="preload" href="/images/Assets/People Working.png" as="image" fetchpriority="high">
+  
+  <!-- Critical CSS to prevent FOUC for loading animation -->
+  <style>
+    .loading-tech-icons,
+    .loading-backpack-container,
+    .loading-backpack-img,
+    .loading-backpack-text,
+    .loading-greeting {
+      visibility: hidden;
+    }
+  </style>
+  
+  <!-- Critical CSS - Load with high priority -->
+  <link rel="stylesheet" href="/css/style.css" media="all">
+  
+  <!-- Fonts with font-display: swap for better performance -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+  
+  <!-- Non-critical CSS - Load asynchronously -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+  
+  <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"></noscript>
+</head>
+<body>
+  <!-- Loading Animation -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-content">
+      <!-- Tech Icons from 4 corners -->
+      <div class="loading-tech-icons">
+        <!-- Bottom Left Icons (2 icons) -->
+        <i class="fab fa-react loading-icon bl-icon" style="--delay: 0s;"></i>
+        <i class="fab fa-python loading-icon bl-icon" style="--delay: 0.2s;"></i>
+        
+        <!-- Bottom Right Icons (2 icons) -->
+        <i class="fab fa-html5 loading-icon br-icon" style="--delay: 0.4s;"></i>
+        <i class="fab fa-css3-alt loading-icon br-icon" style="--delay: 0.6s;"></i>
+        
+        <!-- Top Left Icons (2 icons) -->
+        <i class="fab fa-java loading-icon tl-icon" style="--delay: 0.8s;"></i>
+        <i class="fab fa-php loading-icon tl-icon" style="--delay: 1s;"></i>
+        
+        <!-- Top Right Icons (2 icons) -->
+        <i class="fab fa-android loading-icon tr-icon" style="--delay: 1.2s;"></i>
+        <i class="fas fa-database loading-icon tr-icon" style="--delay: 1.4s;"></i>
+      </div>
+      
+      <!-- Backpack Image Container -->
+      <div class="loading-backpack-container">
+        <img src="/Backpack.png" alt="Backpack" class="loading-backpack-img" id="loadingBackpackImg" draggable="false" oncontextmenu="return false;" width="240" height="240" fetchpriority="high">
+        <div class="loading-text-container">
+          <span class="loading-backpack-text" id="loadingBackpackText"></span>
+          <span class="loading-greeting" id="loadingGreeting"></span>
+        </div>
+        <div class="image-protection-overlay"></div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/header') %>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <!-- Tech Circuit Pattern Background -->
+    <div class="circuit-pattern"></div>
+    
+    <!-- Flying Tech Icons (Programming Languages) -->
+    <div class="flying-tech-icons">
+      <i class="fab fa-react" style="--i:1;"></i>
+      <i class="fab fa-python" style="--i:2;"></i>
+      <i class="fab fa-js-square" style="--i:3;"></i>
+      <i class="fab fa-node-js" style="--i:4;"></i>
+      <i class="fab fa-html5" style="--i:5;"></i>
+      <i class="fab fa-css3-alt" style="--i:6;"></i>
+      <i class="fab fa-vuejs" style="--i:7;"></i>
+      <i class="fab fa-angular" style="--i:8;"></i>
+      <i class="fab fa-java" style="--i:9;"></i>
+      <i class="fab fa-php" style="--i:10;"></i>
+      <i class="fab fa-laravel" style="--i:11;"></i>
+      <i class="fab fa-swift" style="--i:12;"></i>
+      <i class="fab fa-android" style="--i:13;"></i>
+      <i class="fas fa-database" style="--i:16;"></i>
+      <i class="fab fa-git-alt" style="--i:17;"></i>
+      <i class="fab fa-github" style="--i:18;"></i>
+      <i class="fab fa-npm" style="--i:19;"></i>
+      <i class="fab fa-bootstrap" style="--i:20;"></i>
+      <i class="devicon-typescript-plain" style="--i:19;"></i>
+      <i class="devicon-tailwindcss-original" style="--i:20;"></i>
+      <i class="devicon-nextjs-original" style="--i:21;"></i>
+      <i class="devicon-vercel-original" style="--i:22;"></i>
+    </div>
+    
+    <div class="hero-container">
+      <div class="hero-content">
+        <h1>Build Your Digital Future with <span class="highlight">Backpack</span></h1>
+        <p>We create smart, practical solutions that turn ideas into reality. Whether it’s digital, physical, or strategic, we help you make things work better.</p>        <div class="hero-buttons">
+          <a href="/services" class="btn btn-primary">Explore Services</a>
+          <a href="/contact" class="btn btn-outline">Get in Touch</a>
+        </div>
+      </div>
+      
+      <!-- People Working Image -->
+      <div class="hero-image">
+        <img src="/images/Assets/People Working.png" alt="People Working Together" draggable="false" oncontextmenu="return false;" loading="eager" fetchpriority="high" width="600" height="400">
+        <div class="image-glow"></div>
+        <div class="image-protection-overlay"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Brands Section -->
+  <section class="brands-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Brands That <span class="highlight">Trust Us</span></h2>
+      </div>
+      
+      <div class="brands-grid" data-brand-count="<%= logos.length %>">
+        <% logos.forEach((logo, index) => { %>
+          <div class="brand-item" data-index="<%= index + 1 %>">
+            <div class="brand-item-inner">
+              <img src="/logos/<%= logo.filename %>" alt="<%= logo.name %>" loading="lazy" width="120" height="60">
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Services Section -->
+  <section class="services-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>What We Do Best</h2>
+      </div>
+      <div class="services-grid">
+        <% services.forEach(service => { %>
+          <div class="service-card">
+            <div class="service-icon">
+              <% if (service.icon) { %>
+                <% if (service.icon.startsWith('/')) { %>
+                  <img src="<%= service.icon %>" alt="<%= service.title %> Icon" class="service-icon-img" loading="lazy" width="64" height="64" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <i class="fas fa-cog" style="display: none;"></i>
+                <% } else { %>
+                  <i class="fas fa-<%= service.icon %>"></i>
+                <% } %>
+              <% } else { %>
+                <i class="fas fa-cog"></i>
+              <% } %>
+            </div>
+            <h3><%= service.title %></h3>
+            <p><%= service.short_description %></p>
+            <a href="/services/<%= service.slug %>" class="btn btn-outline">Learn More</a>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Us Section -->
+  <section class="about-us-section">
+    <div class="container">
+      <div class="section-header" style="margin-bottom:10px;">
+        <h2>About Us</h2>
+      </div>
+      <div class="about-header" style="margin-top:0;">
+        <h3>Solving Complexity with <span class="highlight-text">Innovation</span></h3>
+        <p>We specialise in creating tailored solutions for enterprises and leading brands, helping them overcome complex business challenges. We value long-term partnerships and work collaboratively to build systems that adapt and grow with your needs.</p>      
+      </div>
+      
+      
+      <div class="about-features">
+        <div class="about-feature-card">
+          <div class="feature-icon-wrapper">
+            <i class="fas fa-lightbulb"></i>
+          </div>
+          <h3>Turning Visions Into Reality</h3>
+          <p>We invest in understanding your thoughts and goals to develop the ideal solution.</p>
+        </div>
+        
+        <div class="about-feature-card">
+          <div class="feature-icon-wrapper">
+            <i class="fas fa-arrow-trend-up"></i>
+          </div>
+          <h3>Grow Business With Our Solutions</h3>
+          <p>Our technical expertise is your asset to helping your business reach new heights.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Backpack Section -->
+  <section class="why-choose-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why Choose <span class="highlight">Backpack</span>?</h2>
+      </div>
+      
+      <div class="why-choose-grid">
+        <!-- Business-driven Approach - Icon Left -->
+        <div class="why-item why-item-left">
+          <div class="why-icon why-icon-left">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div class="why-content">
+            <h3>Business-driven Approach</h3>
+            <p>Our web and mobile apps meet security standards set by industry leaders like OWASP, SANS, Apple, and Google.</p>
+          </div>
+        </div>
+        
+        <!-- Great UI & UX Design - Icon Middle Down -->
+        <div class="why-item why-item-center">
+          <div class="why-content">
+            <h3>Great UI & UX Design</h3>
+            <p>We strive to always create solutions that are aesthetically pleasing, easy to use, and deliver an exceptional user experience.</p>
+          </div>
+          <div class="why-icon why-icon-center">
+            <i class="fas fa-palette"></i>
+          </div>
+        </div>
+        
+        <!-- Great Support - Icon Top Right -->
+        <div class="why-item why-item-right">
+          <div class="why-icon why-icon-right">
+            <i class="fas fa-headset"></i>
+          </div>
+          <div class="why-content">
+            <h3>Great Support</h3>
+            <p>We take the time to understand your unique challenges, crafting tailored software solutions to address your needs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>What Our <span class="highlight">Clients Say</span></h2>
+        <p>Hear from the teams that trust Backpack to power their development</p>
+      </div>
+      
+      <div class="testimonials-bento">
+        <% testimonials.forEach((testimonial, index) => { %>
+          <div class="testimonial-card <%= testimonial.featured ? 'testimonial-featured' : '' %>">
+            <div class="testimonial-content">
+              <p class="testimonial-text">"<%= testimonial.text %>"</p>
+              
+              <div class="testimonial-rating">
+                <% 
+                  const fullStars = Math.floor(testimonial.rating);
+                  const hasHalfStar = testimonial.rating % 1 !== 0;
+                  
+                  for(let i = 0; i < fullStars; i++) { %>
+                    <i class="fas fa-star"></i>
+                <% } 
+                  if(hasHalfStar) { %>
+                    <i class="fas fa-star-half-alt"></i>
+                <% } %>
+              </div>
+              
+              <div class="testimonial-author">
+                <img src="/<%= testimonial.avatarFolder ? testimonial.avatarFolder : 'images/team members' %>/<%= testimonial.avatar %>" alt="<%= testimonial.name %>" draggable="false" oncontextmenu="return false;" loading="lazy" width="60" height="60">
+                <div class="author-info">
+                  <h4><%= testimonial.name %></h4>
+                  <p><%= testimonial.company %></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our 4 Step Approach Section -->
+  <section class="approach-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Our <span class="highlight">4 Step Approach</span></h2>
+        <p>How we bring your vision to life</p>
+      </div>
+      
+      <div class="approach-container">
+        <!-- Left Side Steps -->
+        <div class="approach-steps approach-steps-left">
+          <!-- Step 1 -->
+          <div class="approach-step approach-step-1">
+            <div class="step-card" id="step1">
+              <div class="step-icon">
+                <i class="fas fa-comments"></i>
+              </div>
+              <div class="step-number">1</div>
+              <h3>Discussion about<br>the project</h3>
+            </div>
+          </div>
+          
+          <!-- Step 3 -->
+          <div class="approach-step approach-step-3">
+            <div class="step-card" id="step3">
+              <div class="step-icon">
+                <i class="fas fa-rocket"></i>
+              </div>
+              <div class="step-number">3</div>
+              <h3>Deployment &<br>Launch</h3>
+            </div>
+          </div>
+        </div>
+        
+        
+        <!-- Center Backpack -->
+        <div class="approach-center">
+          <div class="backpack-container">
+            <div class="backpack-glow"></div>
+            <img src="/images/Assets/Backpack Bag.png" alt="Backpack" class="backpack-image" draggable="false" oncontextmenu="return false;" loading="lazy" width="300" height="300">
+            <div class="image-protection-overlay"></div>
+          </div>
+        </div>
+        
+        <!-- Right Side Steps -->
+        <div class="approach-steps approach-steps-right">
+          <!-- Step 2 -->
+          <div class="approach-step approach-step-2">
+            <div class="step-card" id="step2">
+              <div class="step-icon">
+                <i class="fas fa-code"></i>
+              </div>
+              <div class="step-number">2</div>
+              <h3>Design, Planning &<br>Development</h3>
+            </div>
+          </div>
+          
+          <!-- Step 4 -->
+          <div class="approach-step approach-step-4">
+            <div class="step-card" id="step4">
+              <div class="step-icon">
+                <i class="fas fa-sync-alt"></i>
+              </div>
+              <div class="step-number">4</div>
+              <h3>Feedback &<br>Iteration</h3>
+            </div>
+          </div>
+        </div>
+        
+        
+        <!-- SVG Straight Lines -->
+        <svg class="approach-lines" viewBox="0 0 1200 600" preserveAspectRatio="none">
+          <defs>
+            <style>
+              .approach-line {
+                stroke: #c51d34;
+                stroke-width: 3;
+                fill: none;
+                stroke-dashoffset: 1000;
+                filter: drop-shadow(0 2px 6px rgba(197, 29, 52, 0.5));
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                opacity: 0;
+              }
+              
+              .approach-section.animate-active .approach-line {
+                animation: shootArrow 1.2s ease-out forwards;
+              }
+              
+              .approach-section.animate-active .line-1 {
+                animation-delay: 0.3s;
+              }
+              
+              .approach-section.animate-active .line-2 {
+                animation-delay: 0.45s;
+              }
+              
+              .approach-section.animate-active .line-3 {
+                animation-delay: 0.6s;
+              }
+              
+              .approach-section.animate-active .line-4 {
+                animation-delay: 0.75s;
+              }
+              
+              @keyframes shootArrow {
+                0% {
+                  stroke-dashoffset: 1000;
+                  opacity: 0;
+                }
+                1% {
+                  opacity: 1;
+                }
+                100% {
+                  stroke-dashoffset: 0;
+                  opacity: 1;
+                }
+              }
+            </style>
+          </defs>
+          <!-- Straight Line 1: Center to Step 1 (Left Top) -->
+          <path id="line1" class="approach-line line-1" d="M 600 300 L 200 220" />
+          
+          <!-- Straight Line 2: Center to Step 2 (Right Top) -->
+          <path id="line2" class="approach-line line-2" d="M 600 300 L 1000 220" />
+          
+          <!-- Straight Line 3: Center to Step 3 (Left Bottom) -->
+          <path id="line3" class="approach-line line-3" d="M 600 300 L 200 380" />
+          
+          <!-- Straight Line 4: Center to Step 4 (Right Bottom) -->
+          <path id="line4" class="approach-line line-4" d="M 600 300 L 1000 380" />
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blogs & Polls Section -->
+  <section class="blogs-polls-section" style="padding: 4rem 0; background: #f9fafb;">
+    <div class="container">
+      <div class="section-header">
+        <h2>Latest <span class="highlight">Updates</span></h2>
+        <p>Stay connected with our latest blogs and participate in polls</p>
+      </div>
+      
+      <div class="updates-grid">
+        <!-- Blogs Section -->
+        <div class="updates-section">
+          <div class="updates-header">
+            <h3 class="updates-title">
+              <i class="fas fa-blog" style="color: #c51d34; margin-right: 0.5rem;"></i>
+              Latest Blogs
+            </h3>
+            <a href="/blogs" class="updates-view-all">
+              View All <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+          
+          <% if (blogs && blogs.length > 0) { %>
+            <div class="blogs-list">
+              <% blogs.forEach(blog => { %>
+                <div class="blog-card" onclick="window.location.href='/blogs/<%= blog.slug %>'">
+                  <div class="blog-card-content">
+                    <% if (blog.cover_image) { %>
+                      <img src="<%= blog.cover_image %>" alt="<%= blog.title %>" class="blog-image" loading="lazy" width="150" height="120">
+                    <% } else { %>
+                      <div class="blog-image-placeholder">
+                        <i class="fas fa-blog"></i>
+                      </div>
+                    <% } %>
+                    <div class="blog-text">
+                      <h4 class="blog-title">
+                        <%= blog.title %>
+                      </h4>
+                      <p class="blog-date">
+                        <%= new Date(blog.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                      </p>
+                      <a href="/blogs/<%= blog.slug %>" class="blog-link">
+                        Read More <i class="fas fa-arrow-right"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <div class="updates-empty">
+              <i class="fas fa-blog"></i>
+              <p>No blog posts yet. Check back soon!</p>
+            </div>
+          <% } %>
+        </div>
+        
+        <!-- Polls Section -->
+        <div class="updates-section">
+          <div class="updates-header">
+            <h3 class="updates-title">
+              <i class="fas fa-poll" style="color: #10b981; margin-right: 0.5rem;"></i>
+              Active Polls
+            </h3>
+            <a href="/polls" class="updates-view-all">
+              View All <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+          
+          <% if (polls && polls.length > 0) { %>
+            <div class="polls-list">
+              <% polls.forEach(poll => { %>
+                <div class="poll-card">
+                  <h4 class="poll-question">
+                    <%= poll.question %>
+                  </h4>
+                  
+                  <!-- Poll Results -->
+                  <div class="poll-results">
+                    <% poll.options.forEach((option, index) => { %>
+                      <% 
+                        const votes = poll.optionVotes && poll.optionVotes[index] ? poll.optionVotes[index] : 0;
+                        const percentage = poll.totalVotes > 0 ? ((votes / poll.totalVotes) * 100).toFixed(1) : 0;
+                      %>
+                      <div class="poll-option">
+                        <div class="poll-option-header">
+                          <span class="poll-option-text"><%= option %></span>
+                          <span class="poll-option-stats"><%= percentage %>% (<%= votes %> votes)</span>
+                        </div>
+                        <div class="poll-bar">
+                          <div class="poll-bar-fill" style="width: <%= percentage %>%;"></div>
+                        </div>
+                      </div>
+                    <% }) %>
+                  </div>
+                  
+                  <div class="poll-footer">
+                    <i class="fas fa-users"></i>
+                    <span><%= poll.totalVotes || 0 %> total votes</span>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <div class="updates-empty">
+              <i class="fas fa-poll"></i>
+              <p>No active polls at the moment.</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <!-- Tech Grid Background -->
+    <div class="tech-grid-bg"></div>
+    
+    <div class="container">
+      <div class="cta-content">
+        <h2 class="cta-title">Ready to Start Your Project?</h2>
+        <p class="cta-subtitle">Let's discuss how we can help bring your vision to life</p>
+        <div style="margin-top: 2rem;">
+          <a href="/contact" class="btn btn-primary cta-button" style="font-size: 1.125rem; padding: 1rem 2rem;">Contact Us Today</a>
+        </div>
+        
+        <!-- Tech Icons -->
+        <div class="tech-icons">
+          <div class="tech-icon-item"><i class="fab fa-react"></i></div>
+          <div class="tech-icon-item"><i class="fab fa-node-js"></i></div>
+          <div class="tech-icon-item"><i class="fab fa-html5"></i></div>
+          <div class="tech-icon-item"><i class="fab fa-css3-alt"></i></div>
+          <div class="tech-icon-item"><i class="fab fa-js-square"></i></div>
+          <div class="tech-icon-item"><i class="fab fa-vuejs"></i></div>
+          <div class="tech-icon-item"><i class="fab fa-java"></i></div>
+          <div class="tech-icon-item"><i class="fab fa-laravel"></i></div>
+          <div class="tech-icon-item"><i class="fa-brands fa-bootstrap"></i></div>
+          <div class="tech-icon-item"><i class="devicon-tailwindcss-original"></i></div>
+          <div class="tech-icon-item"><i class="devicon-typescript-plain"></i></div>
+          <div class="tech-icon-item"><i class="devicon-mysql-original"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>
+  
+  <!-- Adding scroll animation script - Deferred for performance -->
+  <script defer>
+    (function() {
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, observerOptions);
+
+      // Wait for DOM to be ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initScrollAnimations);
+      } else {
+        initScrollAnimations();
+      }
+
+      function initScrollAnimations() {
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+        document.querySelectorAll('section:not(.hero)').forEach(section => observer.observe(section));
+        
+        const footer = document.querySelector('footer');
+        if (footer) {
+          observer.observe(footer);
+        }
+
+        const approachObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.classList.contains('animate-active')) {
+              entry.target.classList.add('animate-active');
+            }
+          });
+        }, {
+          threshold: 0.2,
+          rootMargin: '0px'
+        });
+
+        const approachSection = document.querySelector('.approach-section');
+        if (approachSection) {
+          approachObserver.observe(approachSection);
+        }
+      }
+    })();
+  </script>
+
+  <!-- White Image to Black Converter Script - Deferred for performance -->
+  <script defer>
+    function checkImageBrightness(img) {
+      return new Promise((resolve) => {
+
+        if (img.dataset.processed === 'true') {
+          resolve(false);
+          return;
+        }
+        
+
+        if (!img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
+          const checkLoaded = () => {
+            if (img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
+              analyzeImage(img).then(resolve);
+            } else {
+              setTimeout(checkLoaded, 100);
+            }
+          };
+          checkLoaded();
+          return;
+        }
+        
+        analyzeImage(img).then(resolve);
+      });
+    }
+    
+    function analyzeImage(img) {
+      return new Promise((resolve) => {
+        try {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          
+          if (canvas.width === 0 || canvas.height === 0) {
+            img.dataset.processed = 'true';
+            resolve(false);
+            return;
+          }
+          
+          ctx.drawImage(img, 0, 0);
+          
+
+          const samplePoints = [];
+          const gridSize = 5; 
+          
+          for (let i = 0; i <= gridSize; i++) {
+            for (let j = 0; j <= gridSize; j++) {
+              samplePoints.push({
+                x: (i / gridSize) * canvas.width,
+                y: (j / gridSize) * canvas.height
+              });
+            }
+          }
+          
+          let totalBrightness = 0;
+          let sampleCount = 0;
+          let whitePixelCount = 0;
+          
+          samplePoints.forEach(point => {
+            const x = Math.floor(point.x);
+            const y = Math.floor(point.y);
+            
+            if (x >= 0 && x < canvas.width && y >= 0 && y < canvas.height) {
+              try {
+                const pixelData = ctx.getImageData(x, y, 1, 1).data;
+                const r = pixelData[0];
+                const g = pixelData[1];
+                const b = pixelData[2];
+                const a = pixelData[3];
+                
+
+                if (a < 128) return;
+                
+
+                const brightness = (r + g + b) / 3;
+                totalBrightness += brightness;
+                sampleCount++;
+                
+
+                if (brightness > 200) {
+                  whitePixelCount++;
+                }
+              } catch (e) {
+
+              }
+            }
+          });
+          
+          if (sampleCount === 0) {
+            img.dataset.processed = 'true';
+            resolve(false);
+            return;
+          }
+          
+          const averageBrightness = totalBrightness / sampleCount;
+          const whitePixelRatio = whitePixelCount / sampleCount;
+          
+
+
+
+          const shouldConvert = averageBrightness > 200 || whitePixelRatio > 0.8;
+          
+          if (shouldConvert) {
+            img.style.filter = 'brightness(0)';
+            img.style.transition = 'filter 0.3s ease';
+          }
+          
+          img.dataset.processed = 'true';
+          resolve(shouldConvert);
+        } catch (e) {
+          console.warn('Error analyzing image:', e);
+          img.dataset.processed = 'true';
+          resolve(false);
+        }
+      });
+    }
+    
+    function processAllImages() {
+      const serviceImages = document.querySelectorAll('.service-icon-img:not([data-processed="true"])');
+      
+      if (serviceImages.length === 0) return;
+      
+      serviceImages.forEach(img => {
+        checkImageBrightness(img);
+      });
+    }
+    
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+
+        setTimeout(processAllImages, 100);
+        
+
+        setTimeout(processAllImages, 1000);
+        setTimeout(processAllImages, 2000);
+        
+
+        const observer = new MutationObserver(processAllImages);
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      });
+    } else {
+
+      setTimeout(processAllImages, 100);
+      setTimeout(processAllImages, 1000);
+      setTimeout(processAllImages, 2000);
+    }
+    
+
+    document.addEventListener('load', function(e) {
+      if (e.target.classList && e.target.classList.contains('service-icon-img')) {
+        checkImageBrightness(e.target);
+      }
+    }, true);
+  </script>
+
+<script defer>
+const positionApproachLines = () => {
+  const svg = document.querySelector('.approach-lines');
+  const backpack = document.querySelector('.backpack-container img');
+  if (!svg || !backpack) return;
+
+  const svgRect = svg.getBoundingClientRect();
+  const backpackRect = backpack.getBoundingClientRect();
+  const startX = backpackRect.left + backpackRect.width / 2 - svgRect.left;
+  const startY = backpackRect.top + backpackRect.height / 2 - svgRect.top;
+
+  for (let i = 1; i <= 4; i++) {
+    const line = document.getElementById(`line${i}`);
+    const step = document.getElementById(`step${i}`);
+    if (!step || !line) continue;
+
+    const stepRect = step.getBoundingClientRect();
+
+
+    let targetX = stepRect.left + stepRect.width / 2 - svgRect.left;
+    let targetY;
+
+
+
+    if (i === 1 || i === 2) {
+      const topMargin = 8; 
+      targetY = stepRect.top - svgRect.top + topMargin;
+
+      if (i === 1) targetX -= Math.min(30, stepRect.width * 0.15); 
+      if (i === 2) targetX += Math.min(30, stepRect.width * 0.12); 
+    } 
+
+    else {
+      const shortGap = Math.max(12, stepRect.height * 0.18); 
+      targetY = stepRect.top - svgRect.top + shortGap; 
+
+      if (i === 3) targetX -= Math.min(18, stepRect.width * 0.12);
+      if (i === 4) targetX += Math.min(18, stepRect.width * 0.12);
+    }
+
+
+    const dx = targetX - startX;
+    const dy = targetY - startY;
+    const midX = startX + dx * 0.45; 
+    const midY = startY + dy * 0.45;
+
+
+    const distance = Math.hypot(dx, dy) || 1;
+    const curveFactor = 0.12; 
+
+    const side = (targetX < startX) ? -1 : 1;
+    const perpX = -dy / distance * distance * curveFactor * side;
+    const perpY = dx / distance * distance * curveFactor * side;
+
+    const controlX = midX + perpX;
+    const controlY = midY + perpY;
+
+
+    const d = `M ${startX} ${startY} Q ${controlX} ${controlY} ${targetX} ${targetY}`;
+    line.setAttribute('d', d);
+
+
+    try {
+      const length = Math.round(line.getTotalLength());
+      line.style.strokeDasharray = length;
+      line.style.strokeDashoffset = length;
+
+    } catch (e) {
+
+    }
+  }
+};
+
+
+window.addEventListener('load', positionApproachLines);
+
+// Debounce resize handler for better performance
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    positionApproachLines();
+  }, 150);
+});
+
+  </script>
+
+  <style>
+    /* Latest Updates Section - Responsive Styles */
+    .updates-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .updates-section {
+      width: 100%;
+    }
+
+    .updates-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .updates-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .updates-view-all {
+      color: #c51d34;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+
+    .updates-view-all:hover {
+      color: #a01628;
+    }
+
+    /* Blog Cards */
+    .blogs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .blog-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .blog-card-content {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .blog-image,
+    .blog-image-placeholder {
+      width: 150px;
+      height: 120px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .blog-image-placeholder {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .blog-image-placeholder i {
+      font-size: 2rem;
+      color: white;
+      opacity: 0.5;
+    }
+
+    .blog-text {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .blog-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #111827;
+      margin: 0 0 0.5rem 0;
+      line-height: 1.3;
+    }
+
+    .blog-date {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin: 0 0 0.75rem 0;
+    }
+
+    .blog-link {
+      color: #c51d34;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-top: auto;
+      transition: color 0.2s;
+    }
+
+    .blog-link:hover {
+      color: #a01628;
+    }
+
+    /* Poll Cards */
+    .polls-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .poll-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .poll-question {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #111827;
+      margin: 0 0 1rem 0;
+      line-height: 1.4;
+    }
+
+    .poll-results {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .poll-option {
+      width: 100%;
+    }
+
+    .poll-option-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+      gap: 0.5rem;
+    }
+
+    .poll-option-text {
+      color: #111827;
+      font-weight: 500;
+      font-size: 0.875rem;
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .poll-option-stats {
+      font-weight: 600;
+      color: #10b981;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .poll-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .poll-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+      transition: width 0.3s ease;
+    }
+
+    .poll-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* Empty State */
+    .updates-empty {
+      background: white;
+      border-radius: 12px;
+      padding: 3rem;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    .updates-empty i {
+      font-size: 3rem;
+      opacity: 0.3;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .updates-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .updates-section {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .blogs-polls-section {
+        padding: 2.5rem 0 !important;
+      }
+
+      .updates-grid {
+        margin-top: 2rem;
+        gap: 2rem;
+      }
+
+      .updates-title {
+        font-size: 1.25rem;
+      }
+
+      .updates-view-all {
+        font-size: 0.875rem;
+      }
+
+      .blog-card-content {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .blog-image,
+      .blog-image-placeholder {
+        width: 100%;
+        height: 200px;
+      }
+
+      .blog-text {
+        padding: 1.25rem;
+      }
+
+      .blog-title {
+        font-size: 1rem;
+      }
+
+      .blog-date {
+        font-size: 0.8125rem;
+      }
+
+      .blog-link {
+        font-size: 0.8125rem;
+      }
+
+      .poll-card {
+        padding: 1.25rem;
+      }
+
+      .poll-question {
+        font-size: 1rem;
+      }
+
+      .poll-option-text,
+      .poll-option-stats {
+        font-size: 0.8125rem;
+      }
+
+      .poll-option-header {
+        flex-wrap: wrap;
+      }
+
+      .updates-empty {
+        padding: 2rem 1.5rem;
+      }
+
+      .updates-empty i {
+        font-size: 2.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .blogs-polls-section {
+        padding: 2rem 0 !important;
+      }
+
+      .updates-grid {
+        margin-top: 1.5rem;
+        gap: 1.5rem;
+      }
+
+      .updates-header {
+        margin-bottom: 1.25rem;
+      }
+
+      .updates-title {
+        font-size: 1.125rem;
+      }
+
+      .updates-view-all {
+        font-size: 0.8125rem;
+      }
+
+      .blogs-list,
+      .polls-list {
+        gap: 1.25rem;
+      }
+
+      .blog-image,
+      .blog-image-placeholder {
+        height: 180px;
+      }
+
+      .blog-text {
+        padding: 1rem;
+      }
+
+      .blog-title {
+        font-size: 0.9375rem;
+      }
+
+      .blog-date {
+        font-size: 0.75rem;
+      }
+
+      .blog-link {
+        font-size: 0.75rem;
+      }
+
+      .poll-card {
+        padding: 1rem;
+      }
+
+      .poll-question {
+        font-size: 0.9375rem;
+        margin-bottom: 0.875rem;
+      }
+
+      .poll-results {
+        gap: 0.625rem;
+        margin-bottom: 0.875rem;
+      }
+
+      .poll-option-text,
+      .poll-option-stats {
+        font-size: 0.75rem;
+      }
+
+      .poll-footer {
+        font-size: 0.8125rem;
+        padding-top: 0.625rem;
+      }
+
+      .updates-empty {
+        padding: 1.5rem 1rem;
+      }
+
+      .updates-empty i {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .updates-empty p {
+        font-size: 0.875rem;
+      }
+    }
+
+    /* Disable hover effects on touch devices */
+    @media (hover: none) and (pointer: coarse) {
+      .blog-card:hover {
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+    }
+  </style>
+
+  <!-- Image Protection Styles -->
+  <style>
+    .image-protection-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      background: transparent;
+      cursor: default;
+      pointer-events: auto;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .hero-image,
+    .backpack-container {
+      position: relative;
+      pointer-events: auto;
+      user-select: none;
+    }
+
+    .hero-image img,
+    .backpack-image,
+    .loading-backpack-img,
+    .testimonial-author img {
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+
+    .loading-backpack-container,
+    .testimonial-author {
+      position: relative;
+      pointer-events: auto;
+      user-select: none;
+    }
+  </style>
+
+  <!-- Loading Animation Styles -->
+  <style>
+    body.loading {
+      overflow: hidden;
+    }
+
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--cream-white) 0%, #faf8f3 100%);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 1;
+      transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s cubic-bezier(0.4, 0, 0.2, 1);
+      visibility: visible;
+      overflow: hidden;
+    }
+
+    .loading-screen::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(197, 29, 52, 0.03) 0%, transparent 70%);
+      animation: pulseBg 4s ease-in-out infinite;
+    }
+
+    .loading-screen::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 200px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(197, 29, 52, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: centerGlow 3s ease-in-out 4s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulseBg {
+      0%, 100% {
+        opacity: 0.4;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes centerGlow {
+      0%, 100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.3);
+      }
+    }
+
+    .loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      contain: layout style paint;
+    }
+
+    /* Tech Icons Animation */
+    .loading-tech-icons {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      contain: layout style paint;
+      will-change: contents;
+      visibility: visible;
+    }
+
+    /* Hide tech icons on mobile */
+    @media (max-width: 768px) {
+      .loading-tech-icons {
+        display: none;
+      }
+    }
+
+    /* Loading Greeting */
+    .loading-greeting {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--dark-gray) 0%, var(--red) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      will-change: clip-path, transform;
+      contain: layout style;
+      clip-path: inset(0 100% 0 -20%);
+      animation: wipeTextGreeting 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 4.4s forwards,
+                 textRevealGreeting 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 4.4s forwards;
+      transform-origin: left center;
+      overflow: visible;
+      padding-right: 20px;
+      visibility: visible;
+      display: block;
+      margin-top: 0.5rem;
+      align-self: flex-start;
+    }
+
+    .loading-greeting::before {
+      content: attr(data-greeting);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--dark-gray) 0%, var(--red) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: blur(8px);
+      opacity: 0;
+      animation: textShadowGlowGreeting 1.5s ease-out 4.8s forwards;
+      z-index: -1;
+    }
+
+    @keyframes wipeTextGreeting {
+      0% {
+        clip-path: inset(0 100% 0 -20%);
+      }
+      100% {
+        clip-path: inset(0 -20% 0 -20%);
+      }
+    }
+
+    @keyframes textRevealGreeting {
+      0% {
+        transform: translate3d(5px, 0, 0) scale(0.95);
+        opacity: 0.8;
+      }
+      60% {
+        transform: translate3d(-1px, 0, 0) scale(1.02);
+      }
+      100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes textShadowGlowGreeting {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        opacity: 0.6;
+        transform: translate3d(2px, 2px, 0) scale(1.01);
+      }
+      100% {
+        opacity: 0.3;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .loading-greeting {
+        font-size: 1.25rem;
+        margin-top: 0.4rem;
+        letter-spacing: -0.75px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .loading-greeting {
+        font-size: 1.125rem;
+        margin-top: 0.3rem;
+        letter-spacing: -0.5px;
+      }
+    }
+
+    .loading-icon {
+      position: absolute;
+      font-size: 3.5rem;
+      color: var(--red);
+      opacity: 0;
+      filter: drop-shadow(0 0 20px rgba(197, 29, 52, 0.6));
+      animation: throwToCenter 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation-delay: var(--delay, 0s);
+      will-change: transform, opacity;
+      contain: layout style paint;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+
+    /* Bottom Left Icons */
+    .bl-icon {
+      bottom: -60px;
+      left: -60px;
+      animation-name: throwFromBottomLeft;
+    }
+
+    .bl-icon:nth-child(2) {
+      bottom: -75px;
+      left: -75px;
+    }
+
+    /* Bottom Right Icons */
+    .br-icon {
+      bottom: -60px;
+      right: -60px;
+      animation-name: throwFromBottomRight;
+    }
+
+    .br-icon:nth-child(4) {
+      bottom: -75px;
+      right: -75px;
+    }
+
+    /* Top Left Icons */
+    .tl-icon {
+      top: -60px;
+      left: -60px;
+      animation-name: throwFromTopLeft;
+    }
+
+    .tl-icon:nth-child(6) {
+      top: -75px;
+      left: -75px;
+    }
+
+    /* Top Right Icons */
+    .tr-icon {
+      top: -60px;
+      right: -60px;
+      animation-name: throwFromTopRight;
+    }
+
+    .tr-icon:nth-child(8) {
+      top: -75px;
+      right: -75px;
+    }
+
+    @keyframes throwFromBottomLeft {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.2) rotate(0deg);
+      }
+      8% {
+        opacity: 1;
+      }
+      45% {
+        transform: translate3d(calc(50vw - 150px), calc(-50vh + 150px), 0) scale(1.4) rotate(200deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(calc(50vw - 120px), calc(-50vh + 120px), 0) scale(1.8) rotate(450deg);
+      }
+    }
+
+    @keyframes throwFromBottomRight {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.2) rotate(0deg);
+      }
+      8% {
+        opacity: 1;
+      }
+      45% {
+        transform: translate3d(calc(-50vw + 150px), calc(-50vh + 150px), 0) scale(1.4) rotate(-200deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(calc(-50vw + 120px), calc(-50vh + 120px), 0) scale(1.8) rotate(-450deg);
+      }
+    }
+
+    @keyframes throwFromTopLeft {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.2) rotate(0deg);
+      }
+      8% {
+        opacity: 1;
+      }
+      45% {
+        transform: translate3d(calc(50vw - 150px), calc(50vh - 150px), 0) scale(1.4) rotate(200deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(calc(50vw - 120px), calc(50vh - 120px), 0) scale(1.8) rotate(450deg);
+      }
+    }
+
+    @keyframes throwFromTopRight {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.2) rotate(0deg);
+      }
+      8% {
+        opacity: 1;
+      }
+      45% {
+        transform: translate3d(calc(-50vw + 150px), calc(50vh - 150px), 0) scale(1.4) rotate(-200deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(calc(-50vw + 120px), calc(50vh - 120px), 0) scale(1.8) rotate(-450deg);
+      }
+    }
+
+    /* Backpack Container */
+    .loading-backpack-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: -5rem;
+      z-index: 10;
+      visibility: visible;
+    }
+
+    /* Text Container */
+    .loading-text-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
+      z-index: 2;
+    }
+
+    .loading-backpack-img {
+      width: 240px;
+      height: auto;
+      opacity: 0;
+      transform: translate3d(0, 150px, 0) scale(0.4);
+      animation: riseBackpack 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.8s forwards, 
+                 moveLeft 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) 3.6s forwards,
+                 subtleFloat 3s ease-in-out 4.5s infinite;
+      filter: drop-shadow(0 15px 40px rgba(197, 29, 52, 0.4));
+      visibility: visible;
+      will-change: transform, opacity;
+      contain: layout style paint;
+      backface-visibility: hidden;
+      position: relative;
+      z-index: 2;
+    }
+
+    .loading-backpack-img::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 120%;
+      height: 120%;
+      transform: translate(-50%, -50%) translateX(-15px);
+      background: radial-gradient(circle, rgba(197, 29, 52, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      opacity: 0;
+      animation: pulseGlow 2s ease-in-out 4.5s infinite;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes riseBackpack {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 150px, 0) scale(0.4) rotate(-5deg);
+      }
+      40% {
+        opacity: 0.9;
+        transform: translate3d(0, -30px, 0) scale(1.15) rotate(2deg);
+      }
+      70% {
+        transform: translate3d(0, 8px, 0) scale(0.98) rotate(-1deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+      }
+    }
+
+    @keyframes moveLeft {
+      0% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+      }
+      40% {
+        transform: translate3d(-15px, -5px, 0) scale(1.05) rotate(-2deg);
+      }
+      70% {
+        transform: translate3d(-25px, 2px, 0) scale(0.98) rotate(1deg);
+      }
+      100% {
+        transform: translate3d(-30px, 0, 0) scale(1) rotate(0deg);
+      }
+    }
+
+    @keyframes subtleFloat {
+      0%, 100% {
+        transform: translate3d(-30px, 0, 0) scale(1) rotate(0deg);
+      }
+      50% {
+        transform: translate3d(-30px, -8px, 0) scale(1.02) rotate(1deg);
+      }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+      }
+    }
+
+    /* Backpack Text with Gradient */
+    .loading-backpack-text {
+      font-size: 4.5rem;
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, var(--dark-gray) 0%, var(--red) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      will-change: clip-path, transform;
+      contain: layout style;
+      clip-path: inset(0 100% 0 -20%);
+      animation: wipeText 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 3.8s forwards,
+                 textReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 3.8s forwards;
+      transform-origin: left center;
+      overflow: visible;
+      padding-right: 20px;
+      visibility: visible;
+    }
+
+    .loading-backpack-text::before {
+      content: 'Backpack';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--dark-gray) 0%, var(--red) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: blur(8px);
+      opacity: 0;
+      animation: textShadowGlow 1.5s ease-out 4.2s forwards;
+      z-index: -1;
+    }
+
+
+    @keyframes wipeText {
+      0% {
+        clip-path: inset(0 100% 0 -20%);
+      }
+      100% {
+        clip-path: inset(0 -20% 0 -20%);
+      }
+    }
+
+    @keyframes textReveal {
+      0% {
+        transform: translate3d(5px, 0, 0) scale(0.95);
+        opacity: 0.8;
+      }
+      60% {
+        transform: translate3d(-1px, 0, 0) scale(1.02);
+      }
+      100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes textShadowGlow {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        opacity: 0.6;
+        transform: translate3d(2px, 2px, 0) scale(1.01);
+      }
+      100% {
+        opacity: 0.3;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+
+    /* Responsive Design - Optimized for smaller devices */
+    @media (max-width: 1024px) {
+      .loading-backpack-img {
+        width: 200px;
+      }
+
+      .loading-backpack-text {
+        font-size: 3.5rem;
+      }
+
+      .loading-backpack-container {
+        gap: -0.8rem;
+      }
+
+      @keyframes moveLeft {
+        0% {
+          transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+        }
+        100% {
+          transform: translate3d(-25px, 0, 0) scale(1) rotate(0deg);
+        }
+      }
+
+      @keyframes subtleFloat {
+        0%, 100% {
+          transform: translate3d(-25px, 0, 0) scale(1) rotate(0deg);
+        }
+        50% {
+          transform: translate3d(-25px, -6px, 0) scale(1.02) rotate(1deg);
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      .loading-backpack-img {
+        width: 160px;
+      }
+
+      .loading-backpack-text {
+        font-size: 3rem;
+        letter-spacing: -1.5px;
+      }
+
+      .loading-backpack-container {
+        gap: -0.6rem;
+      }
+
+      @keyframes moveLeft {
+        0% {
+          transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+        }
+        100% {
+          transform: translate3d(-20px, 0, 0) scale(1) rotate(0deg);
+        }
+      }
+
+      @keyframes subtleFloat {
+        0%, 100% {
+          transform: translate3d(-20px, 0, 0) scale(1) rotate(0deg);
+        }
+        50% {
+          transform: translate3d(-20px, -6px, 0) scale(1.02) rotate(1deg);
+        }
+      }
+
+      .loading-icon {
+        font-size: 2.5rem;
+        filter: drop-shadow(0 0 15px rgba(197, 29, 52, 0.5));
+        animation-duration: 4s;
+      }
+
+      /* Improve icon visibility on tablets */
+      .bl-icon, .br-icon, .tl-icon, .tr-icon {
+        bottom: -40px;
+        top: -40px;
+        left: -40px;
+        right: -40px;
+      }
+
+      .bl-icon:nth-child(2), .br-icon:nth-child(4), 
+      .tl-icon:nth-child(6), .tr-icon:nth-child(8) {
+        bottom: -50px;
+        top: -50px;
+        left: -50px;
+        right: -50px;
+      }
+
+      /* Reduce animation complexity on tablets */
+      .loading-backpack-img {
+        filter: drop-shadow(0 10px 25px rgba(197, 29, 52, 0.3));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .loading-backpack-img {
+        width: 140px;
+      }
+
+      .loading-backpack-text {
+        font-size: 2.5rem;
+        letter-spacing: -1px;
+      }
+
+      .loading-backpack-container {
+        gap: -0.5rem;
+      }
+
+      @keyframes moveLeft {
+        0% {
+          transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+        }
+        100% {
+          transform: translate3d(-35px, 0, 0) scale(1) rotate(0deg);
+        }
+      }
+
+      @keyframes subtleFloat {
+        0%, 100% {
+          transform: translate3d(-35px, 0, 0) scale(1) rotate(0deg);
+        }
+        50% {
+          transform: translate3d(-35px, -5px, 0) scale(1.01) rotate(1deg);
+        }
+      }
+
+      /* Improve icon visibility on small tablets */
+      .loading-icon {
+        animation-duration: 4.5s;
+      }
+
+      .bl-icon, .br-icon, .tl-icon, .tr-icon {
+        bottom: -30px;
+        top: -30px;
+        left: -30px;
+        right: -30px;
+      }
+
+      .bl-icon:nth-child(2), .br-icon:nth-child(4), 
+      .tl-icon:nth-child(6), .tr-icon:nth-child(8) {
+        bottom: -40px;
+        top: -40px;
+        left: -40px;
+        right: -40px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .loading-backpack-img {
+        width: 120px;
+      }
+
+      .loading-backpack-text {
+        font-size: 2.2rem;
+        letter-spacing: -0.5px;
+      }
+
+      .loading-backpack-container {
+        gap: -0.4rem;
+      }
+
+      @keyframes moveLeft {
+        0% {
+          transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+        }
+        100% {
+          transform: translate3d(-30px, 0, 0) scale(1) rotate(0deg);
+        }
+      }
+
+      .loading-icon {
+        font-size: 2rem;
+        filter: drop-shadow(0 0 12px rgba(197, 29, 52, 0.6));
+      }
+
+      /* Improve icon visibility on mobile - bring icons closer to viewport */
+      .bl-icon {
+        bottom: -20px;
+        left: -20px;
+        animation-name: throwFromBottomLeftMobile;
+      }
+
+      .bl-icon:nth-child(2) {
+        bottom: -30px;
+        left: -30px;
+      }
+
+      .br-icon {
+        bottom: -20px;
+        right: -20px;
+        animation-name: throwFromBottomRightMobile;
+      }
+
+      .br-icon:nth-child(4) {
+        bottom: -30px;
+        right: -30px;
+      }
+
+      .tl-icon {
+        top: -20px;
+        left: -20px;
+        animation-name: throwFromTopLeftMobile;
+      }
+
+      .tl-icon:nth-child(6) {
+        top: -30px;
+        left: -30px;
+      }
+
+      .tr-icon {
+        top: -20px;
+        right: -20px;
+        animation-name: throwFromTopRightMobile;
+      }
+
+      .tr-icon:nth-child(8) {
+        top: -30px;
+        right: -30px;
+      }
+
+      /* Simplify animations on mobile - remove filter animations */
+      .loading-backpack-img {
+        filter: drop-shadow(0 8px 20px rgba(197, 29, 52, 0.25));
+        animation: riseBackpackMobile 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1.8s forwards, 
+                   moveLeftMobile 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 3.3s forwards;
+      }
+
+      @keyframes riseBackpackMobile {
+        0% {
+          opacity: 0;
+          transform: translate3d(0, 120px, 0) scale(0.4);
+        }
+        50% {
+          opacity: 0.9;
+          transform: translate3d(0, -20px, 0) scale(1.1);
+        }
+        100% {
+          opacity: 1;
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+      }
+
+      @keyframes moveLeftMobile {
+        0% {
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+        100% {
+          transform: translate3d(-15px, 0, 0) scale(1);
+        }
+      }
+
+      @keyframes subtleFloat {
+        0%, 100% {
+          transform: translate3d(-15px, 0, 0) scale(1);
+        }
+        50% {
+          transform: translate3d(-15px, -5px, 0) scale(1.01);
+        }
+      }
+
+      /* Simplify icon animations on mobile - reduce rotation and scale, improve visibility */
+      .loading-icon {
+        animation-duration: 5s;
+      }
+
+      @keyframes throwFromBottomLeftMobile {
+        0% {
+          opacity: 0;
+          transform: translate3d(0, 0, 0) scale(0.4);
+        }
+        5% {
+          opacity: 1;
+        }
+        45% {
+          transform: translate3d(calc(50vw - 60px), calc(-50vh + 60px), 0) scale(1.2) rotate(180deg);
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate3d(calc(50vw - 50px), calc(-50vh + 50px), 0) scale(1.5) rotate(360deg);
+        }
+      }
+
+      @keyframes throwFromBottomRightMobile {
+        0% {
+          opacity: 0;
+          transform: translate3d(0, 0, 0) scale(0.4);
+        }
+        5% {
+          opacity: 1;
+        }
+        45% {
+          transform: translate3d(calc(-50vw + 60px), calc(-50vh + 60px), 0) scale(1.2) rotate(-180deg);
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate3d(calc(-50vw + 50px), calc(-50vh + 50px), 0) scale(1.5) rotate(-360deg);
+        }
+      }
+
+      @keyframes throwFromTopLeftMobile {
+        0% {
+          opacity: 0;
+          transform: translate3d(0, 0, 0) scale(0.4);
+        }
+        5% {
+          opacity: 1;
+        }
+        45% {
+          transform: translate3d(calc(50vw - 60px), calc(50vh - 60px), 0) scale(1.2) rotate(180deg);
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate3d(calc(50vw - 50px), calc(50vh - 50px), 0) scale(1.5) rotate(360deg);
+        }
+      }
+
+      @keyframes throwFromTopRightMobile {
+        0% {
+          opacity: 0;
+          transform: translate3d(0, 0, 0) scale(0.4);
+        }
+        5% {
+          opacity: 1;
+        }
+        45% {
+          transform: translate3d(calc(-50vw + 60px), calc(50vh - 60px), 0) scale(1.2) rotate(-180deg);
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate3d(calc(-50vw + 50px), calc(50vh - 50px), 0) scale(1.5) rotate(-360deg);
+        }
+      }
+    }
+
+    /* Additional responsive breakpoints for better scaling */
+    @media (max-width: 360px) {
+      .loading-backpack-img {
+        width: 100px;
+      }
+
+      .loading-backpack-text {
+        font-size: 1.8rem;
+        letter-spacing: 0px;
+      }
+
+      .loading-backpack-container {
+        gap: -0.3rem;
+      }
+
+      @keyframes moveLeftMobile {
+        0% {
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+        100% {
+          transform: translate3d(-12px, 0, 0) scale(1);
+        }
+      }
+
+      @keyframes subtleFloat {
+        0%, 100% {
+          transform: translate3d(-12px, 0, 0) scale(1);
+        }
+        50% {
+          transform: translate3d(-12px, -4px, 0) scale(1.01);
+        }
+      }
+
+      /* Even closer icons for very small screens */
+      .loading-icon {
+        animation-duration: 5.5s;
+      }
+
+      .bl-icon, .br-icon, .tl-icon, .tr-icon {
+        bottom: -15px;
+        top: -15px;
+        left: -15px;
+        right: -15px;
+      }
+
+      .bl-icon:nth-child(2), .br-icon:nth-child(4), 
+      .tl-icon:nth-child(6), .tr-icon:nth-child(8) {
+        bottom: -20px;
+        top: -20px;
+        left: -20px;
+        right: -20px;
+      }
+    }
+
+    /* Landscape orientation adjustments */
+    @media (max-height: 600px) and (orientation: landscape) {
+      .loading-backpack-img {
+        width: 140px;
+      }
+
+      .loading-backpack-text {
+        font-size: 2.5rem;
+      }
+
+      .loading-icon {
+        font-size: 2rem;
+      }
+    }
+
+    /* Reduce motion for users who prefer it */
+    @media (prefers-reduced-motion: reduce) {
+      .loading-icon,
+      .loading-backpack-img,
+      .loading-backpack-text {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+
+  <!-- Loading Animation Script - Optimized to not block render -->
+  <script>
+    // Use requestIdleCallback for better performance, fallback to setTimeout
+    const runWhenIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+    
+    runWhenIdle(function() {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLoadingAnimation);
+      } else {
+        initLoadingAnimation();
+      }
+    });
+
+    function initLoadingAnimation() {
+      const loadingScreen = document.getElementById('loadingScreen');
+      const backpackText = document.getElementById('loadingBackpackText');
+      const loadingGreeting = document.getElementById('loadingGreeting');
+      const text = 'Backpack';
+
+      // Function to get greeting based on time of day
+      function getGreeting() {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) {
+          return 'Good Morning';
+        } else if (hour >= 12 && hour < 17) {
+          return 'Good Afternoon';
+        } else if (hour >= 17 && hour < 22) {
+          return 'Good Evening';
+        } else {
+          return 'Good Evening';
+        }
+      }
+
+      // Check if loading animation should be shown (once per day)
+      function shouldShowLoading() {
+        const today = new Date().toDateString();
+        const lastShownDate = localStorage.getItem('backpackLoadingDate');
+        
+        if (lastShownDate !== today) {
+          localStorage.setItem('backpackLoadingDate', today);
+          return true;
+        }
+        return false;
+      }
+
+      // Check if we should show the loading screen
+      if (!shouldShowLoading()) {
+        // Hide loading screen immediately if already shown today
+        if (loadingScreen) {
+          loadingScreen.style.display = 'none';
+          loadingScreen.remove();
+        }
+        document.body.classList.remove('loading');
+        return;
+      }
+
+      // Set greeting
+      if (loadingGreeting) {
+        const greetingText = getGreeting();
+        loadingGreeting.textContent = greetingText;
+        loadingGreeting.setAttribute('data-greeting', greetingText);
+      }
+
+      // Show loading animation
+      document.body.classList.add('loading');
+
+      // Set backpack text
+      backpackText.textContent = text;
+
+      // Hide loading screen after animation
+      setTimeout(() => {
+        if (loadingScreen) {
+          loadingScreen.classList.add('hidden');
+          document.body.classList.remove('loading');
+
+          setTimeout(() => {
+            loadingScreen.remove();
+          }, 1000);
+        }
+      }, 5500);
+    }
+
+    const preventImageInteraction = (img) => {
+      if (!img) return;
+      
+
+      ['dragstart', 'drag', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(eventType => {
+        img.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }, { passive: false });
+      });
+      
+
+      ['click', 'mousedown', 'mouseup', 'mousemove', 'dblclick'].forEach(eventType => {
+        img.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }, { passive: false });
+      });
+      
+
+      img.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }, { passive: false });
+      
+
+      ['selectstart', 'select', 'copy'].forEach(eventType => {
+        img.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          return false;
+        }, { passive: false });
+      });
+      
+
+      img.addEventListener('auxclick', (e) => {
+        if (e.button === 1) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, { passive: false });
+      
+
+      img.style.pointerEvents = 'none';
+      img.style.userSelect = 'none';
+      img.style.webkitUserDrag = 'none';
+      img.style.MozUserSelect = 'none';
+      img.style.msUserSelect = 'none';
+      img.setAttribute('draggable', 'false');
+      img.setAttribute('oncontextmenu', 'return false;');
+    };
+
+
+    const protectImageContainer = (container) => {
+      if (!container) return;
+      
+      ['dragstart', 'drag', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop',
+       'click', 'mousedown', 'mouseup', 'mousemove', 'dblclick', 'contextmenu',
+       'selectstart', 'select', 'copy', 'auxclick'].forEach(eventType => {
+        container.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          return false;
+        }, { passive: false, capture: true });
+      });
+    };
+
+
+    // Defer image protection to not block initial render
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initImageProtection);
+    } else {
+      // Use requestIdleCallback for non-critical image protection
+      const runWhenIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 100));
+      runWhenIdle(initImageProtection);
+    }
+
+    function initImageProtection() {
+      document.querySelectorAll('.hero-image img, .backpack-image, .loading-backpack-img, .testimonial-author img, .empty-state-image img').forEach(preventImageInteraction);
+      document.querySelectorAll('.hero-image, .backpack-container, .loading-backpack-container, .testimonial-author, .image-protection-overlay').forEach(protectImageContainer);
+    }
+  </script>
+  
+</body>
+</html>
+

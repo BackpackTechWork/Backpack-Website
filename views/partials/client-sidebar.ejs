@@ -1,0 +1,381 @@
+<aside class="dashboard-sidebar client-sidebar" id="dashboardSidebar">
+  <div class="sidebar-header">
+    <a href="/" class="sidebar-logo">
+      <img src="/Backpack.ico" alt="Backpack Logo" class="sidebar-logo-img">
+      <span class="sidebar-logo-text">Backpack</span>
+    </a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="/client/portfolio" class="sidebar-nav-item" data-path="/client/portfolio">
+      <div class="nav-item-bg"></div>
+      <i class="fas fa-user-circle"></i>
+      <span>My Portfolio</span>
+      <div class="nav-item-indicator"></div>
+    </a>
+    <a href="/client/projects" class="sidebar-nav-item" data-path="/client/projects">
+      <div class="nav-item-bg"></div>
+      <i class="fas fa-folder-open"></i>
+      <span>My Projects</span>
+      <div class="nav-item-indicator"></div>
+    </a>
+    <a href="/client/inquiries" class="sidebar-nav-item" data-path="/client/inquiries">
+      <div class="nav-item-bg"></div>
+      <i class="fas fa-envelope"></i>
+      <span>My Inquiries</span>
+      <div class="nav-item-indicator"></div>
+    </a>
+    <a href="/blogs" class="sidebar-nav-item" data-path="/blogs">
+      <div class="nav-item-bg"></div>
+      <i class="fas fa-blog"></i>
+      <span>Blogs</span>
+      <div class="nav-item-indicator"></div>
+    </a>
+    <a href="/client/games" class="sidebar-nav-item games-easter-egg-trigger" data-path="/client/games">
+      <div class="nav-item-bg"></div>
+      <i class="fas fa-gamepad"></i>
+      <span>Games</span>
+      <div class="nav-item-indicator"></div>
+    </a>
+    <!-- 300 Year Old Gamer Easter Egg - Outside anchor for proper fixed positioning -->
+    <div class="thiccgob-easter-egg">
+      <div class="thunder-background"></div>
+      <div class="easter-egg-content">
+        <div class="thiccgob-name">300 YEAR OLD GAMER</div>
+        <img src="/images/Assets/Kak Annez Kyi.png" alt="300 year old gamer" class="thiccgob-image">
+        <div class="game-message-box">
+          <p class="game-message-text typing-text" data-text="Come have a break with me!"></p>
+          <p class="game-message-text typing-text" data-text="Let's slack off work for a minute..."></p>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <% if (user) { %>
+      <a href="/client/profile" class="sidebar-profile sidebar-profile-link">
+        <div class="profile-img-wrapper">
+          <div class="profile-pulse"></div>
+          <% 
+            let sidebarImgSrc = user.avatar || user.profilePicture || '/images/default-avatar.png';
+
+            if (sidebarImgSrc && sidebarImgSrc.includes('googleusercontent.com')) {
+
+              sidebarImgSrc = sidebarImgSrc.replace(/=s\d+-c$/, '');
+
+              sidebarImgSrc += '=s96-c';
+
+              const cacheBuster = Math.floor(Date.now() / (1000 * 60 * 60)); 
+
+              sidebarImgSrc = '/avatar-proxy?url=' + encodeURIComponent(sidebarImgSrc) + '&t=' + cacheBuster;
+            }
+          %>
+          <img src="<%= sidebarImgSrc %>" alt="<%= user.name %>" class="sidebar-profile-img" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+        </div>
+        <div class="sidebar-profile-info">
+          <p class="sidebar-profile-name"><%= user.name %></p>
+          <p class="sidebar-profile-role">Client</p>
+        </div>
+      </a>
+      <div class="sidebar-actions">
+        <a href="/" class="sidebar-action-btn">
+          <i class="fas fa-globe"></i>
+          <span>Back to Main Site</span>
+          <div class="btn-ripple"></div>
+        </a>
+        <a href="/auth/logout" class="sidebar-action-btn logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+          <div class="btn-ripple"></div>
+        </a>
+      </div>
+    <% } else { %>
+      <div class="sidebar-actions">
+        <a href="/" class="sidebar-action-btn">
+          <i class="fas fa-globe"></i>
+          <span>Back to Main Site</span>
+          <div class="btn-ripple"></div>
+        </a>
+        <a href="/auth/login" class="sidebar-action-btn">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Login</span>
+          <div class="btn-ripple"></div>
+        </a>
+      </div>
+    <% } %>
+  </div>
+</aside>
+
+<div class="sidebar-mobile-overlay" id="sidebarOverlay"></div>
+<button class="sidebar-mobile-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+  <i class="fas fa-bars"></i>
+</button>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const navItems = document.querySelectorAll('.sidebar-nav-item');
+    
+    navItems.forEach((item, index) => {
+      const itemPath = item.getAttribute('data-path') || item.getAttribute('href');
+      if (currentPath === itemPath || (itemPath !== '/' && currentPath.startsWith(itemPath))) {
+        item.classList.add('active');
+      }
+      
+
+      item.style.animationDelay = `${index * 0.1}s`;
+      item.classList.add('animate-in');
+    });
+
+
+    const sidebar = document.getElementById('dashboardSidebar');
+    const toggle = document.getElementById('sidebarToggle');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    if (toggle && sidebar && overlay) {
+
+      function updateTogglePosition() {
+        if (sidebar.classList.contains('mobile-open')) {
+          toggle.classList.remove('sidebar-closed');
+        } else {
+          toggle.classList.add('sidebar-closed');
+        }
+      }
+
+
+      function openSidebar() {
+        sidebar.classList.add('mobile-open');
+        overlay.classList.add('active');
+        updateTogglePosition();
+      }
+
+
+      function closeSidebar() {
+        sidebar.classList.remove('mobile-open');
+        overlay.classList.remove('active');
+        updateTogglePosition();
+      }
+
+
+      updateTogglePosition();
+
+      toggle.addEventListener('click', function() {
+        if (sidebar.classList.contains('mobile-open')) {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
+      });
+
+      overlay.addEventListener('click', function() {
+        closeSidebar();
+      });
+
+
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchEndX = 0;
+      let touchEndY = 0;
+      const swipeThreshold = 50;
+      const swipeZoneWidth = 30; 
+
+      document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
+
+      document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+      }, { passive: true });
+
+      function handleSwipe() {
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+        const absDeltaX = Math.abs(deltaX);
+        const absDeltaY = Math.abs(deltaY);
+
+
+        if (absDeltaX > absDeltaY && absDeltaX > swipeThreshold) {
+
+          if (deltaX > 0 && touchStartX < swipeZoneWidth && !sidebar.classList.contains('mobile-open')) {
+            openSidebar();
+          }
+
+          else if (deltaX < 0 && sidebar.classList.contains('mobile-open')) {
+            closeSidebar();
+          }
+        }
+      }
+    }
+
+
+    document.querySelectorAll('.sidebar-action-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const ripple = this.querySelector('.btn-ripple');
+        if (ripple) {
+          const rect = this.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          ripple.style.left = x + 'px';
+          ripple.style.top = y + 'px';
+          ripple.classList.add('active');
+          setTimeout(() => ripple.classList.remove('active'), 600);
+        }
+      });
+    });
+
+
+    function init300YearOldGamerEasterEgg() {
+      const gamesTab = document.querySelector('.games-easter-egg-trigger');
+      const easterEgg = document.querySelector('.thiccgob-easter-egg');
+      
+      if (!gamesTab) {
+        console.warn('Games tab not found for easter egg');
+        return;
+      }
+      
+      if (!easterEgg) {
+        console.warn('Easter egg element not found');
+        return;
+      }
+      
+      let isVisible = false;
+      let typingTimers = [];
+      let typingIntervals = [];
+      let delayTimers = [];
+      let isAnimating = false;
+      let hoverTimeout = null;
+      
+      function clearAllAnimations() {
+
+        typingIntervals.forEach(interval => clearInterval(interval));
+        typingIntervals = [];
+        
+
+        delayTimers.forEach(timer => clearTimeout(timer));
+        delayTimers = [];
+        
+
+        const typingTexts = easterEgg.querySelectorAll('.typing-text');
+        typingTexts.forEach(textEl => {
+          textEl.textContent = '';
+          textEl.classList.remove('typing-complete');
+        });
+        
+        isAnimating = false;
+      }
+      
+      function updateEasterEggPosition() {
+        if (!isVisible) return;
+        
+        const rect = gamesTab.getBoundingClientRect();
+        const isMobile = window.innerWidth <= 768;
+        const easterEggWidth = 220;
+        
+        if (isMobile) {
+
+          easterEgg.style.left = Math.max(10, rect.left - easterEggWidth - 12) + 'px';
+        } else {
+
+          easterEgg.style.left = (rect.left + rect.width + 12) + 'px';
+        }
+        easterEgg.style.top = (rect.top + rect.height / 2) + 'px';
+      }
+
+
+      function typeText(element, text, speed = 50) {
+        return new Promise((resolve) => {
+          element.textContent = '';
+          element.classList.remove('typing-complete');
+          let i = 0;
+          const timer = setInterval(() => {
+            if (!isVisible || !isAnimating) {
+              clearInterval(timer);
+              resolve();
+              return;
+            }
+            if (i < text.length) {
+              element.textContent = text.substring(0, i + 1);
+              i++;
+            } else {
+              clearInterval(timer);
+              element.classList.add('typing-complete');
+              resolve();
+            }
+          }, speed);
+          typingIntervals.push(timer);
+        });
+      }
+
+
+      gamesTab.addEventListener('mouseenter', function(e) {
+
+        if (hoverTimeout) {
+          clearTimeout(hoverTimeout);
+          hoverTimeout = null;
+        }
+        
+
+        clearAllAnimations();
+        
+
+        hoverTimeout = setTimeout(() => {
+          if (!isVisible) {
+            isVisible = true;
+            isAnimating = true;
+            updateEasterEggPosition();
+            easterEgg.style.opacity = '1';
+            easterEgg.style.visibility = 'visible';
+            easterEgg.style.transform = 'translateY(-50%) scale(1)';
+            
+
+            const typingTexts = easterEgg.querySelectorAll('.typing-text');
+            typingTexts.forEach((textEl, index) => {
+              const text = textEl.getAttribute('data-text');
+              if (text && isVisible) {
+
+                const delayTimer = setTimeout(() => {
+                  if (isVisible && isAnimating) {
+                    typeText(textEl, text, 40);
+                  }
+                }, index * 1000);
+                delayTimers.push(delayTimer);
+              }
+            });
+          }
+        }, 50);
+      });
+
+
+      gamesTab.addEventListener('mouseleave', function(e) {
+
+        if (hoverTimeout) {
+          clearTimeout(hoverTimeout);
+          hoverTimeout = null;
+        }
+        
+        isVisible = false;
+        easterEgg.style.opacity = '0';
+        easterEgg.style.visibility = 'hidden';
+        easterEgg.style.transform = 'translateY(-50%) scale(0.8)';
+        
+
+        clearAllAnimations();
+      });
+
+
+      window.addEventListener('scroll', function() {
+        if (isVisible) updateEasterEggPosition();
+      }, { passive: true });
+      
+      window.addEventListener('resize', function() {
+        if (isVisible) updateEasterEggPosition();
+      });
+    }
+    
+
+    init300YearOldGamerEasterEgg();
+  });
+</script>

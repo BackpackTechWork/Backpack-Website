@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/404',
+    seoDescription: "Page not found - The page you're looking for doesn't exist. Return to Backpack Tech Works homepage.",
+    seoKeywords: "404, page not found, Backpack Tech Works",
+    seoImage: "/Backpack.webp",
+    noindex: true
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <section class="hero hero-error">
+    <!-- Tech Circuit Pattern Background -->
+    <div class="circuit-pattern"></div>
+    
+    <!-- Animated Data Particles -->
+    <div class="particles">
+      <span style="--i:1;"></span>
+      <span style="--i:2;"></span>
+      <span style="--i:3;"></span>
+      <span style="--i:4;"></span>
+      <span style="--i:5;"></span>
+    </div>
+    
+    <div class="container error-container">
+      <div class="error-illustration" aria-hidden="true">
+        <img src="/images/Assets/404.png" alt="Illustration of 404 error with a character balancing between numbers">
+      </div>
+
+      <div class="error-copy">
+        <h1 style="font-size: 3.3rem;">Oops! We couldn't pack this page.</h1>
+        <p style="font-size: 1.2rem;">Your adventure just hit a detour. The page you're looking for may have been moved or no longer exists, but the rest of the site is ready for exploration.</p>
+        <div class="hero-buttons error-actions">
+          <a href="/" class="btn btn-primary">
+            <i class="fas fa-home"></i> Back to Home
+          </a>
+          <a href="/contact" class="btn btn-outline">
+            <i class="fas fa-compass"></i> Contact Support
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>
+  
+  <!-- Adding scroll animation script -->
+  <script>
+
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+
+    const footer = document.querySelector('footer');
+    if (footer) {
+      observer.observe(footer);
+    }
+  </script>
+</body>
+</html>

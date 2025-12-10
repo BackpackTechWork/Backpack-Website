@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --border-primary: #e5e7eb;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --accent-red: #c51d34;
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      background: var(--bg-secondary);
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+    }
+
+    .btn-primary {
+      background: var(--accent-red);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      background: #a01628;
+    }
+
+    .tabs-container {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 0.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .tab-link {
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      text-align: center;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      transition: all 0.2s;
+    }
+
+    .tab-link.active {
+      background: var(--accent-red);
+      color: white;
+    }
+
+    .tab-link:hover {
+      background: var(--accent-red);
+      color: white;
+    }
+
+    .table-container {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table thead {
+      background: var(--bg-secondary);
+    }
+
+    .table th {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .table td {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-primary);
+      color: var(--text-primary);
+    }
+
+    .table tbody tr:hover {
+      background: var(--bg-secondary);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+
+    .status-badge.active {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+
+    .status-badge.inactive {
+      background: rgba(107, 114, 128, 0.1);
+      color: #6b7280;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-sm {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      width: 36px;
+      height: 36px;
+      justify-content: center;
+    }
+
+    .btn-icon-only {
+      padding: 0.5rem;
+      width: 36px;
+      height: 36px;
+      gap: 0;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .empty-state {
+      padding: 4rem 2rem;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.3;
+      color: var(--text-secondary);
+    }
+
+    .empty-state h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+      font-size: 0.9375rem;
+      margin: 0;
+      color: var(--text-secondary);
+    }
+
+    .poll-results {
+      max-width: 400px;
+    }
+
+    .poll-result-item {
+      margin-bottom: 0.75rem;
+    }
+
+    .poll-result-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .poll-result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+      font-size: 0.875rem;
+    }
+
+    .poll-result-label {
+      color: var(--text-primary);
+      font-weight: 500;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-right: 0.5rem;
+    }
+
+    .poll-result-stats {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      white-space: nowrap;
+    }
+
+    .poll-result-bar {
+      height: 8px;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .poll-result-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-red) 0%, #e63946 100%);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .poll-result-fill.no-votes {
+      background: var(--border-primary);
+    }
+
+    .btn-info {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-info:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      animation: slideUp 0.3s ease;
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-primary);
+    }
+
+    .modal-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.5rem;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: var(--text-primary);
+    }
+
+    .modal-results {
+      margin-top: 1rem;
+    }
+
+    .modal-results .poll-results {
+      max-width: 100%;
+    }
+
+    .modal-results .poll-result-item {
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-results .poll-result-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .modal-results .poll-result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+      font-size: 0.875rem;
+    }
+
+    .modal-results .poll-result-label {
+      color: var(--text-primary);
+      font-weight: 500;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-right: 0.5rem;
+    }
+
+    .modal-results .poll-result-stats {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      white-space: nowrap;
+    }
+
+    .modal-results .poll-result-bar {
+      height: 8px;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .modal-results .poll-result-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-red) 0%, #e63946 100%);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .modal-results .poll-result-fill.no-votes {
+      background: var(--border-primary);
+    }
+
+    .modal-total {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid var(--border-primary);
+      text-align: center;
+    }
+
+    .modal-total strong {
+      font-size: 1.125rem;
+      color: var(--text-primary);
+    }
+
+    .modal-total span {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+    }
+
+    /* Success/Error/Confirmation Modal Styles */
+    .success-modal,
+    .confirmation-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .success-modal.show,
+    .confirmation-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .success-modal.show .modal-content-wrapper,
+    .confirmation-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    .modal-icon.error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .modal-icon.warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+      
+      .modal-content {
+        padding: 1.5rem;
+        width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="page-header">
+        <div>
+          <h1>Polls</h1>
+          <p>Manage polls</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+          <a href="/admin/activities/polls/add" class="btn-primary" style="background: #10b981;">
+            <i class="fas fa-plus"></i> Add Poll
+          </a>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <% if (polls && polls.length > 0) { %>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Total Votes</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% polls.forEach(poll => { %>
+                <tr>
+                  <td><strong><%= poll.question %></strong></td>
+                  <td><strong><%= poll.totalVotes || 0 %></strong></td>
+                  <td>
+                    <span class="status-badge <%= poll.is_active ? 'active' : 'inactive' %>">
+                      <%= poll.is_active ? 'Active' : 'Inactive' %>
+                    </span>
+                  </td>
+                  <td><%= new Date(poll.created_at).toLocaleDateString() %></td>
+                  <td>
+                    <div class="action-buttons">
+                      <button class="btn btn-info btn-sm btn-icon-only view-results" 
+                              data-poll-id="<%= poll.id %>"
+                              data-poll-question="<%= poll.question %>"
+                              data-poll-options='<%= JSON.stringify(poll.options || []) %>'
+                              data-poll-votes='<%= JSON.stringify(poll.optionVotes || []) %>'
+                              data-poll-total="<%= poll.totalVotes || 0 %>"
+                              data-poll-status="<%= poll.is_active %>"
+                              data-poll-created="<%= poll.created_at %>"
+                              title="View Results">
+                        <i class="fas fa-chart-bar"></i>
+                      </button>
+                      <% if (poll.is_active) { %>
+                        <a href="/polls#poll-<%= poll.id %>" target="_blank" class="btn btn-primary btn-sm btn-icon-only" style="text-decoration: none; display: inline-flex; background: #3b82f6;" title="View Poll">
+                          <i class="fas fa-external-link-alt"></i>
+                        </a>
+                      <% } %>
+                      <button class="btn btn-success btn-sm btn-icon-only toggle-poll" data-poll-id="<%= poll.id %>" data-status="<%= poll.is_active %>" title="<%= poll.is_active ? 'Deactivate' : 'Activate' %> Poll">
+                        <i class="fas fa-<%= poll.is_active ? 'toggle-on' : 'toggle-off' %>"></i>
+                      </button>
+                      <a href="/admin/activities/polls/edit/<%= poll.id %>" class="btn btn-secondary btn-sm btn-icon-only" style="text-decoration: none; display: inline-flex;" title="Edit Poll">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <button class="btn btn-danger btn-sm btn-icon-only delete-poll" data-poll-id="<%= poll.id %>" data-poll-question="<%= poll.question %>" title="Delete Poll">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <div class="empty-state">
+            <i class="fas fa-poll"></i>
+            <h3>No Polls Found</h3>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Modal -->
+  <div class="modal-overlay" id="resultsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalPollQuestion">Poll Results</h2>
+        <button class="modal-close" id="closeModal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-results" id="modalResultsContent">
+        <!-- Results will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+    function showConfirmation(message, onConfirm) {
+      const modal = document.getElementById('confirmationModal');
+      const messageEl = document.getElementById('confirmationMessage');
+      const confirmBtn = document.getElementById('confirmBtn');
+      
+      if (modal && messageEl) {
+        messageEl.textContent = message;
+        modal.classList.add('show');
+        
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        newConfirmBtn.onclick = function() {
+          closeModal('confirmationModal');
+          if (onConfirm) onConfirm();
+        };
+      }
+    }
+
+    document.querySelectorAll('.toggle-poll').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const pollId = this.dataset.pollId;
+        const currentStatus = this.dataset.status === 'true';
+
+        try {
+          const response = await fetch(`/admin/activities/polls/${pollId}/toggle-active`, {
+            method: 'POST'
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            location.reload();
+          } else {
+            document.getElementById('errorMessage').textContent = data.message || 'Error toggling poll status';
+            showModal('errorModal');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          document.getElementById('errorMessage').textContent = 'An error occurred while toggling poll status';
+          showModal('errorModal');
+        }
+      });
+    });
+
+    document.querySelectorAll('.delete-poll').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const pollId = this.dataset.pollId;
+        const pollQuestion = this.dataset.pollQuestion;
+
+        showConfirmation(`Are you sure you want to delete poll "${pollQuestion}"? This action cannot be undone.`, async function() {
+          try {
+            const response = await fetch(`/admin/activities/polls/${pollId}`, {
+              method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              document.getElementById('successMessage').textContent = 'Poll deleted successfully';
+              showModal('successModal');
+              setTimeout(() => {
+                location.reload();
+              }, 1500);
+            } else {
+              document.getElementById('errorMessage').textContent = data.message || 'Error deleting poll';
+              showModal('errorModal');
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('errorMessage').textContent = 'An error occurred while deleting the poll';
+            showModal('errorModal');
+          }
+        });
+      });
+    });
+
+
+    const resultsModal = document.getElementById('resultsModal');
+    const closeResultsModalBtn = document.getElementById('closeModal');
+    const modalPollQuestion = document.getElementById('modalPollQuestion');
+    const modalResultsContent = document.getElementById('modalResultsContent');
+
+
+    document.querySelectorAll('.view-results').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const question = this.dataset.pollQuestion;
+        const options = JSON.parse(this.dataset.pollOptions || '[]');
+        const votes = JSON.parse(this.dataset.pollVotes || '[]');
+        const totalVotes = parseInt(this.dataset.pollTotal || '0');
+
+        modalPollQuestion.textContent = question;
+        
+        let resultsHTML = '<div class="poll-results">';
+        
+        if (options.length > 0 && totalVotes > 0) {
+          options.forEach((option, index) => {
+            const voteCount = votes[index] || 0;
+            const percentage = totalVotes > 0 ? ((voteCount / totalVotes) * 100).toFixed(1) : 0;
+            
+            resultsHTML += `
+              <div class="poll-result-item">
+                <div class="poll-result-header">
+                  <span class="poll-result-label">${option}</span>
+                  <span class="poll-result-stats">${voteCount} (${percentage}%)</span>
+                </div>
+                <div class="poll-result-bar">
+                  <div class="poll-result-fill ${voteCount === 0 ? 'no-votes' : ''}" style="width: ${percentage}%"></div>
+                </div>
+              </div>
+            `;
+          });
+        } else if (options.length > 0) {
+          resultsHTML += '<div style="color: var(--text-secondary); font-size: 0.9375rem; text-align: center; padding: 2rem;">No votes yet</div>';
+        } else {
+          resultsHTML += '<div style="color: var(--text-secondary); font-size: 0.9375rem; text-align: center; padding: 2rem;">No options available</div>';
+        }
+        
+        resultsHTML += '</div>';
+        
+        if (totalVotes > 0) {
+          resultsHTML += `
+            <div class="modal-total">
+              <strong>Total Votes: ${totalVotes}</strong>
+            </div>
+          `;
+        }
+        
+        modalResultsContent.innerHTML = resultsHTML;
+        resultsModal.classList.add('active');
+      });
+    });
+
+
+    closeResultsModalBtn.addEventListener('click', () => {
+      resultsModal.classList.remove('active');
+    });
+
+
+    resultsModal.addEventListener('click', (e) => {
+      if (e.target === resultsModal) {
+        resultsModal.classList.remove('active');
+      }
+    });
+
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && resultsModal.classList.contains('active')) {
+        resultsModal.classList.remove('active');
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('success-modal') || e.target.classList.contains('confirmation-modal')) {
+        closeModal(e.target.id);
+      }
+    });
+  </script>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title">Success!</h3>
+      <p class="modal-message" id="successMessage">Operation completed successfully.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('successModal')" class="modal-btn modal-btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="success-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon error">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error Occurred</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong. Please try again.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('errorModal')" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon warning">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 class="modal-title">Confirm Action</h3>
+      <p class="modal-message" id="confirmationMessage">Are you sure you want to proceed?</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('confirmationModal')" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirmBtn" class="modal-btn modal-btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

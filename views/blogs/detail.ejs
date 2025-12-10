@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('../partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/blogs'
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .blog-detail-section {
+      padding: 4rem 0;
+      background: #ffffff;
+    }
+
+    .blog-content-wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .blog-cover-image {
+      width: 100%;
+      max-height: 500px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 3rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-main-layout {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 3rem;
+      margin-top: 2rem;
+    }
+
+    .blog-body {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: #374151;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .blog-content {
+      flex: 1;
+    }
+
+    .blog-body p {
+      margin-bottom: 1.5rem;
+    }
+
+    .blog-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .blog-images-section {
+      background: #f9fafb;
+      padding: 1.5rem;
+      border-radius: 12px;
+      position: sticky;
+      top: 2rem;
+      max-height: calc(100vh - 4rem);
+      overflow-y: auto;
+    }
+
+    .blog-images-section h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .blog-images-section h3 i {
+      color: #c51d34;
+    }
+
+    .blog-images {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .blog-image-item {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .blog-image-item:hover {
+      transform: translateY(-2px);
+    }
+
+    .blog-image-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: block;
+    }
+
+    .blog-image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .blog-image-item:hover .blog-image-overlay {
+      opacity: 1;
+    }
+
+    .blog-image-overlay i {
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .blog-links {
+      background: #f9fafb;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-top: 2rem;
+      width: 100%;
+      border: 2px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .blog-links h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .blog-links h3 i {
+      color: #c51d34;
+      font-size: 1.5rem;
+    }
+
+    .blog-links-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .blog-link-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #111827;
+      transition: all 0.2s;
+    }
+
+    .blog-link-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-link-item i {
+      color: #c51d34;
+      font-size: 1.25rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #c51d34;
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 1024px) {
+      .blog-main-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .blog-sidebar {
+        order: 2;
+      }
+
+      .blog-body {
+        order: 1;
+      }
+
+      .blog-images-section {
+        position: static;
+        max-height: none;
+      }
+
+      .blog-images {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .blog-detail-hero h1 {
+        font-size: 1.75rem;
+      }
+
+      .blog-images {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <!-- Blog Detail Hero -->
+  <section class="service-detail-hero">
+    <div class="flying-tech-icons">
+      <i class="fab fa-react" style="--i:1;"></i>
+      <i class="fab fa-python" style="--i:2;"></i>
+      <i class="fab fa-js-square" style="--i:3;"></i>
+      <i class="fab fa-node-js" style="--i:4;"></i>
+      <i class="fab fa-html5" style="--i:5;"></i>
+      <i class="fab fa-css3-alt" style="--i:6;"></i>
+      <i class="fab fa-vuejs" style="--i:7;"></i>
+      <i class="fab fa-angular" style="--i:8;"></i>
+      <i class="fab fa-java" style="--i:9;"></i>
+      <i class="fab fa-php" style="--i:10;"></i>
+      <i class="fab fa-laravel" style="--i:11;"></i>
+      <i class="fab fa-swift" style="--i:12;"></i>
+      <i class="fab fa-android" style="--i:13;"></i>
+      <i class="fas fa-database" style="--i:16;"></i>
+      <i class="fab fa-git-alt" style="--i:17;"></i>
+      <i class="fab fa-github" style="--i:18;"></i>
+      <i class="fab fa-npm" style="--i:19;"></i>
+      <i class="fab fa-bootstrap" style="--i:20;"></i>
+    </div>
+    <div class="container">
+      <div class="project-detail-header">
+        <a href="/" class="back-button">
+          <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        <div class="project-detail-center">
+          <h1 class="service-detail-title"><%= blog.title %></h1>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog Detail Section -->
+  <section class="blog-detail-section">
+    <div class="container">
+      <div class="blog-content-wrapper">
+        <a href="/blogs" class="back-link">
+          <i class="fas fa-arrow-left"></i> Back to Blogs
+        </a>
+
+        <% if (blog.cover_image) { %>
+          <img src="<%= blog.cover_image %>" alt="<%= blog.title %>" class="blog-cover-image">
+        <% } %>
+
+        <div class="blog-main-layout">
+          <!-- Main Content -->
+          <div class="blog-body">
+            <div class="blog-content">
+              <%= blog.content.replace(/\n/g, '<br>') %>
+            </div>
+
+            <% 
+
+              let linksArray = [];
+              if (blog.links) {
+                if (Array.isArray(blog.links)) {
+                  linksArray = blog.links;
+                } else if (typeof blog.links === 'string') {
+                  try {
+                    const parsed = JSON.parse(blog.links);
+                    linksArray = Array.isArray(parsed) ? parsed : [parsed];
+                  } catch (e) {
+                    linksArray = [blog.links];
+                  }
+                } else {
+                  linksArray = [blog.links];
+                }
+              }
+            %>
+            <% if (linksArray && linksArray.length > 0) { %>
+              <div class="blog-links">
+                <h3><i class="fas fa-link"></i>Links</h3>
+                <div class="blog-links-list">
+                  <% linksArray.forEach(link => { %>
+                    <% 
+                      let linkText, linkUrl;
+                      if (typeof link === 'object' && link !== null) {
+                        linkText = link.text || link.url || 'Link';
+                        linkUrl = link.url || '#';
+                      } else if (typeof link === 'string') {
+                        linkText = link;
+                        linkUrl = link;
+                      } else {
+                        linkText = 'Link';
+                        linkUrl = '#';
+                      }
+                    %>
+                    <a href="<%= linkUrl %>" target="_blank" rel="noopener noreferrer" class="blog-link-item">
+                      <i class="fas fa-external-link-alt"></i>
+                      <span><%= linkText %></span>
+                    </a>
+                  <% }) %>
+                </div>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- Sidebar with Images -->
+          <% if (blog.images && blog.images.length > 0) { %>
+            <div class="blog-sidebar">
+              <div class="blog-images-section">
+                <h3><i class="fas fa-images"></i> Gallery</h3>
+                <div class="blog-images">
+                  <% blog.images.forEach((image, index) => { %>
+                    <div class="blog-image-item gallery-link" data-image="<%= image %>" data-index="<%= index %>">
+                      <img src="<%= image %>" alt="Blog Image <%= index + 1 %>" loading="lazy">
+                      <div class="blog-image-overlay">
+                        <i class="fas fa-expand"></i>
+                      </div>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  
+  <!-- Image Lightbox Modal -->
+  <div id="imageModal" class="image-modal">
+    <div class="modal-header">
+      <div class="modal-counter"></div>
+      <span class="modal-close">&times;</span>
+    </div>
+    <span class="modal-prev"><i class="fas fa-chevron-left"></i></span>
+    <span class="modal-next"><i class="fas fa-chevron-right"></i></span>
+    <div class="modal-content">
+      <img id="modalImage" src="" alt="Blog Image">
+      <div class="modal-zoom-controls">
+        <button class="zoom-btn" id="zoomIn"><i class="fas fa-search-plus"></i></button>
+        <button class="zoom-btn" id="zoomOut"><i class="fas fa-search-minus"></i></button>
+        <button class="zoom-btn" id="zoomReset"><i class="fas fa-compress"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Animation Script -->
+  <script>
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+    const footer = document.querySelector('footer');
+    if (footer) {
+      observer.observe(footer);
+      footer.addEventListener('transitionend', () => {
+        footer.style.opacity = '1';
+        footer.style.visibility = 'visible';
+      });
+    }
+
+
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const modalClose = document.querySelector('.modal-close');
+    const modalPrev = document.querySelector('.modal-prev');
+    const modalNext = document.querySelector('.modal-next');
+    const modalCounter = document.querySelector('.modal-counter');
+    const zoomInBtn = document.getElementById('zoomIn');
+    const zoomOutBtn = document.getElementById('zoomOut');
+    const zoomResetBtn = document.getElementById('zoomReset');
+    
+    let currentImageIndex = 0;
+    let images = [];
+    let zoomLevel = 1;
+
+
+    document.querySelectorAll('.gallery-link').forEach((link, index) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        images = Array.from(document.querySelectorAll('.gallery-link')).map(l => l.getAttribute('data-image'));
+        currentImageIndex = parseInt(link.getAttribute('data-index'));
+        openModal(currentImageIndex);
+      });
+    });
+
+    function openModal(index) {
+      currentImageIndex = index;
+      modalImg.src = images[index];
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      zoomLevel = 1;
+      updateZoom();
+      updateCounter();
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      zoomLevel = 1;
+      updateZoom();
+    }
+
+    function nextImage() {
+      currentImageIndex = (currentImageIndex + 1) % images.length;
+      modalImg.src = images[currentImageIndex];
+      zoomLevel = 1;
+      updateZoom();
+      updateCounter();
+    }
+
+    function prevImage() {
+      currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+      modalImg.src = images[currentImageIndex];
+      zoomLevel = 1;
+      updateZoom();
+      updateCounter();
+    }
+
+    function updateCounter() {
+      modalCounter.textContent = `${currentImageIndex + 1} / ${images.length}`;
+    }
+
+    function updateZoom() {
+      modalImg.style.transform = `scale(${zoomLevel})`;
+    }
+
+    function zoomIn() {
+      if (zoomLevel < 3) {
+        zoomLevel += 0.25;
+        updateZoom();
+      }
+    }
+
+    function zoomOut() {
+      if (zoomLevel > 0.5) {
+        zoomLevel -= 0.25;
+        updateZoom();
+      }
+    }
+
+    function resetZoom() {
+      zoomLevel = 1;
+      updateZoom();
+    }
+
+
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    if (modalPrev) modalPrev.addEventListener('click', prevImage);
+    if (modalNext) modalNext.addEventListener('click', nextImage);
+    if (zoomInBtn) zoomInBtn.addEventListener('click', zoomIn);
+    if (zoomOutBtn) zoomOutBtn.addEventListener('click', zoomOut);
+    if (zoomResetBtn) zoomResetBtn.addEventListener('click', resetZoom);
+
+
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+    }
+
+
+    document.addEventListener('keydown', (e) => {
+      if (modal && modal.style.display === 'flex') {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowRight') nextImage();
+        if (e.key === 'ArrowLeft') prevImage();
+        if (e.key === '+' || e.key === '=') zoomIn();
+        if (e.key === '-') zoomOut();
+        if (e.key === '0') resetZoom();
+      }
+    });
+
+
+    if (modalImg) {
+      modalImg.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+          zoomIn();
+        } else {
+          zoomOut();
+        }
+      });
+    }
+
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let touchStartY = 0;
+    let touchEndY = 0;
+    const swipeThreshold = 50;
+
+    if (modal) {
+      modal.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
+
+      modal.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+      }, { passive: true });
+    }
+
+    function handleSwipe() {
+      const swipeDistanceX = touchEndX - touchStartX;
+      const swipeDistanceY = touchEndY - touchStartY;
+      
+      if (Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY)) {
+        if (Math.abs(swipeDistanceX) > swipeThreshold) {
+          if (swipeDistanceX > 0) {
+            prevImage();
+          } else {
+            nextImage();
+          }
+        }
+      }
+    }
+
+
+    const modalContent = document.querySelector('.modal-content');
+    if (modalContent) {
+      modalContent.addEventListener('touchmove', (e) => {
+        if (zoomLevel === 1) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    }
+  </script>
+</body>
+</html>
+

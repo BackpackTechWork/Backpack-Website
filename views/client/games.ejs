@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .games-container {
+      padding: 2rem 0;
+    }
+    
+    .games-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .games-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .games-header p {
+      font-size: 1.1rem;
+      color: var(--gray);
+    }
+    
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    .game-card {
+      background: var(--white);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      border: 2px solid transparent;
+    }
+    
+    .game-card:hover {
+      transform: translateY(-12px) scale(1.02);
+      box-shadow: 0 16px 48px rgba(197, 29, 52, 0.2);
+      border-color: #c51d34;
+    }
+    
+    .game-card-image {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .game-card-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.1) 75%),
+                  linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.1) 75%);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
+      opacity: 0.3;
+    }
+    
+    .game-card-image i {
+      font-size: 5rem;
+      color: white;
+      z-index: 1;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+      transition: transform 0.3s;
+    }
+    
+    .game-card:hover .game-card-image i {
+      transform: scale(1.1) rotate(5deg);
+    }
+    
+    .game-card-content {
+      padding: 1.5rem;
+    }
+    
+    .game-card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin: 0 0 0.5rem 0;
+      text-transform: capitalize;
+    }
+    
+    .game-card-description {
+      color: var(--gray);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin: 0 0 1rem 0;
+    }
+    
+    .game-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1rem;
+      border-top: 1px solid var(--light-gray);
+    }
+    
+    .play-button {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+    
+    .play-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+    
+    .game-badge {
+      background: rgba(197, 29, 52, 0.1);
+      color: #c51d34;
+      padding: 0.25rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .games-iframe-container {
+      margin-top: 2rem;
+      background: var(--white);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      min-height: 600px;
+    }
+    
+    .games-iframe {
+      width: 100%;
+      height: 80vh;
+      min-height: 600px;
+      border: none;
+      display: block;
+    }
+    
+    .game-icon {
+      font-size: 3rem;
+    }
+    
+    .game-icons {
+      font-size: 2.5rem;
+    }
+    
+    .game-card-image svg {
+      width: 5rem;
+      height: 5rem;
+      fill: white;
+      z-index: 1;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+      transition: transform 0.3s;
+    }
+    
+    .game-card:hover .game-card-image svg {
+      transform: scale(1.1) rotate(5deg);
+    }
+    
+    .games-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .search-container {
+      flex: 1;
+      min-width: 250px;
+      max-width: 400px;
+      position: relative;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 3rem;
+      border: 2px solid var(--light-gray);
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      background: var(--white);
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+    }
+    
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    
+    .filter-label {
+      font-weight: 600;
+      color: var(--dark);
+      margin-right: 0.5rem;
+    }
+    
+    .filter-button {
+      padding: 0.5rem 1.25rem;
+      border: 2px solid var(--light-gray);
+      border-radius: 20px;
+      background: var(--white);
+      color: var(--dark);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .filter-button:hover {
+      border-color: #c51d34;
+      color: #c51d34;
+      background: rgba(197, 29, 52, 0.05);
+    }
+    
+    .filter-button.active {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      border-color: #c51d34;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray);
+    }
+    
+    .no-results i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    /* Generic hidden utility class */
+    .hidden {
+      display: none !important;
+    }
+    
+    .game-card.hidden {
+      display: none;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .games-container {
+        padding: 1rem 0;
+      }
+      
+      .games-header {
+        margin-bottom: 2rem;
+      }
+      
+      .games-header h1 {
+        font-size: 2rem;
+      }
+      
+      .games-header p {
+        font-size: 1rem;
+      }
+      
+      .games-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+      
+      .search-container {
+        min-width: 100%;
+        max-width: 100%;
+      }
+      
+      .filter-buttons {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .filter-buttons::-webkit-scrollbar {
+        height: 4px;
+      }
+      
+      .filter-buttons::-webkit-scrollbar-thumb {
+        background: #c51d34;
+        border-radius: 2px;
+      }
+      
+      .filter-button {
+        padding: 0.45rem 1rem;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      
+      .filter-label {
+        font-size: 0.9rem;
+      }
+      
+      .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+      
+      .game-card-image {
+        height: 150px;
+      }
+      
+      .game-card-image i {
+        font-size: 3.5rem;
+      }
+      
+      .game-card-image svg {
+        width: 3.5rem;
+        height: 3.5rem;
+      }
+      
+      .game-card-content {
+        padding: 1rem;
+      }
+      
+      .game-card-title {
+        font-size: 1.25rem;
+      }
+      
+      .game-card-description {
+        font-size: 0.85rem;
+      }
+      
+      .play-button {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.9rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .games-header h1 {
+        font-size: 1.75rem;
+      }
+      
+      .games-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .game-card-image {
+        height: 180px;
+      }
+      
+      .game-card-image i {
+        font-size: 4rem;
+      }
+      
+      .game-card-image svg {
+        width: 4rem;
+        height: 4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/client-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="container">
+        <div class="games-container">
+          <div class="games-header">
+            <h1><i class="fas fa-gamepad" style="margin-right: 1rem;"></i>Games</h1>
+            <p>Just Enjoy the Games.........</p>
+          </div>
+
+          <div class="games-controls">
+            <div class="search-container">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" id="searchInput" class="search-input" placeholder="Search games...">
+            </div>
+            <div class="filter-buttons">
+              <button class="filter-button active" data-filter="all">All</button>
+              <button class="filter-button" data-filter="Arcade">Arcade</button>
+              <button class="filter-button" data-filter="Classic">Classic</button>
+              <button class="filter-button" data-filter="Puzzle">Puzzle</button>
+              <button class="filter-button" data-filter="Action">Action</button>
+              <button class="filter-button" data-filter="Card Game">Card Game</button>
+            </div>
+          </div>
+
+          <div class="games-grid" id="gamesGrid">
+            <div class="game-card" data-game="bounce" data-badge="Arcade" data-title="bounce" data-description="Classic bouncing ball game. Keep the ball in play and score points!" onclick="navigateToGame('bounce')">
+              <div class="game-card-image">
+                <i class="fas fa-basketball-ball game-icon"></i>
+              </div>
+              <div class="game-card-content">
+                <h3 class="game-card-title">Bounce</h3>
+                <p class="game-card-description">Classic bouncing ball game. Keep the ball in play and score points!</p>
+                <div class="game-card-footer">
+                  <span class="game-badge">Arcade</span>
+                  <span class="play-button">
+                    <i class="fas fa-play"></i> Play
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="game-card" data-game="snake" data-badge="Classic" data-title="snake" data-description="The classic snake game. Grow longer by eating food and avoid hitting yourself!" onclick="navigateToGame('snake')">
+              <div class="game-card-image">
+                <i class="fa-solid fa-staff-snake"></i>
+              </div>
+              <div class="game-card-content">
+                <h3 class="game-card-title">Snake</h3>
+                <p class="game-card-description">The classic snake game. Grow longer by eating food and avoid hitting yourself!</p>
+                <div class="game-card-footer">
+                  <span class="game-badge">Classic</span>
+                  <span class="play-button">
+                    <i class="fas fa-play"></i> Play
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="game-card" data-game="tetris" data-badge="Puzzle" data-title="tetris" data-description="The legendary puzzle game. Arrange falling blocks to clear lines!" onclick="navigateToGame('tetris')">
+              <div class="game-card-image">
+                <i class="fas fa-th game-icon"></i>
+              </div>
+              <div class="game-card-content">
+                <h3 class="game-card-title">Tetris</h3>
+                <p class="game-card-description">The legendary puzzle game. Arrange falling blocks to clear lines!</p>
+                <div class="game-card-footer">
+                  <span class="game-badge">Puzzle</span>
+                  <span class="play-button">
+                    <i class="fas fa-play"></i> Play
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="game-card" data-game="defender" data-badge="Action" data-title="defender" data-description="Defend your base from incoming enemies. Shoot them down before they reach you!" onclick="navigateToGame('defender')">
+              <div class="game-card-image">
+                <i class="fas fa-rocket game-icon"></i>
+              </div>
+              <div class="game-card-content">
+                <h3 class="game-card-title">Defender</h3>
+                <p class="game-card-description">Defend your base from incoming enemies. Shoot them down before they reach you!</p>
+                <div class="game-card-footer">
+                  <span class="game-badge">Action</span>
+                  <span class="play-button">
+                    <i class="fas fa-play"></i> Play
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="game-card" data-game="pacman" data-badge="Classic" data-title="pacman" data-description="The iconic maze game. Eat all the dots while avoiding the ghosts!" onclick="navigateToGame('pacman')">
+              <div class="game-card-image">
+                <i class="fas fa-ghost game-icon"></i>
+              </div>
+              <div class="game-card-content">
+                <h3 class="game-card-title">Pacman</h3>
+                <p class="game-card-description">The iconic maze game. Eat all the dots while avoiding the ghosts!</p>
+                <div class="game-card-footer">
+                  <span class="game-badge">Classic</span>
+                  <span class="play-button">
+                    <i class="fas fa-play"></i> Play
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="game-card" data-game="puzzle" data-badge="Puzzle" data-title="puzzle" data-description="Solve the puzzle by arranging the pieces in the correct order!" onclick="navigateToGame('puzzle')">
+              <div class="game-card-image">
+                <i class="fas fa-puzzle-piece game-icon"></i>
+              </div>
+              <div class="game-card-content">
+                <h3 class="game-card-title">Puzzle</h3>
+                <p class="game-card-description">Solve the puzzle by arranging the pieces in the correct order!</p>
+                <div class="game-card-footer">
+                  <span class="game-badge">Puzzle</span>
+                  <span class="play-button">
+                    <i class="fas fa-play"></i> Play
+                  </span>
+                </div>
+              </div>
+            </div>
+
+
+            
+            <div class="game-card" data-game="spider" data-badge="Card Game" data-title="spider solitaire" data-description="The classic card game. Arrange all cards in descending order to win!" onclick="navigateToGame('spider')">
+              <div class="game-card-image">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 122.88 105.44" style="enable-background:new 0 0 122.88 105.44" xml:space="preserve"><g><path d="M4.85,12.96L53.22,0l-0.06,3.12l-3.27,0.88L14.98,64.46l3.29,12.26l34.63-59.98l-0.12,6.2L19.36,80.81l3.28,12.26 L52.4,41.52l-0.12,6.2L24.21,96.35c-0.14,0.23-0.32,0.42-0.54,0.54l0.78,2.93c0.25,0.94,0.87,1.69,1.65,2.14 c0.78,0.45,1.74,0.61,2.68,0.36l2.99-0.8c0.01-0.23,0.07-0.47,0.2-0.69L51.92,66.3l-0.12,6.2l-16.15,27.98L47.9,97.2l3.53-6.12 l-0.16,8.32l-21.71,5.81c-1.74,0.47-3.51,0.18-4.96-0.66c-1.45-0.84-2.58-2.23-3.05-3.97L0.22,20.97 c-0.47-1.74-0.18-3.51,0.66-4.96C1.72,14.56,3.11,13.43,4.85,12.96L4.85,12.96z M64.69,4.65h51.66c1.8,0,3.43,0.74,4.62,1.92 c1.18,1.18,1.92,2.82,1.92,4.62v82.43c0,1.8-0.74,3.43-1.92,4.62c-1.18,1.18-2.82,1.92-4.62,1.92H64.69 c-1.79,0-3.43-0.74-4.61-1.92h-0.01c-1.18-1.18-1.92-2.82-1.92-4.62V11.19c0-1.8,0.74-3.43,1.92-4.62l0.09-0.08 C61.34,5.35,62.94,4.65,64.69,4.65L64.69,4.65z M107.24,85.97l0.6,0.09l2.54,7.25h1.71l2.52-7.25l0.59-0.09v-1h-2.84v1l0.58,0.1 l-0.37,1.15h-2.7l-0.37-1.15l0.58-0.1v-1h-2.84V85.97L107.24,85.97z M110.26,88.45h1.91l-0.94,2.94h-0.04L110.26,88.45 L110.26,88.45z M65.65,19l0.6-0.09l2.54-7.25h1.71l2.52,7.25L73.61,19v1h-2.84v-1l0.58-0.1l-0.37-1.15h-2.7l-0.37,1.15l0.58,0.1v1 h-2.84V19L65.65,19z M68.68,16.52h1.91l-0.94-2.94h-0.04L68.68,16.52L68.68,16.52z M95.54,67.21l-3.03-6.98 c5.42,5.12,13.69,2.34,13.89-5.65c0.14-5.74-5.34-13.24-16.1-22.94c-10.69,9.7-16.22,17.15-15.64,22.94 c0.71,7.02,7.77,10.22,13.21,5.65l-2.15,6.98H95.54L95.54,67.21z M116.34,7.65H64.69c-0.94,0-1.8,0.37-2.44,0.98l-0.06,0.06 c-0.64,0.64-1.04,1.53-1.04,2.5v82.43c0,0.97,0.4,1.86,1.04,2.5c0.64,0.64,1.53,1.04,2.5,1.04h51.66c0.97,0,1.86-0.4,2.5-1.04 c0.64-0.64,1.04-1.53,1.04-2.5V11.19c0-0.97-0.4-1.86-1.04-2.5C118.2,8.04,117.32,7.65,116.34,7.65L116.34,7.65z M17.18,12.76 l-10.97,19L9.5,44.01L29.44,9.47L17.18,12.76L17.18,12.76z M5.12,27.66l7.98-13.81l-7.47,2c-0.94,0.25-1.69,0.87-2.14,1.65 c-0.45,0.79-0.61,1.75-0.36,2.69L5.12,27.66L5.12,27.66z M33.53,8.38L10.59,48.11l3.29,12.26L45.79,5.09L33.53,8.38L33.53,8.38z"/></g></svg>
+              </div>
+              <div class="game-card-content">
+                <h3 class="game-card-title">Spider Solitaire</h3>
+                <p class="game-card-description">The classic card game. Arrange all cards in descending order to win!</p>
+                <div class="game-card-footer">
+                  <span class="game-badge">Card Game</span>
+                  <span class="play-button">
+                    <i class="fas fa-play"></i> Play
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="no-results hidden" id="noResults">
+            <i class="fas fa-search"></i>
+            <h3>No games found</h3>
+            <p>Try adjusting your search or filter criteria</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function navigateToGame(gameName) {
+      window.location.href = `/client/games/${gameName}`;
+    }
+
+
+    const searchInput = document.getElementById('searchInput');
+    const filterButtons = document.querySelectorAll('.filter-button');
+    const gameCards = document.querySelectorAll('.game-card');
+    const gamesGrid = document.getElementById('gamesGrid');
+    const noResults = document.getElementById('noResults');
+    let currentFilter = 'all';
+    let currentSearch = '';
+
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        
+        currentFilter = this.getAttribute('data-filter');
+        filterGames();
+      });
+    });
+
+
+    searchInput.addEventListener('input', function() {
+      currentSearch = this.value.toLowerCase().trim();
+      filterGames();
+    });
+
+
+    function filterGames() {
+      let visibleCount = 0;
+      
+      gameCards.forEach(card => {
+        const badge = card.getAttribute('data-badge');
+        const title = card.getAttribute('data-title').toLowerCase();
+        const description = card.getAttribute('data-description').toLowerCase();
+        
+
+        const matchesFilter = currentFilter === 'all' || badge === currentFilter;
+        
+
+        const matchesSearch = currentSearch === '' || 
+          title.includes(currentSearch) || 
+          description.includes(currentSearch);
+        
+
+        if (matchesFilter && matchesSearch) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+      
+
+      if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+        gamesGrid.style.display = 'none';
+      } else {
+        noResults.classList.add('hidden');
+        gamesGrid.style.display = 'grid';
+      }
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      filterGames();
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/contact'
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* Image Protection Styles */
+    .image-protection-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      background: transparent;
+      cursor: default;
+      pointer-events: auto;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .contact-guy-wrapper {
+      position: relative;
+      pointer-events: auto;
+      user-select: none;
+    }
+
+    .contact-guy-image {
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+
+    .contact-main-section {
+      padding: clamp(56px, 8vh, 96px) 0 clamp(48px, 6vh, 96px);
+      background: var(--white);
+      position: relative;
+      min-height: calc(100vh - 140px);
+      display: flex;
+      align-items: center;
+    }
+
+    .contact-content-wrapper {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+      gap: clamp(32px, 6vw, 60px);
+      align-items: center;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 clamp(16px, 4vw, 48px);
+      width: 100%;
+    }
+
+    .contact-form-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s ease forwards;
+      animation-delay: 0.2s;
+    }
+
+    .contact-support-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(24px, 4vw, 40px);
+      width: 100%;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s ease forwards;
+      animation-delay: 0.35s;
+    }
+
+    .contact-image-section {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: clamp(16px, 3vh, 32px);
+    }
+
+    .contact-guy-wrapper {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .contact-guy-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 18px 36px rgba(197, 29, 52, 0.18));
+    }
+
+    .red-glow-effect {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(197, 29, 52, 0.2) 0%, rgba(197, 29, 52, 0.05) 45%, transparent 75%);
+      filter: blur(38px);
+      z-index: 1;
+      animation: glow-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% {
+        opacity: 0.55;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        opacity: 0.95;
+        transform: translate(-50%, -50%) scale(1.08);
+      }
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modern-contact-card {
+      position: relative;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+      border: 2px solid rgba(197, 29, 52, 0.08);
+      border-radius: 24px;
+      padding: clamp(28px, 3vw, 40px);
+      box-shadow: 0 28px 50px rgba(20, 20, 40, 0.12);
+      transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+    }
+
+    .modern-contact-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(197, 29, 52, 0.12), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .modern-contact-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, rgba(197, 29, 52, 0.08), transparent 45%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .modern-contact-card:hover {
+      border-color: rgba(197, 29, 52, 0.22);
+      box-shadow: 0 36px 64px rgba(197, 29, 52, 0.16);
+      transform: translateY(-6px);
+    }
+
+    .modern-contact-card:hover::after {
+      opacity: 1;
+    }
+
+    .contact-form-header {
+      margin-bottom: 40px;
+      text-align: left;
+    }
+
+    .contact-form-header h2 {
+      font-size: clamp(2rem, 3vw, 2.5rem);
+      font-weight: 800;
+      color: var(--dark-gray);
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .contact-form-header .highlight {
+      color: var(--red);
+      position: relative;
+    }
+
+    .contact-form-header p {
+      color: var(--gray);
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .modern-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(16px, 3vw, 24px);
+      margin-bottom: clamp(16px, 2.5vw, 28px);
+    }
+
+    .modern-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    .modern-form-group:nth-of-type(1) { animation-delay: 0.35s; }
+    .modern-form-group:nth-of-type(2) { animation-delay: 0.45s; }
+    .modern-form-group:nth-of-type(3) { animation-delay: 0.55s; }
+    .modern-form-group:nth-of-type(4) { animation-delay: 0.65s; }
+
+    .modern-form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .modern-form-group label {
+      display: block;
+      color: var(--dark-gray);
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modern-form-group label i {
+      color: var(--red);
+    }
+
+    .modern-input {
+      width: 100%;
+      padding: 16px 20px;
+      background: var(--cream-white);
+      border: 2px solid #d1d5db;
+      border-radius: 12px;
+      color: var(--dark-gray);
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .modern-input:focus {
+      border-color: var(--red);
+      background: var(--white);
+      box-shadow: 0 0 0 4px rgba(197, 29, 52, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .modern-input::placeholder {
+      color: var(--gray);
+      opacity: 0.6;
+    }
+
+    .modern-textarea {
+      min-height: 140px;
+      resize: vertical;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .modern-submit-btn {
+      width: 100%;
+      padding: 18px 32px;
+      background: linear-gradient(135deg, var(--red) 0%, #a01828 100%);
+      border: none;
+      border-radius: 12px;
+      color: var(--white);
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      margin-top: clamp(8px, 2vw, 16px);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.6s ease forwards;
+      animation-delay: 0.85s;
+      box-shadow: 0 8px 20px rgba(197, 29, 52, 0.3);
+    }
+
+    .modern-submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .modern-submit-btn:hover::before {
+      left: 100%;
+    }
+
+    .modern-submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(197, 29, 52, 0.4);
+    }
+
+    .modern-submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .modern-submit-btn i {
+      margin-right: 10px;
+    }
+
+    .alert-message {
+      position: relative;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: clamp(16px, 2vw, 24px);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      animation: slideIn 0.4s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .error-message {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .contact-support-note {
+      text-align: center;
+      max-width: 420px;
+      padding: clamp(20px, 4vw, 32px);
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.08), rgba(197, 29, 52, 0.02));
+      border: 1px solid rgba(197, 29, 52, 0.12);
+      box-shadow: 0 18px 30px rgba(0, 0, 0, 0.06);
+      backdrop-filter: blur(6px);
+      color: var(--dark-gray);
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 0.6s ease forwards;
+      animation-delay: 0.45s;
+    }
+
+    .contact-form-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: clamp(12px, 2vw, 20px);
+    }
+
+    .form-guarantee {
+      margin: 0;
+      font-size: 0.9rem;
+      color: rgba(60, 60, 80, 0.7);
+      text-align: center;
+    }
+
+    .contact-support-note h3 {
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--dark-gray);
+    }
+
+    .contact-support-note p {
+      margin: 0;
+      color: var(--gray);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    body.contact-modal-open {
+      overflow: hidden;
+    }
+
+    .contact-success-modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(16px, 5vw, 48px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 1200;
+    }
+
+    .contact-success-modal.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .contact-success-modal .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(197, 29, 52, 0.15), rgba(10, 10, 25, 0.85));
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .contact-success-modal.is-visible .modal-backdrop {
+      opacity: 1;
+    }
+
+    /* Confetti particles */
+    .modal-confetti {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      opacity: 0;
+      animation: confetti-fall 3s ease-out forwards;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg);
+      }
+    }
+
+    .contact-success-modal .modal-card {
+      position: relative;
+      z-index: 1;
+      max-width: 560px;
+      width: min(100%, 560px);
+      padding: clamp(36px, 5vw, 56px);
+      border-radius: 32px;
+      background: linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
+      box-shadow: 
+        0 60px 120px rgba(197, 29, 52, 0.25),
+        0 25px 50px rgba(20, 20, 40, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      border: 2px solid rgba(197, 29, 52, 0.12);
+      transform: translateY(40px) scale(0.9);
+      opacity: 0;
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
+      overflow: visible;
+    }
+
+    .contact-success-modal.is-visible .modal-card {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .modal-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -20%;
+      right: -20%;
+      height: 100%;
+      background: radial-gradient(ellipse at top, rgba(197, 29, 52, 0.15) 0%, transparent 50%);
+      opacity: 1;
+      pointer-events: none;
+      animation: gentle-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes gentle-pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    .modal-card::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 32px;
+      padding: 2px;
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.4), rgba(197, 29, 52, 0.1), rgba(197, 29, 52, 0.4));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(197, 29, 52, 0.1);
+      color: var(--dark-gray);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 10;
+      font-size: 1.2rem;
+    }
+
+    .modal-close:hover {
+      background: linear-gradient(135deg, var(--red), #a01828);
+      color: white;
+      transform: rotate(90deg) scale(1.1);
+      box-shadow: 0 8px 16px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-icon-wrapper {
+      position: relative;
+      display: inline-flex;
+      margin-bottom: 24px;
+    }
+
+    .modal-celebration {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 96px;
+      height: 96px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--red) 0%, #d62839 50%, #a01828 100%);
+      color: var(--white);
+      font-size: 2.5rem;
+      box-shadow: 
+        0 20px 50px rgba(197, 29, 52, 0.4),
+        0 8px 16px rgba(197, 29, 52, 0.3),
+        inset 0 2px 0 rgba(255, 255, 255, 0.2);
+      animation: icon-bounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+      transform-origin: center;
+    }
+
+    @keyframes icon-bounce {
+      0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1) rotate(10deg);
+      }
+      100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .modal-celebration::before {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border-radius: 28px;
+      background: radial-gradient(circle, rgba(197, 29, 52, 0.3), transparent 70%);
+      animation: icon-glow 2s ease-in-out infinite;
+    }
+
+    @keyframes icon-glow {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.1); }
+    }
+
+    .modal-content-wrapper {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .contact-success-modal h3 {
+      margin: 0 0 16px;
+      font-size: clamp(1.8rem, 4vw, 2.2rem);
+      font-weight: 800;
+      color: var(--dark-gray);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      animation: fade-slide-up 0.6s ease 0.4s both;
+    }
+
+    .contact-success-modal h3 .highlight-text {
+      background: linear-gradient(135deg, var(--red), #d62839);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .contact-success-modal p {
+      margin: 0 0 28px;
+      color: rgba(60, 60, 80, 0.8);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      animation: fade-slide-up 0.6s ease 0.5s both;
+    }
+
+    @keyframes fade-slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-checkmark {
+      margin: 0 auto 20px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(34, 197, 94, 0.1);
+      animation: fade-slide-up 0.6s ease 0.6s both;
+    }
+
+    .modal-checkmark i {
+      color: #22c55e;
+      font-size: 0.9rem;
+    }
+
+    .contact-success-modal .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 32px;
+      animation: fade-slide-up 0.6s ease 0.7s both;
+    }
+
+    .modal-primary {
+      width: 100%;
+      padding: 16px 32px;
+      border-radius: 16px;
+      border: none;
+      background: linear-gradient(135deg, var(--red) 0%, #d62839 50%, #a01828 100%);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      box-shadow: 
+        0 12px 28px rgba(197, 29, 52, 0.35),
+        0 4px 8px rgba(197, 29, 52, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-primary::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .modal-primary:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .modal-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 
+        0 16px 36px rgba(197, 29, 52, 0.45),
+        0 6px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-primary:active {
+      transform: translateY(-1px);
+    }
+
+    .modal-secondary {
+      width: 100%;
+      padding: 16px 32px;
+      border-radius: 16px;
+      border: 2px solid rgba(197, 29, 52, 0.2);
+      background: transparent;
+      color: var(--dark-gray);
+      font-weight: 600;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-secondary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.08), rgba(197, 29, 52, 0.04));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-secondary:hover::before {
+      opacity: 1;
+    }
+
+    .modal-secondary:hover {
+      border-color: rgba(197, 29, 52, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(197, 29, 52, 0.15);
+    }
+
+    .modal-secondary:active {
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .contact-form-section,
+      .contact-support-column,
+      .modern-form-group,
+      .modern-submit-btn,
+      .contact-support-note {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+
+      .contact-success-modal.is-visible,
+      .contact-success-modal.is-visible .modal-card,
+      .modal-celebration,
+      .modal-celebration::before,
+      .modal-card::before,
+      .contact-success-modal h3,
+      .contact-success-modal p,
+      .modal-checkmark,
+      .modal-actions,
+      .confetti-piece {
+        animation: none !important;
+        transition: opacity 0.2s ease !important;
+        transform: none !important;
+      }
+      
+      .contact-success-modal.is-visible .modal-card {
+        opacity: 1 !important;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .contact-main-section {
+        padding-top: 96px;
+        min-height: auto;
+      }
+
+      .contact-content-wrapper {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .contact-main-section {
+        padding: 80px 0 60px;
+      }
+
+      .contact-content-wrapper {
+        padding: 0 20px;
+        gap: 36px;
+      }
+
+      .modern-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modern-contact-card {
+        padding: 28px 22px;
+      }
+
+      .contact-form-header h2 {
+        font-size: 2rem;
+      }
+
+      .contact-guy-image {
+        max-width: 280px;
+      }
+
+      .red-glow-effect {
+        width: 260px;
+        height: 260px;
+      }
+
+      .contact-success-modal .modal-card {
+        padding: 32px 24px;
+        border-radius: 24px;
+      }
+
+      .modal-celebration {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+        border-radius: 20px;
+      }
+
+      .contact-success-modal h3 {
+        font-size: 1.8rem;
+        margin-bottom: 14px;
+      }
+
+      .contact-success-modal p {
+        font-size: 1rem;
+      }
+
+      .modal-primary,
+      .modal-secondary {
+        padding: 14px 24px;
+        font-size: 1rem;
+      }
+      
+      .modal-close {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<% const hasSuccess = success && success.length > 0; %>
+<% const hasError = error && error.length > 0; %>
+<body class="<%= hasSuccess ? 'contact-modal-open' : '' %>">
+  <%- include('partials/header') %>
+
+  <section class="contact-main-section">
+    <div class="contact-content-wrapper">
+      <!-- Contact Form Section -->
+      <div class="contact-form-section">
+        <div class="modern-contact-card">
+          <div class="contact-form-header">
+            <h2>Let's <span class="highlight">Connect</span></h2>
+            <p>We'd love to hear from you. Send us a message and we'll respond within 24 hours.</p>
+          </div>
+          
+          <% if (hasError) { %>
+            <div class="alert-message error-message" role="alert">
+              <i class="fas fa-exclamation-circle"></i>
+              <span><%= error %></span>
+            </div>
+          <% } %>
+
+          <form action="/contact" method="POST" id="contactForm">
+            <div class="modern-form-grid">
+              <div class="modern-form-group">
+                <label for="name"><i class="fas fa-user"></i> How should we address you?</label>
+                <input type="text" id="name" name="name" class="modern-input" required placeholder="John Doe" value="<%= user ? user.name : '' %>">
+              </div>
+
+              <div class="modern-form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                <input type="email" id="email" name="email" class="modern-input" required placeholder="john@example.com" value="<%= user ? user.email : '' %>">
+              </div>
+
+              <div class="modern-form-group full-width">
+                <label for="subject"><i class="fas fa-tag"></i> Subject</label>
+                <input type="text" id="subject" name="subject" class="modern-input" required placeholder="How can we help you?">
+              </div>
+
+              <div class="modern-form-group full-width">
+                <label for="message"><i class="fas fa-comment-dots"></i> Message</label>
+                <textarea id="message" name="message" class="modern-input modern-textarea" required placeholder="Tell us about your project..."></textarea>
+              </div>
+            </div>
+
+            <div class="contact-form-actions">
+              <button type="submit" class="modern-submit-btn">
+                <i class="fas fa-paper-plane"></i> Send Message
+              </button>
+              <p class="form-guarantee">
+                We respect your inbox. No spam, just thoughtful responses within 24 hours.
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Contact Visuals & Quick Info -->
+      <div class="contact-support-column">
+        <div class="contact-image-section">
+          <div class="red-glow-effect"></div>
+          <div class="contact-guy-wrapper">
+            <img src="/images/Assets/Contact Guy.png" alt="Contact Us" class="contact-guy-image" draggable="false" oncontextmenu="return false;">
+            <div class="image-protection-overlay"></div>
+          </div>
+        </div>
+
+        <div class="contact-support-note">
+          <h3>We're ready when you are</h3>
+          <p>Share an idea, a challenge, or a question. our team reads every message and comes back with thoughtful next steps.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="contact-success-modal <%= hasSuccess ? 'is-visible' : '' %>" id="contactSuccessModal" role="dialog" aria-modal="true" aria-hidden="<%= hasSuccess ? 'false' : 'true' %>">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-confetti" id="modalConfetti"></div>
+    <div class="modal-card" role="document" aria-labelledby="successModalTitle">
+      <button type="button" class="modal-close" data-close-modal aria-label="Close message">
+        <i class="fas fa-xmark"></i>
+      </button>
+      <div class="modal-content-wrapper">
+        <div class="modal-icon-wrapper">
+          <span class="modal-celebration" aria-hidden="true">
+            <i class="fas fa-paper-plane"></i>
+          </span>
+        </div>
+        <h3 id="successModalTitle">Message <span class="highlight-text">Received!</span></h3>
+        <div class="modal-checkmark">
+        </div>
+        <p><%= hasSuccess ? success : "We've logged your message and will be in touch shortly. Our team typically responds within 24 hours." %></p>
+        <div class="modal-actions">
+          <button type="button" class="modal-primary" data-close-modal>
+            <span>Continue exploring</span>
+          </button>
+          <button type="button" class="modal-secondary" data-close-modal data-scroll-target="contactForm">
+            <span>Send another message</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+  
+  <!-- Scroll Animation & Modal Script -->
+  <script>
+    (function () {
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+      };
+
+      const observerTargets = document.querySelectorAll('section, footer');
+
+      if ('IntersectionObserver' in window && observerTargets.length) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+
+        observerTargets.forEach(target => observer.observe(target));
+      } else {
+        observerTargets.forEach(target => target.classList.add('visible'));
+      }
+
+      const successModal = document.getElementById('contactSuccessModal');
+
+      if (!successModal) {
+        return;
+      }
+
+      const closeModal = () => {
+        successModal.classList.remove('is-visible');
+        successModal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('contact-modal-open');
+      };
+
+      const createConfetti = () => {
+        const confettiContainer = document.getElementById('modalConfetti');
+        if (!confettiContainer) return;
+        
+        confettiContainer.innerHTML = '';
+        
+        const colors = ['#C51D34', '#d62839', '#ff4757', '#ffa502', '#ff6348', '#ff7979'];
+        const confettiCount = 50;
+        
+        for (let i = 0; i < confettiCount; i++) {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti-piece';
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.top = '-10px';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.animationDelay = Math.random() * 0.5 + 's';
+          confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+          confettiContainer.appendChild(confetti);
+        }
+      };
+
+      const openModal = () => {
+        successModal.classList.add('is-visible');
+        successModal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('contact-modal-open');
+        
+        createConfetti();
+
+        const primaryFocus = successModal.querySelector('.modal-close') || successModal.querySelector('[data-close-modal]');
+        window.setTimeout(() => primaryFocus?.focus({ preventScroll: true }), 120);
+      };
+
+      const closeTriggers = successModal.querySelectorAll('[data-close-modal]');
+
+      closeTriggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+          const scrollTargetId = trigger.getAttribute('data-scroll-target');
+          closeModal();
+
+          if (scrollTargetId) {
+            const scrollTarget = document.getElementById(scrollTargetId);
+            if (scrollTarget) {
+              scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              const firstField = scrollTarget.querySelector('input, textarea, select');
+              window.setTimeout(() => firstField?.focus({ preventScroll: true }), 550);
+            }
+          }
+        });
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && successModal.classList.contains('is-visible')) {
+          closeModal();
+        }
+      });
+
+      if (successModal.classList.contains('is-visible')) {
+        openModal();
+      }
+    })();
+
+
+    const preventImageInteraction = (img) => {
+      if (!img) return;
+      
+
+      ['dragstart', 'drag', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(eventType => {
+        img.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }, { passive: false });
+      });
+      
+
+      ['click', 'mousedown', 'mouseup', 'mousemove', 'dblclick'].forEach(eventType => {
+        img.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }, { passive: false });
+      });
+      
+
+      img.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }, { passive: false });
+      
+
+      ['selectstart', 'select', 'copy'].forEach(eventType => {
+        img.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          return false;
+        }, { passive: false });
+      });
+      
+
+      img.addEventListener('auxclick', (e) => {
+        if (e.button === 1) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, { passive: false });
+      
+
+      img.style.pointerEvents = 'none';
+      img.style.userSelect = 'none';
+      img.style.webkitUserDrag = 'none';
+      img.style.MozUserSelect = 'none';
+      img.style.msUserSelect = 'none';
+      img.setAttribute('draggable', 'false');
+      img.setAttribute('oncontextmenu', 'return false;');
+    };
+
+
+    const protectImageContainer = (container) => {
+      if (!container) return;
+      
+      ['dragstart', 'drag', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop',
+       'click', 'mousedown', 'mouseup', 'mousemove', 'dblclick', 'contextmenu',
+       'selectstart', 'select', 'copy', 'auxclick'].forEach(eventType => {
+        container.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          return false;
+        }, { passive: false, capture: true });
+      });
+    };
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+      document.querySelectorAll('.contact-guy-image').forEach(preventImageInteraction);
+      
+
+      document.querySelectorAll('.contact-guy-wrapper, .image-protection-overlay').forEach(protectImageContainer);
+    });
+  </script>
+</body>
+</html>

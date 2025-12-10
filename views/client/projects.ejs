@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/client-sidebar') %>
+    
+    <div class="dashboard-main">
+      <section class="client-projects-section">
+        <div class="container">
+          <div class="dashboard-header">
+            <h1>My Projects</h1>
+            <p>View all your assigned projects</p>
+          </div>
+
+          <!-- Search and Filter Bar -->
+          <div class="projects-filters filters-section">
+            <form method="GET" action="/client/projects" id="projectsFilterForm">
+              <div class="filters-grid">
+                <div class="filter-group">
+                  <label for="searchInput"><i class="fas fa-search"></i> Search</label>
+                  <div class="filter-input-wrapper">
+                    <i class="fas fa-search"></i>
+              <input 
+                type="text" 
+                id="searchInput" 
+                      name="search"
+                      class="filter-input"
+                      placeholder="Search by name, description, or service..."
+                value="<%= searchQuery || '' %>"
+              >
+            </div>
+                </div>
+
+                <div class="filter-group">
+                  <label for="serviceFilterBtn"><i class="fas fa-briefcase"></i> Service</label>
+                  <button 
+                    type="button"
+                    id="serviceFilterBtn" 
+                    class="filter-select-btn"
+                  >
+                    <span class="filter-btn-text">
+                      <% if (selectedService && services && services.length > 0) { %>
+                        <% const selectedServiceObj = services.find(s => s.id == selectedService); %>
+                        <%= selectedServiceObj ? selectedServiceObj.title : 'All Services' %>
+                      <% } else { %>
+                        All Services
+                      <% } %>
+                    </span>
+                    <i class="fas fa-chevron-down"></i>
+                  </button>
+                  <input type="hidden" id="serviceFilter" name="service" value="<%= selectedService || '' %>">
+                </div>
+
+                <div class="filter-actions">
+                  <button type="submit" class="btn-filter">
+                    <i class="fas fa-sliders-h"></i> Apply
+            </button>
+                  <% if (searchQuery || selectedService) { %>
+                    <a href="/client/projects" class="btn-filter btn-filter-secondary">
+                      <i class="fas fa-times"></i> Clear
+                    </a>
+                  <% } %>
+                </div>
+              </div>
+            </form>
+          </div>
+
+        <div id="projectsContainer">
+        <% if (projects && projects.length > 0) { %>
+          <div class="projects-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; margin-top: 2rem;">
+            <% projects.forEach((project, index) => { %>
+                <div class="project-card" 
+                 style="background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer;" 
+                 onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.12)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'"
+                 onclick="window.location.href='/client/projects/<%= project.slug || project.id %>'">
+                <div class="project-image" style="width: 100%; height: 200px; overflow: hidden; background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); position: relative;">
+                  <% if (project.image) { %>
+                    <img src="<%= project.image %>" alt="<%= project.title %>" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <% } %>
+                  <div style="display: <%= project.image ? 'none' : 'flex' %>; width: 100%; height: 100%; align-items: center; justify-content: center;">
+                    <i class="fas fa-folder-open" style="font-size: 4rem; color: white; opacity: 0.5;"></i>
+                  </div>
+                  <div class="project-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;">
+                    <i class="fas fa-eye" style="font-size: 2rem; color: white;"></i>
+                  </div>
+                </div>
+                <div class="project-content" style="padding: 1.5rem;">
+                  <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem; font-weight: 600; color: var(--dark);"><%= project.title %></h3>
+                  <% if (project.service_title) { %>
+                    <p style="margin: 0 0 1rem 0; color: var(--gray); font-size: 0.9rem;">
+                      <i class="fas fa-briefcase" style="margin-right: 0.5rem;"></i><%= project.service_title %>
+                    </p>
+                  <% } %>
+                  <% if (project.description) { %>
+                    <p style="margin: 0 0 1rem 0; color: var(--gray); font-size: 0.875rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                      <%= project.description.substring(0, 150) %><% if (project.description.length > 150) { %>...<% } %>
+                    </p>
+                  <% } %>
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1rem;">
+                    <% if (project.status) { %>
+                      <span style="background: <%= project.status === 'completed' ? '#28a745' : project.status === 'in_progress' ? '#17a2b8' : '#ffc107' %>; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; text-transform: capitalize;">
+                        <%= project.status %>
+                      </span>
+                    <% } %>
+                    <span style="color: var(--gray); font-size: 0.875rem;">
+                      <i class="fas fa-calendar" style="margin-right: 0.25rem;"></i>
+                      <%= new Date(project.created_at).toLocaleDateString() %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else if (searchQuery || selectedService) { %>
+          <div class="no-projects-message" style="background: var(--white); padding: 4rem 2rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; margin-top: 2rem;">
+            <i class="fas fa-search" style="font-size: 4rem; color: var(--gray); opacity: 0.3; margin-bottom: 1.5rem;"></i>
+            <h2 style="color: var(--dark); margin-bottom: 1rem;">No Projects Found</h2>
+            <p style="color: var(--gray); margin-bottom: 2rem;">Try adjusting your search or filter criteria.</p>
+            <a href="/client/projects" class="btn btn-primary">Clear Filters</a>
+          </div>
+        <% } else { %>
+          <div class="no-projects-message" style="background: var(--white); padding: 4rem 2rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; margin-top: 2rem;">
+            <i class="fas fa-folder-open" style="font-size: 4rem; color: var(--gray); opacity: 0.3; margin-bottom: 1.5rem;"></i>
+            <h2 style="color: var(--dark); margin-bottom: 1rem;">No Projects Yet</h2>
+            <p style="color: var(--gray); margin-bottom: 2rem;">You don't have any assigned projects at the moment.</p>
+            <a href="/contact" class="btn btn-primary">Contact Us</a>
+          </div>
+        <% } %>
+        </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Service Filter Modal -->
+  <div id="serviceFilterModal" class="filter-modal">
+    <div class="filter-modal-overlay" id="serviceFilterModalOverlay"></div>
+    <div class="filter-modal-content">
+      <div class="filter-modal-header">
+        <h3><i class="fas fa-briefcase"></i> Filter by Service</h3>
+        <button type="button" class="filter-modal-close" id="serviceFilterModalClose">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="filter-modal-body">
+        <div class="filter-option" data-value="">
+          <div class="filter-option-content">
+            <i class="fas fa-list"></i>
+            <span>All Services</span>
+          </div>
+          <% if (!selectedService) { %>
+            <i class="fas fa-check filter-option-check"></i>
+          <% } %>
+        </div>
+        <% if (services && services.length > 0) { %>
+          <% services.forEach(service => { %>
+            <div class="filter-option" data-value="<%= service.id %>">
+              <div class="filter-option-content">
+                <i class="fas fa-briefcase"></i>
+                <span><%= service.title %></span>
+              </div>
+              <% if (selectedService == service.id) { %>
+                <i class="fas fa-check filter-option-check"></i>
+              <% } %>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+      <div class="filter-modal-footer">
+        <button type="button" class="btn-filter-secondary" id="serviceFilterCancel">Cancel</button>
+        <button type="button" class="btn-filter" id="serviceFilterApply">Apply Filter</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const section = document.querySelector('.client-projects-section');
+
+      if (!section) {
+        return;
+      }
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.2,
+          rootMargin: '0px 0px -50px 0px'
+        });
+
+        observer.observe(section);
+      } else {
+        section.classList.add('visible');
+      }
+
+
+      const serviceFilterBtn = document.getElementById('serviceFilterBtn');
+      const serviceFilterModal = document.getElementById('serviceFilterModal');
+      const serviceFilterModalOverlay = document.getElementById('serviceFilterModalOverlay');
+      const serviceFilterModalClose = document.getElementById('serviceFilterModalClose');
+      const serviceFilterCancel = document.getElementById('serviceFilterCancel');
+      const serviceFilterApply = document.getElementById('serviceFilterApply');
+      const serviceFilterInput = document.getElementById('serviceFilter');
+      const serviceFilterOptions = document.querySelectorAll('#serviceFilterModal .filter-option');
+      const filtersForm = document.getElementById('projectsFilterForm');
+
+      let selectedServiceValue = '<%= selectedService || "" %>';
+      let originalButtonText = '';
+      let originalSelectedValue = '<%= selectedService || "" %>';
+
+
+      if (serviceFilterBtn) {
+        const btnText = serviceFilterBtn.querySelector('.filter-btn-text');
+        if (btnText) {
+          originalButtonText = btnText.textContent;
+        }
+      }
+
+
+      const restoreOriginalState = () => {
+        selectedServiceValue = originalSelectedValue;
+        serviceFilterOptions.forEach(opt => {
+          opt.classList.remove('active');
+          if (opt.getAttribute('data-value') === selectedServiceValue) {
+            opt.classList.add('active');
+          }
+        });
+
+        if (serviceFilterBtn) {
+          const btnText = serviceFilterBtn.querySelector('.filter-btn-text');
+          if (btnText) {
+            btnText.textContent = originalButtonText;
+          }
+        }
+      };
+
+
+      if (serviceFilterBtn && serviceFilterModal) {
+        serviceFilterBtn.addEventListener('click', () => {
+
+          originalSelectedValue = selectedServiceValue;
+          if (serviceFilterBtn) {
+            const btnText = serviceFilterBtn.querySelector('.filter-btn-text');
+            if (btnText) {
+              originalButtonText = btnText.textContent;
+            }
+          }
+
+          serviceFilterOptions.forEach(opt => {
+            opt.classList.remove('active');
+            if (opt.getAttribute('data-value') === selectedServiceValue) {
+              opt.classList.add('active');
+            }
+          });
+          serviceFilterModal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        });
+      }
+
+
+      const closeServiceModal = () => {
+        serviceFilterModal.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+
+      if (serviceFilterModalOverlay) {
+        serviceFilterModalOverlay.addEventListener('click', () => {
+          restoreOriginalState();
+          closeServiceModal();
+        });
+      }
+
+      if (serviceFilterModalClose) {
+        serviceFilterModalClose.addEventListener('click', () => {
+          restoreOriginalState();
+          closeServiceModal();
+        });
+      }
+
+      if (serviceFilterCancel) {
+        serviceFilterCancel.addEventListener('click', () => {
+          restoreOriginalState();
+          closeServiceModal();
+        });
+      }
+
+
+      serviceFilterOptions.forEach(option => {
+        option.addEventListener('click', () => {
+
+          serviceFilterOptions.forEach(opt => opt.classList.remove('active'));
+
+          option.classList.add('active');
+          selectedServiceValue = option.getAttribute('data-value');
+          
+
+          const optionText = option.querySelector('.filter-option-content span').textContent;
+          if (serviceFilterBtn) {
+            const btnText = serviceFilterBtn.querySelector('.filter-btn-text');
+            if (btnText) {
+              btnText.textContent = optionText;
+            }
+          }
+        });
+      });
+
+
+      if (serviceFilterApply) {
+        serviceFilterApply.addEventListener('click', () => {
+          if (serviceFilterInput) {
+            serviceFilterInput.value = selectedServiceValue;
+          }
+          closeServiceModal();
+          if (filtersForm) {
+            filtersForm.submit();
+          }
+        });
+      }
+
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && serviceFilterModal.classList.contains('active')) {
+          closeServiceModal();
+        }
+      });
+    });
+  </script>
+
+  <style>
+    .client-projects-section {
+      padding: 2rem 0 4rem;
+    }
+
+    .project-card:hover .project-overlay {
+      opacity: 1 !important;
+    }
+
+    .projects-filters {
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .filters-section {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--gray);
+    }
+
+    .filter-input-wrapper {
+      position: relative;
+    }
+
+    .filter-input-wrapper i {
+      position: absolute;
+      top: 50%;
+      left: 0.85rem;
+      transform: translateY(-50%);
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .filter-input {
+      width: 100%;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+      font-size: 0.95rem;
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    .filter-select-btn {
+      width: 100%;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      text-align: left;
+    }
+
+    .filter-select-btn:hover {
+      border-color: var(--primary, #c51d34);
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .filter-select-btn:focus {
+      border-color: var(--primary, #c51d34);
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .filter-btn-text {
+      flex: 1;
+      color: var(--dark);
+    }
+
+    .filter-select-btn i {
+      color: var(--gray);
+      font-size: 0.875rem;
+      transition: transform 0.2s;
+    }
+
+    .filter-input:focus {
+      border-color: var(--primary, #c51d34);
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    /* Filter Modal Styles */
+    .filter-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      pointer-events: none;
+    }
+
+    .filter-modal.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
+    }
+
+    .filter-modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    .filter-modal-content {
+      position: relative;
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.3s ease;
+      z-index: 10001;
+    }
+
+    .filter-modal.active .filter-modal-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .filter-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .filter-modal-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .filter-modal-header h3 i {
+      color: var(--primary, #c51d34);
+    }
+
+    .filter-modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--gray);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+    }
+
+    .filter-modal-close:hover {
+      background: #f3f4f6;
+      color: var(--dark);
+    }
+
+    .filter-modal-body {
+      padding: 1rem;
+      overflow-y: auto;
+      flex: 1;
+      max-height: calc(90vh - 160px);
+    }
+
+    .filter-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 0.5rem;
+      border: 2px solid transparent;
+    }
+
+    .filter-option:hover {
+      background: #f8f9fa;
+      border-color: #e5e7eb;
+    }
+
+    .filter-option.active {
+      background: rgba(197, 29, 52, 0.1);
+      border-color: var(--primary, #c51d34);
+    }
+
+    .filter-option-content {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .filter-option-content i {
+      font-size: 0.875rem;
+    }
+
+    .filter-option-content span {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    .filter-option-check {
+      color: var(--primary, #c51d34);
+      font-size: 1rem;
+    }
+
+    .filter-modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+      padding: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .filter-modal-footer .btn-filter,
+    .filter-modal-footer .btn-filter-secondary {
+      min-width: 120px;
+    }
+
+    .filter-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .btn-filter {
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #c51d34, #d93850);
+      color: white;
+      box-shadow: 0 4px 15px rgba(197, 29, 52, 0.25);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-filter:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.35);
+    }
+
+    .btn-filter-secondary {
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: var(--gray);
+      box-shadow: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-filter-secondary:hover {
+      background: #f8f9fa;
+      border-color: #d1d5db;
+      color: var(--dark);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Clear button in filter section - keep dark style */
+    .filter-actions .btn-filter.btn-filter-secondary {
+      background: #2e2e30;
+      border: none;
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .filter-actions .btn-filter.btn-filter-secondary:hover {
+      background: #1a1a1b;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .filter-select-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        min-height: 44px;
+      }
+
+      .filter-modal-content {
+        width: 95%;
+        max-height: 85vh;
+      }
+
+      .filter-modal-header {
+        padding: 1.25rem;
+      }
+
+      .filter-modal-header h3 {
+        font-size: 1.125rem;
+      }
+
+      .filter-modal-body {
+        padding: 0.75rem;
+        max-height: calc(85vh - 140px);
+      }
+
+      .filter-option {
+        padding: 0.875rem;
+      }
+
+      .filter-modal-footer {
+        padding: 1.25rem;
+        flex-direction: column;
+      }
+
+      .filter-modal-footer .btn-filter,
+      .filter-modal-footer .btn-filter-secondary {
+        width: 100%;
+        min-width: auto;
+      }
+    }
+  </style>
+</body>
+</html>
+
+
+

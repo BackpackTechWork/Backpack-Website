@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --border-primary: #e5e7eb;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --accent-red: #c51d34;
+      --accent-red-light: rgba(197, 29, 52, 0.1);
+      --accent-red-hover: #a01628;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2.5rem 3rem;
+      margin-left: 280px;
+      background: transparent;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .breadcrumb a {
+      color: var(--accent-red);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .breadcrumb a:hover {
+      color: var(--accent-red-hover);
+      transform: translateX(2px);
+    }
+
+    .breadcrumb i {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .page-header {
+      margin-bottom: 2.5rem;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-red) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      font-weight: 400;
+    }
+
+    .form-container {
+      background: var(--bg-primary);
+      border-radius: 20px;
+      box-shadow: var(--shadow-xl);
+      padding: 3rem;
+      max-width: 700px;
+      margin: 0 auto;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      animation: fadeInUp 0.6s ease-out 0.2s both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-red) 0%, var(--accent-red-hover) 100%);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-group {
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.6s ease-out both;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.3s; }
+    .form-group:nth-child(2) { animation-delay: 0.4s; }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.9375rem;
+      letter-spacing: -0.01em;
+    }
+
+    .form-group label .required {
+      color: var(--accent-red);
+      margin-left: 0.25rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: 2px solid var(--border-primary);
+      border-radius: 12px;
+      font-size: 0.9375rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-weight: 500;
+    }
+
+    .form-control::placeholder {
+      color: #9ca3af;
+      font-weight: 400;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-red);
+      box-shadow: 0 0 0 4px var(--accent-red-light);
+      transform: translateY(-1px);
+    }
+
+    .form-control:hover:not(:focus) {
+      border-color: #d1d5db;
+    }
+
+    .form-help {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .logo-upload-section {
+      background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+      border-radius: 16px;
+      padding: 2.5rem;
+      border: 2px dashed var(--border-primary);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-upload-section:hover {
+      border-color: var(--accent-red);
+      background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .logo-upload-section.drag-over {
+      border-color: var(--accent-red);
+      background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+      transform: scale(1.02);
+      box-shadow: var(--shadow-lg);
+      border-style: solid;
+    }
+
+    .logo-upload-section.drag-over .logo-preview {
+      transform: scale(1.1) rotate(5deg);
+      border-color: var(--accent-red);
+    }
+
+    .logo-upload-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .logo-preview {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 3px solid var(--bg-primary);
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .logo-preview:hover {
+      border-color: var(--accent-red);
+      transform: scale(1.05) rotate(2deg);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .logo-preview::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.1) 0%, rgba(197, 29, 52, 0.05) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .logo-preview:hover::before {
+      opacity: 1;
+    }
+
+    .logo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      color: var(--text-secondary);
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-placeholder i {
+      font-size: 4rem;
+      opacity: 0.3;
+      transition: all 0.3s ease;
+    }
+
+    .logo-preview:hover .logo-placeholder i {
+      opacity: 0.5;
+      transform: scale(1.1);
+    }
+
+    .logo-placeholder span {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .logo-upload-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.95) 0%, rgba(160, 22, 40, 0.95) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      color: white;
+      gap: 0.75rem;
+      z-index: 2;
+      backdrop-filter: blur(4px);
+    }
+
+    .logo-preview:hover .logo-upload-overlay {
+      opacity: 1;
+    }
+
+    .logo-upload-overlay i {
+      font-size: 2.5rem;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .logo-upload-overlay span {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-input {
+      display: none;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 3rem;
+      padding-top: 2.5rem;
+      border-top: 2px solid var(--bg-secondary);
+      animation: fadeInUp 0.6s ease-out 0.5s both;
+      z-index: 1;
+    }
+
+    .btn {
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 1 !important;
+      width: 40px;
+      height: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: visible;
+    }
+
+    .btn span {
+      display: none;
+    }
+
+    .btn i {
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-red-hover) 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--accent-red-hover) 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-red-hover) 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+      width: auto;
+      padding: 0.75rem 1.5rem;
+    }
+
+    .btn-submit span {
+      display: inline;
+    }
+
+    .btn-submit:hover {
+      background: linear-gradient(135deg, var(--accent-red-hover) 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    /* Success Modal */
+    .success-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .success-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 24px;
+      padding: 3rem;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: var(--shadow-xl);
+      transform: scale(0.8) translateY(20px);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .success-modal.show .modal-content-wrapper {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-icon {
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+    }
+
+    .modal-icon.error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.75rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.15);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .modal-message {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.875rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-red-hover) 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .modal-btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 2px solid var(--border-primary);
+    }
+
+    .modal-btn-secondary:hover {
+      background: var(--bg-primary);
+      border-color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1.5rem;
+      }
+
+      .form-container {
+        padding: 2rem 1.5rem;
+        border-radius: 16px;
+      }
+
+      .page-header h1 {
+        font-size: 2rem;
+      }
+
+      .logo-preview {
+        width: 180px;
+        height: 180px;
+      }
+
+      .logo-upload-section {
+        padding: 2rem 1.5rem;
+      }
+
+      .form-actions {
+        flex-direction: column-reverse;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="breadcrumb">
+        <a href="/admin/dashboard">
+          <i class="fas fa-home"></i>
+          Dashboard
+        </a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="/admin/brands">
+          <i class="fas fa-tags"></i>
+          Brands
+        </a>
+        <i class="fas fa-chevron-right"></i>
+        <span><%= isEdit ? 'Edit' : 'Add' %> Brand</span>
+      </div>
+
+      <div class="page-header">
+        <h1><%= isEdit ? 'Edit' : 'Create' %> Brand</h1>
+        <p><%= isEdit ? 'Update your brand information and logo' : 'Add a new brand to your system' %></p>
+      </div>
+
+      <div class="form-container">
+        <form method="POST" action="<%= isEdit ? `/admin/brands/${brand.id}` : '/admin/brands/add' %>" enctype="multipart/form-data" id="brandForm">
+          <!-- Logo Upload Section -->
+          <div class="form-group">
+            <label for="logo">
+              <i class="fas fa-image" style="margin-right: 0.5rem; color: var(--accent-red);"></i>
+              Brand Logo
+            </label>
+            <div class="logo-upload-section">
+              <div class="logo-upload-container">
+                <div class="logo-preview" id="logoPreview">
+                  <% if (isEdit && brand.logo) { %>
+                    <img src="<%= brand.logo %>" alt="Logo Preview" id="logoPreviewImg" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="logo-placeholder" style="display: none;">
+                      <i class="fas fa-image"></i>
+                      <span>No Logo</span>
+                    </div>
+                  <% } else { %>
+                    <div class="logo-placeholder">
+                      <i class="fas fa-image"></i>
+                      <span>Click to Upload</span>
+                    </div>
+                  <% } %>
+                  <div class="logo-upload-overlay">
+                    <i class="fas fa-camera"></i>
+                    <span><%= isEdit ? 'Change Logo' : 'Choose Logo' %></span>
+                  </div>
+                </div>
+                <input type="file" id="logo" name="logo" class="logo-input" accept="image/*">
+              </div>
+            </div>
+            <small class="form-help">
+              <i class="fas fa-info-circle" style="margin-right: 0.25rem;"></i>
+              Upload a brand logo (optional, max 5MB)<%= isEdit ? '. Leave empty to keep current logo.' : '' %> Drag and drop an image here or click to browse.
+            </small>
+          </div>
+
+          <!-- Brand Name -->
+          <div class="form-group">
+            <label for="name">
+              <i class="fas fa-tag" style="margin-right: 0.5rem; color: var(--accent-red);"></i>
+              Brand Name <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              class="form-control" 
+              required 
+              placeholder="Enter brand name (e.g., Nike, Apple, etc.)" 
+              value="<%= isEdit ? (brand.name || '') : '' %>"
+            >
+            <small class="form-help">
+              <i class="fas fa-lightbulb" style="margin-right: 0.25rem;"></i>
+              Choose a unique and memorable name for your brand
+            </small>
+          </div>
+
+          <div class="form-actions">
+            <a href="/admin/brands" class="btn btn-secondary" title="Cancel">
+              <i class="fas fa-times"></i>
+              <span>Cancel</span>
+            </a>
+            <button type="submit" class="btn btn-submit" title="<%= isEdit ? 'Update' : 'Create' %> Brand">
+              <i class="fas fa-<%= isEdit ? 'save' : 'plus' %>"></i>
+              <span><%= isEdit ? 'Update' : 'Create' %> Brand</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title"><%= isEdit ? 'Brand Updated!' : 'Brand Created!' %></h3>
+      <p class="modal-message"><%= isEdit ? 'The brand has been successfully updated.' : 'The brand has been successfully added to the system.' %></p>
+      <div class="modal-actions">
+        <a href="/admin/brands" class="modal-btn modal-btn-secondary">View Brands</a>
+        <% if (!isEdit) { %>
+        <a href="/admin/brands/add" class="modal-btn modal-btn-primary">Add Another</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="success-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon error">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error Occurred</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong. Please try again.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('errorModal')" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isEditMode = <%= JSON.stringify(isEdit) %>;
+      
+      if (urlParams.get('success') === 'true') {
+        showModal('successModal');
+        
+
+        if (!isEditMode) {
+          setTimeout(function() {
+            const form = document.getElementById('brandForm');
+            if (form) {
+              form.reset();
+
+              const logoPreview = document.getElementById('logoPreview');
+              if (logoPreview) {
+                const img = logoPreview.querySelector('img');
+                if (img) {
+                  img.style.display = 'none';
+                }
+                const placeholder = logoPreview.querySelector('.logo-placeholder');
+                if (placeholder) {
+                  placeholder.style.display = 'flex';
+                }
+              }
+            }
+          }, 100);
+        }
+      } else if (urlParams.get('error') === 'true') {
+        const errorMsg = decodeURIComponent(urlParams.get('message') || 'Something went wrong. Please try again.');
+        document.getElementById('errorMessage').textContent = errorMsg;
+        showModal('errorModal');
+      }
+
+
+      const logoInput = document.getElementById('logo');
+      const logoPreview = document.getElementById('logoPreview');
+      const logoUploadSection = document.querySelector('.logo-upload-section');
+
+
+      function processFile(file) {
+        if (!file) return;
+
+
+        if (file.size > 5 * 1024 * 1024) {
+          alert('File size must be less than 5MB');
+          return;
+        }
+
+
+        if (!file.type.startsWith('image/')) {
+          alert('Please select an image file');
+          return;
+        }
+
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const placeholder = logoPreview.querySelector('.logo-placeholder');
+          if (placeholder) {
+            placeholder.style.display = 'none';
+          }
+          
+          let img = logoPreview.querySelector('img');
+          if (!img) {
+            img = document.createElement('img');
+            img.id = 'logoPreviewImg';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'contain';
+            img.style.padding = '1rem';
+            img.style.position = 'relative';
+            img.style.zIndex = '1';
+            const overlay = logoPreview.querySelector('.logo-upload-overlay');
+            if (overlay) {
+              logoPreview.insertBefore(img, overlay);
+            } else {
+              logoPreview.appendChild(img);
+            }
+          }
+          img.src = e.target.result;
+          img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+
+      if (logoPreview && logoInput && logoUploadSection) {
+
+        logoPreview.addEventListener('click', () => {
+          logoInput.click();
+        });
+
+
+        logoInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            processFile(file);
+          }
+        });
+
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+          logoUploadSection.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+          logoUploadSection.addEventListener(eventName, () => {
+            logoUploadSection.classList.add('drag-over');
+          }, false);
+        });
+
+
+        ['dragleave', 'drop'].forEach(eventName => {
+          logoUploadSection.addEventListener(eventName, () => {
+            logoUploadSection.classList.remove('drag-over');
+          }, false);
+        });
+
+
+        logoUploadSection.addEventListener('drop', (e) => {
+          const dt = e.dataTransfer;
+          const files = dt.files;
+
+          if (files.length > 0) {
+            const file = files[0];
+            processFile(file);
+            
+
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            logoInput.files = dataTransfer.files;
+          }
+        }, false);
+      }
+    });
+
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('success-modal')) {
+        closeModal(e.target.id);
+      }
+    });
+  </script>
+</body>
+</html>

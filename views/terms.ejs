@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/terms',
+    noindex: true
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .legal-page {
+      padding: clamp(80px, 10vh, 120px) 0 clamp(60px, 8vh, 100px);
+      background: transparent;
+      min-height: calc(100vh - 140px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .legal-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 clamp(20px, 5vw, 48px);
+    }
+
+    .legal-header {
+      text-align: center;
+      margin-bottom: clamp(40px, 6vh, 60px);
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .legal-header-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--red) 0%, #d62839 50%, #a01828 100%);
+      color: var(--white);
+      font-size: 2rem;
+      margin-bottom: 24px;
+      box-shadow: 0 20px 50px rgba(197, 29, 52, 0.3);
+      animation: iconBounce 0.8s ease 0.2s both;
+    }
+
+    @keyframes iconBounce {
+      0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1) rotate(10deg);
+      }
+      100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .legal-header h1 {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 800;
+      color: var(--dark-gray);
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .legal-header h1 .highlight {
+      background: linear-gradient(135deg, var(--red), #d62839);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .legal-header p {
+      font-size: 1.1rem;
+      color: var(--gray);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .legal-last-updated {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(197, 29, 52, 0.08);
+      border-radius: 20px;
+      font-size: 0.9rem;
+      color: var(--dark-gray);
+      margin-top: 20px;
+    }
+
+    .legal-content {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(253, 251, 247, 0.98) 100%);
+      border: 2px solid rgba(197, 29, 52, 0.08);
+      border-radius: 24px;
+      padding: clamp(32px, 5vw, 48px);
+      box-shadow: 0 28px 50px rgba(20, 20, 40, 0.1);
+      backdrop-filter: blur(20px);
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s ease forwards;
+      animation-delay: 0.3s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .legal-content::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(197, 29, 52, 0.1), transparent 55%);
+      border-radius: 24px;
+      pointer-events: none;
+    }
+
+    .legal-section {
+      margin-bottom: clamp(32px, 5vh, 48px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .legal-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .legal-section h2 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      color: var(--dark-gray);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(197, 29, 52, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .legal-section h2 i {
+      color: var(--red);
+      font-size: 1.2em;
+    }
+
+    .legal-section h3 {
+      font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+      font-weight: 600;
+      color: var(--dark-gray);
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+
+    .legal-section p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--gray);
+      margin-bottom: 16px;
+    }
+
+    .legal-section ul,
+    .legal-section ol {
+      margin: 16px 0;
+      padding-left: 24px;
+    }
+
+    .legal-section li {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--gray);
+      margin-bottom: 12px;
+    }
+
+    .legal-section li strong {
+      color: var(--dark-gray);
+      font-weight: 600;
+    }
+
+    .legal-highlight-box {
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.08), rgba(197, 29, 52, 0.04));
+      border-left: 4px solid var(--red);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 24px 0;
+    }
+
+    .legal-highlight-box p {
+      margin: 0;
+      color: var(--dark-gray);
+      font-weight: 500;
+    }
+
+    .legal-contact-info {
+      background: linear-gradient(135deg, rgba(197, 29, 52, 0.1), rgba(197, 29, 52, 0.05));
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 32px;
+      text-align: center;
+    }
+
+    .legal-contact-info h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      color: var(--dark-gray);
+    }
+
+    .legal-contact-info p {
+      margin-bottom: 8px;
+      color: var(--gray);
+    }
+
+    .legal-contact-info a {
+      color: var(--red);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .legal-contact-info a:hover {
+      color: #a01828;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .legal-page {
+        padding: clamp(60px, 8vh, 80px) 0 clamp(40px, 6vh, 60px);
+      }
+
+      .legal-container {
+        padding: 0 16px;
+      }
+
+      .legal-header {
+        margin-bottom: 32px;
+      }
+
+      .legal-header h1 {
+        font-size: 2rem;
+        margin-bottom: 12px;
+      }
+
+      .legal-header p {
+        font-size: 1rem;
+        padding: 0 8px;
+      }
+
+      .legal-last-updated {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        margin-top: 16px;
+      }
+
+      .legal-content {
+        padding: 24px 18px;
+        border-radius: 20px;
+      }
+
+      .legal-section {
+        margin-bottom: 28px;
+      }
+
+      .legal-section h2 {
+        font-size: 1.4rem;
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+      }
+
+      .legal-section h2 i {
+        font-size: 1.1em;
+      }
+
+      .legal-section h3 {
+        font-size: 1.15rem;
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
+
+      .legal-section p {
+        font-size: 0.95rem;
+        line-height: 1.7;
+      }
+
+      .legal-section ul,
+      .legal-section ol {
+        padding-left: 20px;
+      }
+
+      .legal-section li {
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin-bottom: 10px;
+      }
+
+      .legal-highlight-box {
+        padding: 16px 18px;
+        margin: 20px 0;
+      }
+
+      .legal-highlight-box p {
+        font-size: 0.95rem;
+      }
+
+      .legal-header-icon {
+        width: 64px;
+        height: 64px;
+        font-size: 1.5rem;
+        margin-bottom: 16px;
+      }
+
+      .legal-contact-info {
+        padding: 20px 18px;
+        margin-top: 28px;
+      }
+
+      .legal-contact-info h3 {
+        font-size: 1.2rem;
+      }
+
+      .legal-contact-info p {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .legal-page {
+        padding: 50px 0 30px;
+      }
+
+      .legal-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .legal-content {
+        padding: 20px 16px;
+        border-radius: 16px;
+      }
+
+      .legal-section h2 {
+        font-size: 1.25rem;
+      }
+
+      .legal-section h3 {
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .legal-header,
+      .legal-content,
+      .legal-header-icon {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <section class="legal-page">
+    <div class="legal-container">
+      <div class="legal-header">
+        <div class="legal-header-icon">
+          <i class="fas fa-file-contract"></i>
+        </div>
+        <h1>Terms of <span class="highlight">Service</span></h1>
+        <p>Please read these terms carefully before using our services. By accessing or using our services, you agree to be bound by these terms.</p>
+        <div class="legal-last-updated">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Last Updated: <%= new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+        </div>
+      </div>
+
+      <div class="legal-content">
+        <div class="legal-section">
+          <h2><i class="fas fa-handshake"></i> 1. Acceptance of Terms</h2>
+          <p>By accessing and using the services provided by Backpack Tech Works ("we," "us," or "our"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.</p>
+          <div class="legal-highlight-box">
+            <p><strong>Important:</strong> These terms constitute a legally binding agreement between you and Backpack Tech Works. Continued use of our services indicates your acceptance of these terms.</p>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-briefcase"></i> 2. Services Description</h2>
+          <p>Backpack Tech Works provides software development, web development, mobile application development, UI/UX design, and related technology consulting services. We reserve the right to modify, suspend, or discontinue any aspect of our services at any time.</p>
+          <h3>2.1 Service Availability</h3>
+          <p>While we strive to ensure our services are available 24/7, we do not guarantee uninterrupted access. Services may be temporarily unavailable due to maintenance, updates, or unforeseen circumstances.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-user-shield"></i> 3. User Accounts and Responsibilities</h2>
+          <p>To access certain features of our services, you may be required to create an account. You are responsible for:</p>
+          <ul>
+            <li><strong>Account Security:</strong> Maintaining the confidentiality of your account credentials and all activities that occur under your account.</li>
+            <li><strong>Accurate Information:</strong> Providing accurate, current, and complete information during registration and keeping it updated.</li>
+            <li><strong>Unauthorized Access:</strong> Notifying us immediately of any unauthorized use of your account or any other breach of security.</li>
+            <li><strong>Account Termination:</strong> Understanding that we reserve the right to suspend or terminate accounts that violate these terms.</li>
+          </ul>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-code"></i> 4. Intellectual Property Rights</h2>
+          <h3>4.1 Our Intellectual Property</h3>
+          <p>All content, features, and functionality of our services, including but not limited to text, graphics, logos, icons, images, audio clips, digital downloads, and software, are the exclusive property of Backpack Tech Works or its licensors and are protected by international copyright, trademark, and other intellectual property laws.</p>
+          <h3>4.2 Client Intellectual Property</h3>
+          <p>Upon full payment for services rendered, clients retain ownership of custom-developed software and deliverables created specifically for them, subject to any third-party licenses or agreements.</p>
+          <h3>4.3 License to Use</h3>
+          <p>We grant you a limited, non-exclusive, non-transferable license to access and use our services for your personal or business purposes, subject to these terms.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-ban"></i> 5. Prohibited Uses</h2>
+          <p>You agree not to use our services:</p>
+          <ul>
+            <li>For any unlawful purpose or to solicit others to perform unlawful acts</li>
+            <li>To violate any international, federal, provincial, or state regulations, rules, laws, or local ordinances</li>
+            <li>To infringe upon or violate our intellectual property rights or the intellectual property rights of others</li>
+            <li>To harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate</li>
+            <li>To submit false or misleading information</li>
+            <li>To upload or transmit viruses or any other type of malicious code</li>
+            <li>To collect or track the personal information of others</li>
+            <li>To spam, phish, pharm, pretext, spider, crawl, or scrape</li>
+            <li>For any obscene or immoral purpose</li>
+            <li>To interfere with or circumvent the security features of our services</li>
+          </ul>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-file-invoice-dollar"></i> 6. Payment Terms</h2>
+          <h3>6.1 Pricing</h3>
+          <p>All prices for our services are as quoted on our website or in written proposals. We reserve the right to change our prices at any time, but such changes will not affect projects already in progress or under contract.</p>
+          <h3>6.2 Payment Schedule</h3>
+          <p>Payment terms will be specified in individual service agreements. Generally, we require:</p>
+          <ul>
+            <li>A deposit or retainer before work begins</li>
+            <li>Milestone payments for larger projects</li>
+            <li>Final payment upon project completion and delivery</li>
+          </ul>
+          <h3>6.3 Refunds</h3>
+          <p>Refund policies vary by service type and will be outlined in individual service agreements. Generally, deposits are non-refundable, but we work with clients to resolve any issues or concerns.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-shield-alt"></i> 7. Warranties and Disclaimers</h2>
+          <h3>7.1 Service Warranties</h3>
+          <p>We warrant that our services will be performed in a professional and workmanlike manner consistent with industry standards. However, we do not guarantee that our services will be error-free or uninterrupted.</p>
+          <h3>7.2 Disclaimer of Warranties</h3>
+          <p>EXCEPT AS EXPRESSLY SET FORTH HEREIN, OUR SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-gavel"></i> 8. Limitation of Liability</h2>
+          <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, BACKPACK TECH WORKS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM YOUR USE OF OUR SERVICES.</p>
+          <p>Our total liability for any claims arising from or related to our services shall not exceed the amount you paid us in the twelve (12) months preceding the claim.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-balance-scale"></i> 9. Indemnification</h2>
+          <p>You agree to defend, indemnify, and hold harmless Backpack Tech Works and its officers, directors, employees, and agents from and against any claims, actions, suits, or proceedings, as well as any losses, liabilities, damages, costs, and expenses (including reasonable attorneys' fees) arising out of or relating to:</p>
+          <ul>
+            <li>Your use of our services</li>
+            <li>Your violation of these terms</li>
+            <li>Your violation of any rights of another party</li>
+            <li>Any content you submit, post, or transmit through our services</li>
+          </ul>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-exchange-alt"></i> 10. Modifications to Terms</h2>
+          <p>We reserve the right to modify these terms at any time. We will notify users of any material changes by posting the new terms on this page and updating the "Last Updated" date. Your continued use of our services after such modifications constitutes your acceptance of the updated terms.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-hand-paper"></i> 11. Termination</h2>
+          <p>We may terminate or suspend your account and access to our services immediately, without prior notice or liability, for any reason, including if you breach these terms. Upon termination, your right to use our services will immediately cease.</p>
+          <p>If you wish to terminate your account, you may simply discontinue using our services or contact us to request account deletion.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-globe"></i> 12. Governing Law</h2>
+          <p>These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which Backpack Tech Works operates, without regard to its conflict of law provisions. Any disputes arising from these terms or our services shall be resolved in the appropriate courts of that jurisdiction.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-puzzle-piece"></i> 13. Severability</h2>
+          <p>If any provision of these terms is found to be unenforceable or invalid, that provision shall be limited or eliminated to the minimum extent necessary so that these terms shall otherwise remain in full force and effect and enforceable.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2><i class="fas fa-handshake"></i> 14. Entire Agreement</h2>
+          <p>These terms, together with any service-specific agreements, constitute the entire agreement between you and Backpack Tech Works regarding the use of our services and supersede all prior agreements and understandings.</p>
+        </div>
+
+        <div class="legal-contact-info">
+          <h3><i class="fas fa-question-circle"></i> Questions About These Terms?</h3>
+          <p>If you have any questions about these Terms of Service, please contact us:</p>
+          <p>
+            <i class="fas fa-envelope"></i> Email: <a href="mailto:hello@backpacktech.works">hello@backpacktech.works</a>
+          </p>
+          <p>
+            <i class="fas fa-phone"></i> Phone: <a href="tel:+601121194948">+601121194948</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>
+  
+  <script>
+
+    (function() {
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+
+      const footer = document.querySelector('footer');
+      const sections = document.querySelectorAll('section');
+      
+      if (footer) {
+        observer.observe(footer);
+
+        if (footer.getBoundingClientRect().top < window.innerHeight) {
+          footer.classList.add('visible');
+        }
+      }
+
+      sections.forEach(section => {
+        if (section) {
+          observer.observe(section);
+        }
+      });
+
+
+      window.addEventListener('load', () => {
+        if (footer) {
+          setTimeout(() => {
+            footer.classList.add('visible');
+          }, 100);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      background: #f9fafb;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: #6b7280;
+      font-size: 0.9375rem;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .breadcrumb a {
+      color: #c51d34;
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .form-container {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.5s ease-out both;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.4s; }
+    .form-group:nth-child(2) { animation-delay: 0.45s; }
+    .form-group:nth-child(3) { animation-delay: 0.5s; }
+    .form-group:nth-child(4) { animation-delay: 0.55s; }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-container .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #111827 !important;
+      opacity: 1 !important;
+    }
+
+    .form-container .form-group label .required {
+      color: #c51d34;
+    }
+
+    .form-container .form-control,
+    .form-container input.form-control,
+    .form-container select.form-control,
+    .form-container textarea.form-control {
+      width: 100% !important;
+      padding: 0.75rem !important;
+      border: 2px solid #e5e7eb !important;
+      border-radius: 6px !important;
+      font-size: 0.875rem !important;
+      font-family: inherit !important;
+      background: #ffffff !important;
+      color: #111827 !important;
+      box-sizing: border-box !important;
+      transition: all 0.2s ease !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+    }
+
+    .form-container textarea.form-control {
+      min-height: 200px;
+      resize: vertical;
+    }
+
+    .form-container .form-control:focus,
+    .form-container input.form-control:focus,
+    .form-container select.form-control:focus,
+    .form-container textarea.form-control:focus {
+      outline: none !important;
+      border-color: #c51d34 !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+
+    .form-help {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.8125rem;
+      color: #6b7280;
+      opacity: 1 !important;
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0;
+    }
+
+    .form-checkbox input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #c51d34;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .form-checkbox label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: #111827;
+      opacity: 1 !important;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+      animation: fadeInUp 0.5s ease-out 1s both;
+    }
+
+    .form-container .btn {
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 1 !important;
+      width: 40px;
+      height: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container .btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .form-container .btn-primary:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .form-container .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .form-container .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .form-container .btn-submit {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+      width: auto;
+      padding: 0.75rem 1.5rem;
+    }
+
+    .form-container .btn-submit:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    /* Image Upload Styles */
+    .image-upload-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .existing-images-container {
+      margin-bottom: 1rem;
+    }
+
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .image-item {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #e5e7eb;
+      background: #f9fafb;
+    }
+
+    .image-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-actions {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .cover-image-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(107, 114, 128, 0.9);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .cover-image-btn:hover {
+      background: rgba(75, 85, 99, 1);
+      transform: scale(1.1);
+    }
+
+    .cover-image-btn.active {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+    }
+
+    .cover-image-btn.active:hover {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .remove-image-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .remove-image-btn:hover {
+      background: rgba(220, 38, 38, 1);
+      transform: scale(1.1);
+    }
+
+    .image-upload-input {
+      display: none;
+    }
+
+    /* Drag and Drop Styles */
+    .image-upload-dropzone {
+      position: relative;
+      min-height: 120px;
+      border: 2px dashed #e5e7eb;
+      border-radius: 8px;
+      padding: 1.5rem;
+      background: #f9fafb;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .image-upload-dropzone:hover {
+      border-color: #c51d34;
+      background: #fef2f2;
+      transform: scale(1.02);
+      box-shadow: 0 0 0 4px rgba(197, 29, 52, 0.1),
+                  0 4px 20px rgba(197, 29, 52, 0.3),
+                  0 8px 30px rgba(197, 29, 52, 0.2),
+                  inset 0 0 20px rgba(197, 29, 52, 0.05);
+      animation: dragGlow 1.5s ease-in-out infinite;
+    }
+
+    .image-upload-dropzone.drag-over {
+      border-color: #c51d34;
+      background: #fef2f2;
+      transform: scale(1.02);
+      box-shadow: 0 0 0 4px rgba(197, 29, 52, 0.1),
+                  0 4px 20px rgba(197, 29, 52, 0.3),
+                  0 8px 30px rgba(197, 29, 52, 0.2),
+                  inset 0 0 20px rgba(197, 29, 52, 0.05);
+      animation: dragGlow 1.5s ease-in-out infinite;
+    }
+
+    @keyframes dragGlow {
+      0%, 100% {
+        box-shadow: 0 0 0 4px rgba(197, 29, 52, 0.1),
+                    0 4px 20px rgba(197, 29, 52, 0.3),
+                    0 8px 30px rgba(197, 29, 52, 0.2),
+                    inset 0 0 20px rgba(197, 29, 52, 0.05);
+      }
+      50% {
+        box-shadow: 0 0 0 6px rgba(197, 29, 52, 0.15),
+                    0 4px 25px rgba(197, 29, 52, 0.4),
+                    0 10px 40px rgba(197, 29, 52, 0.3),
+                    inset 0 0 25px rgba(197, 29, 52, 0.08);
+      }
+    }
+
+    .image-upload-dropzone:hover .dropzone-content,
+    .image-upload-dropzone.drag-over .dropzone-content {
+      opacity: 1;
+    }
+
+    .image-upload-dropzone:hover .dropzone-text {
+      color: #c51d34;
+    }
+
+    .dropzone-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      text-align: center;
+      transition: opacity 0.3s ease;
+    }
+
+    .dropzone-icon {
+      font-size: 2.5rem;
+      color: #c51d34;
+      margin-bottom: 0.5rem;
+    }
+
+    .dropzone-text {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #111827;
+      margin: 0;
+    }
+
+    .dropzone-hint {
+      font-size: 0.8125rem;
+      color: #6b7280;
+      margin: 0;
+    }
+
+    .dropzone-or {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin: 0.5rem 0;
+      font-weight: 500;
+    }
+
+    .image-upload-btn {
+      padding: 0.5rem 1rem;
+      background: #f9fafb;
+      border: 2px dashed #e5e7eb;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6b7280;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .image-upload-btn:hover {
+      border-color: #c51d34;
+      background: #fef2f2;
+      color: #c51d34;
+    }
+
+    /* Links Container */
+    .links-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      background: #f9fafb;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin-top: 1rem;
+    }
+
+    .link-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 0.75rem;
+      align-items: center;
+      background: white;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .link-item input {
+      padding: 0.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .link-remove-btn {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .link-remove-btn:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+    }
+
+    .link-add-btn {
+      padding: 0.75rem 1.5rem;
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .link-add-btn:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+
+    /* Success Modal */
+    .success-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .success-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .success-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    .modal-icon.error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .link-item {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="breadcrumb">
+        <a href="/admin/dashboard">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="/admin/activities/blogs">Blogs</a>
+        <i class="fas fa-chevron-right"></i>
+        <span><%= isEdit ? 'Edit' : 'Add' %> Blog</span>
+      </div>
+
+      <div class="page-header">
+        <h1><%= isEdit ? 'Edit' : 'Add' %> Blog</h1>
+        <p><%= isEdit ? 'Update blog post' : 'Create a new blog post' %></p>
+      </div>
+
+      <div class="form-container">
+        <form method="POST" action="<%= isEdit ? `/admin/activities/blogs/${blog.id}` : '/admin/activities/blogs/add' %>" id="blogForm" enctype="multipart/form-data">
+          <div class="form-grid">
+            <!-- Title -->
+            <div class="form-group">
+              <label for="title">Title <span class="required">*</span></label>
+              <input type="text" id="title" name="title" class="form-control" required placeholder="Blog Post Title" value="<%= isEdit && blog ? (blog.title || '') : '' %>">
+            </div>
+
+            <!-- Slug -->
+            <div class="form-group">
+              <label for="slug">Slug <span class="required">*</span></label>
+              <input type="text" id="slug" name="slug" class="form-control" required placeholder="blog-post-title" value="<%= isEdit && blog ? (blog.slug || '') : '' %>">
+              <small class="form-help">URL-friendly identifier (auto-generated from title if left empty)</small>
+            </div>
+
+            <!-- Content -->
+            <div class="form-group full-width">
+              <label for="content">Content <span class="required">*</span></label>
+              <textarea id="content" name="content" class="form-control" required placeholder="Write your blog content here..."><%= isEdit && blog ? (blog.content || '') : '' %></textarea>
+              <small class="form-help">Main content of your blog post</small>
+            </div>
+
+            <!-- Blog Images (Multiple) -->
+            <div class="form-group full-width">
+              <label>Blog Images</label>
+              <div class="image-upload-container">
+                <!-- Existing Images -->
+                <div id="existingImagesContainer" class="existing-images-container">
+                  <% 
+                    let existingImages = [];
+                    if (isEdit && blog && blog.images && Array.isArray(blog.images)) {
+                      existingImages = blog.images.map(img => {
+
+                        if (typeof img === 'object' && img.filename && img.path) {
+                          return img;
+                        }
+
+                        if (typeof img === 'string') {
+                          return {
+                            filename: img.split('/').pop(),
+                            path: img
+                          };
+                        }
+
+                        return {
+                          filename: String(img).split('/').pop(),
+                          path: String(img)
+                        };
+                      });
+                    }
+                  %>
+                  <% if (existingImages.length > 0) { %>
+                    <div class="images-grid" id="existingImagesGrid">
+                      <% existingImages.forEach((img, index) => { %>
+                        <div class="image-item" data-image-filename="<%= img.filename %>" data-image-path="<%= img.path %>">
+                          <img src="<%= img.path %>" alt="Blog Image" onerror="this.parentElement.remove();">
+                          <div class="image-actions">
+                            <% 
+                              const isCoverImage = blog.cover_image && (blog.cover_image.includes(img.filename) || blog.cover_image === img.path);
+                            %>
+                            <button type="button" class="cover-image-btn <%= isCoverImage ? 'active' : '' %>" 
+                                    onclick="setCoverImage('<%= img.path %>', this)" 
+                                    title="<%= isCoverImage ? 'Cover Image' : 'Set as Cover Image' %>">
+                              <i class="<%= isCoverImage ? 'fas' : 'far' %> fa-star"></i>
+                            </button>
+                            <button type="button" class="remove-image-btn" onclick="removeExistingImage('<%= img.path %>', this)" title="Remove Image">
+                              <i class="fas fa-times"></i>
+                            </button>
+                          </div>
+                          <input type="hidden" name="existing_images[]" value="<%= img.path %>">
+                        </div>
+                      <% }) %>
+                    </div>
+                  <% } %>
+                </div>
+                
+                <!-- Cover Image Input (always present) -->
+                <input type="hidden" name="cover_image" id="coverImageInput" value="<%= isEdit && blog ? (blog.cover_image || '') : '' %>">
+                
+                <!-- New Images Upload -->
+                <div class="new-images-upload">
+                  <div class="image-upload-dropzone" id="imageUploadDropzone">
+                    <div class="dropzone-content">
+                      <i class="fas fa-cloud-upload-alt dropzone-icon"></i>
+                      <p class="dropzone-text">Drag & drop your blog images here</p>
+                      <p class="dropzone-hint">or</p>
+                      <label for="images" class="image-upload-btn">
+                        <i class="fas fa-upload"></i> Choose Blog Images (Multiple)
+                      </label>
+                      <input type="file" id="images" name="images" class="image-upload-input" accept="image/*" multiple>
+                      <p class="dropzone-hint" style="margin-top: 0.5rem;">PNG, JPG, WEBP - max 5MB each, up to 10 images</p>
+                    </div>
+                  </div>
+                  
+                  <!-- Preview for new images -->
+                  <div id="newImagesPreview" class="images-grid" style="margin-top: 1rem; display: none;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Links -->
+            <div class="form-group full-width">
+              <label>Links</label>
+              <div class="links-container" id="linksContainer">
+                <% 
+                  let linksArray = [];
+                  if (isEdit && blog && blog.links && blog.links.length > 0) {
+                    linksArray = blog.links;
+                  }
+                  if (linksArray.length > 0) {
+                    linksArray.forEach((link, index) => {
+                      const linkText = typeof link === 'object' ? (link.text || link.url || '') : '';
+                      const linkUrl = typeof link === 'object' ? (link.url || '') : link;
+                %>
+                  <div class="link-item">
+                    <input type="text" name="links[<%= index %>][text]" placeholder="Link Text" value="<%= linkText %>" class="link-text-input">
+                    <input type="url" name="links[<%= index %>][url]" placeholder="https://example.com" value="<%= linkUrl %>" class="link-url-input">
+                    <button type="button" class="link-remove-btn" onclick="removeLink(this)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                <% 
+                    });
+                  } else {
+                %>
+                  <div class="link-item">
+                    <input type="text" name="links[0][text]" placeholder="Link Text" class="link-text-input">
+                    <input type="url" name="links[0][url]" placeholder="https://example.com" class="link-url-input">
+                    <button type="button" class="link-remove-btn" onclick="removeLink(this)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                <% } %>
+              </div>
+              <button type="button" class="link-add-btn" onclick="addLink()">
+                <i class="fas fa-plus"></i> Add Link
+              </button>
+            </div>
+
+            <!-- Published Status -->
+            <div class="form-group full-width">
+              <div class="form-checkbox">
+                <input type="checkbox" id="is_published" name="is_published" value="true" <%= isEdit && blog && blog.is_published ? 'checked' : '' %>>
+                <label for="is_published">Publish this blog post</label>
+              </div>
+              <small class="form-help">Unpublished blogs are saved as drafts</small>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <a href="/admin/activities/blogs" class="btn btn-secondary" title="Cancel">
+              <i class="fas fa-times"></i>
+            </a>
+            <button type="submit" class="btn btn-submit" id="submitBtn" title="<%= isEdit ? 'Update' : 'Create' %> Blog">
+              <i class="fas fa-<%= isEdit ? 'save' : 'plus' %>"></i> <%= isEdit ? 'Update' : 'Create' %> Blog
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title"><%= isEdit ? 'Blog Updated!' : 'Blog Created!' %></h3>
+      <p class="modal-message"><%= isEdit ? 'The blog has been successfully updated.' : 'The blog has been successfully added to the system.' %></p>
+      <div class="modal-actions">
+        <a href="/admin/activities/blogs" class="modal-btn modal-btn-secondary">View Blogs</a>
+        <% if (!isEdit) { %>
+        <a href="/admin/activities/blogs/add" class="modal-btn modal-btn-primary">Add Another</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="success-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon error">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error Occurred</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong. Please try again.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('errorModal')" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isEditMode = <%= JSON.stringify(isEdit) %>;
+      
+      if (urlParams.get('success') === 'true') {
+        showModal('successModal');
+        
+
+        if (!isEditMode) {
+          setTimeout(function() {
+            const form = document.getElementById('blogForm');
+            if (form) {
+              form.reset();
+
+              const newImagesPreview = document.getElementById('newImagesPreview');
+              if (newImagesPreview) {
+                newImagesPreview.innerHTML = '';
+                newImagesPreview.style.display = 'none';
+              }
+            }
+          }, 100);
+        }
+      } else if (urlParams.get('error') === 'true') {
+        const errorMsg = decodeURIComponent(urlParams.get('message') || 'Something went wrong. Please try again.');
+        document.getElementById('errorMessage').textContent = errorMsg;
+        showModal('errorModal');
+      }
+      
+
+      const linkItems = document.querySelectorAll('.link-item');
+      linkItems.forEach(item => {
+        const textInput = item.querySelector('.link-text-input');
+        const urlInput = item.querySelector('.link-url-input');
+        
+        if (textInput && urlInput) {
+          textInput.addEventListener('input', function() {
+            validateLinkPair(textInput, urlInput);
+          });
+          
+          urlInput.addEventListener('input', function() {
+            validateLinkPair(textInput, urlInput);
+          });
+        }
+      });
+    });
+
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('success-modal')) {
+        closeModal(e.target.id);
+      }
+    });
+
+
+    document.getElementById('title')?.addEventListener('input', function() {
+      const slugInput = document.getElementById('slug');
+      if (slugInput && !slugInput.dataset.manualEdit) {
+        const slug = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        slugInput.value = slug;
+      }
+    });
+
+
+    document.getElementById('slug')?.addEventListener('input', function() {
+      this.dataset.manualEdit = 'true';
+    });
+
+
+    const imagesInput = document.getElementById('images');
+    const newImagesPreview = document.getElementById('newImagesPreview');
+    const existingImagesGrid = document.getElementById('existingImagesGrid');
+    const imageUploadDropzone = document.getElementById('imageUploadDropzone');
+    const removedFileIndices = new Set();
+
+
+    function processFiles(files) {
+      if (!files || files.length === 0) return;
+
+      const filesArray = Array.from(files);
+      
+
+      const existingCount = existingImagesGrid ? existingImagesGrid.children.length : 0;
+      const newPreviewCount = newImagesPreview ? newImagesPreview.children.length : 0;
+      const currentTotal = existingCount + newPreviewCount;
+      
+      if (filesArray.length + currentTotal > 10) {
+        alert(`Maximum 10 images allowed. You currently have ${currentTotal} image(s). Please select fewer images.`);
+        return;
+      }
+
+
+      const currentFileCount = imagesInput ? imagesInput.files.length : 0;
+      let validFiles = [];
+
+
+      filesArray.forEach((file, relativeIndex) => {
+
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`Image "${file.name}" is too large. Maximum size is 5MB.`);
+          return;
+        }
+
+
+        if (!file.type.startsWith('image/')) {
+          alert(`"${file.name}" is not an image file.`);
+          return;
+        }
+
+
+        const currentCount = existingImagesGrid ? existingImagesGrid.children.length : 0;
+        const previewCount = newImagesPreview ? newImagesPreview.children.length : 0;
+        if (currentCount + previewCount >= 10) {
+          alert('Maximum 10 images allowed. Please remove some images first.');
+          return;
+        }
+
+        validFiles.push(file);
+        const index = currentFileCount + validFiles.length - 1;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const imageItem = document.createElement('div');
+          imageItem.className = 'image-item';
+          imageItem.dataset.fileName = file.name;
+          imageItem.dataset.fileIndex = index;
+          
+          const previewId = `preview_${Date.now()}_${index}`;
+          
+          imageItem.innerHTML = `
+            <img src="${e.target.result}" alt="Preview">
+            <div class="image-actions">
+              <button type="button" class="cover-image-btn" 
+                      onclick="setCoverImageFromPreview(${index}, this)" 
+                      title="Set as Cover Image">
+                <i class="far fa-star"></i>
+              </button>
+              <button type="button" class="remove-image-btn" onclick="removeNewImage(this)" title="Remove Image">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          `;
+          imageItem.dataset.previewId = previewId;
+          imageItem.dataset.fileIndex = index;
+          
+          if (!newImagesPreview) return;
+          newImagesPreview.appendChild(imageItem);
+          newImagesPreview.style.display = 'grid';
+          
+
+          const coverImageInput = document.getElementById('coverImageInput');
+          if (coverImageInput && !coverImageInput.value && previewCount === 0 && validFiles.length === 1) {
+            setCoverImageFromPreview(index, imageItem.querySelector('.cover-image-btn'));
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+
+
+      if (imagesInput && validFiles.length > 0) {
+        const dataTransfer = new DataTransfer();
+
+        if (imagesInput.files) {
+          for (let i = 0; i < imagesInput.files.length; i++) {
+            dataTransfer.items.add(imagesInput.files[i]);
+          }
+        }
+
+        validFiles.forEach(file => {
+          dataTransfer.items.add(file);
+        });
+        imagesInput.files = dataTransfer.files;
+      }
+    }
+
+
+    if (imagesInput) {
+      imagesInput.addEventListener('change', function(e) {
+        processFiles(e.target.files);
+      });
+    }
+
+
+    if (imageUploadDropzone) {
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        imageUploadDropzone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        imageUploadDropzone.addEventListener(eventName, highlight, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        imageUploadDropzone.addEventListener(eventName, unhighlight, false);
+      });
+
+      function highlight(e) {
+        imageUploadDropzone.classList.add('drag-over');
+      }
+
+      function unhighlight(e) {
+        imageUploadDropzone.classList.remove('drag-over');
+      }
+
+
+      imageUploadDropzone.addEventListener('drop', handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+          processFiles(files);
+        }
+        
+        imageUploadDropzone.classList.remove('drag-over');
+      }
+    }
+
+
+    function setCoverImage(imagePath, button) {
+      const coverImageInput = document.getElementById('coverImageInput');
+      if (coverImageInput) {
+        coverImageInput.value = imagePath;
+      }
+
+
+      document.querySelectorAll('#existingImagesGrid .cover-image-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.querySelector('i').className = 'far fa-star';
+        btn.title = 'Set as Cover Image';
+      });
+
+
+      button.classList.add('active');
+      button.querySelector('i').className = 'fas fa-star';
+      button.title = 'Cover Image';
+    }
+
+
+    function setCoverImageFromPreview(fileIndex, button) {
+      const coverImageInput = document.getElementById('coverImageInput');
+      
+      if (coverImageInput) {
+        coverImageInput.value = `new_image_index_${fileIndex}`;
+      }
+
+
+      document.querySelectorAll('.cover-image-btn').forEach(btn => {
+        btn.classList.remove('active');
+        const icon = btn.querySelector('i');
+        if (icon) {
+          icon.className = 'far fa-star';
+        }
+        if (btn !== button) {
+          btn.title = 'Set as Cover Image';
+        }
+      });
+
+
+      button.classList.add('active');
+      const icon = button.querySelector('i');
+      if (icon) {
+        icon.className = 'fas fa-star';
+      }
+      button.title = 'Cover Image';
+    }
+
+
+    function removeExistingImage(filename, button) {
+      if (!confirm('Are you sure you want to remove this image?')) {
+        return;
+      }
+
+
+      const coverImageInput = document.getElementById('coverImageInput');
+      const imageItem = button.closest('.image-item');
+      const imagePath = imageItem ? imageItem.dataset.imagePath : null;
+      
+      if (coverImageInput && coverImageInput.value === imagePath) {
+        coverImageInput.value = '';
+      }
+
+
+      const deleteInput = document.createElement('input');
+      deleteInput.type = 'hidden';
+      deleteInput.name = 'delete_images[]';
+      deleteInput.value = imagePath || filename;
+      document.getElementById('blogForm').appendChild(deleteInput);
+
+
+      button.closest('.image-item').remove();
+
+
+      if (existingImagesGrid && existingImagesGrid.children.length === 0) {
+        existingImagesGrid.parentElement.style.display = 'none';
+      }
+    }
+
+
+    function removeNewImage(button) {
+      const imageItem = button.closest('.image-item');
+      const coverImageInput = document.getElementById('coverImageInput');
+      
+
+      const fileIndex = parseInt(imageItem.dataset.fileIndex);
+      if (!isNaN(fileIndex)) {
+        removedFileIndices.add(fileIndex);
+      }
+      
+
+      if (coverImageInput && imageItem) {
+        const currentCoverValue = coverImageInput.value;
+        
+        if (currentCoverValue && currentCoverValue.startsWith('new_image_index_')) {
+          const coverIndex = parseInt(currentCoverValue.replace('new_image_index_', ''));
+          if (coverIndex === fileIndex) {
+            coverImageInput.value = '';
+            
+
+            const remainingImages = newImagesPreview.querySelectorAll('.image-item');
+            if (remainingImages.length > 0) {
+              const firstRemaining = remainingImages[0];
+              const firstIndex = parseInt(firstRemaining.dataset.fileIndex);
+              if (!isNaN(firstIndex) && !removedFileIndices.has(firstIndex)) {
+                const firstCoverBtn = firstRemaining.querySelector('.cover-image-btn');
+                if (firstCoverBtn) {
+                  setCoverImageFromPreview(firstIndex, firstCoverBtn);
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      imageItem.remove();
+      
+
+      if (newImagesPreview && newImagesPreview.children.length === 0) {
+        newImagesPreview.style.display = 'none';
+      }
+    }
+
+
+    function addLink() {
+      const container = document.getElementById('linksContainer');
+      const existingLinks = container.querySelectorAll('.link-item');
+      const nextIndex = existingLinks.length;
+      const linkItem = document.createElement('div');
+      linkItem.className = 'link-item';
+      linkItem.innerHTML = `
+        <input type="text" name="links[${nextIndex}][text]" placeholder="Link Text" class="link-text-input">
+        <input type="url" name="links[${nextIndex}][url]" placeholder="https://example.com" class="link-url-input">
+        <button type="button" class="link-remove-btn" onclick="removeLink(this)">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      container.appendChild(linkItem);
+      
+
+      const textInput = linkItem.querySelector('.link-text-input');
+      const urlInput = linkItem.querySelector('.link-url-input');
+      
+      textInput.addEventListener('input', function() {
+        validateLinkPair(textInput, urlInput);
+      });
+      
+      urlInput.addEventListener('input', function() {
+        validateLinkPair(textInput, urlInput);
+      });
+    }
+
+    function removeLink(btn) {
+      btn.closest('.link-item').remove();
+    }
+
+    function validateLinkPair(textInput, urlInput) {
+      const hasText = textInput.value.trim() !== '';
+      const hasUrl = urlInput.value.trim() !== '';
+      
+      if (hasText && !hasUrl) {
+        urlInput.setCustomValidity('URL is required when link text is provided');
+      } else if (hasUrl && !hasText) {
+        textInput.setCustomValidity('Link text is required when URL is provided');
+      } else {
+        textInput.setCustomValidity('');
+        urlInput.setCustomValidity('');
+      }
+    }
+
+
+    const blogForm = document.getElementById('blogForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (blogForm) {
+      blogForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        }
+
+
+
+        const linkItems = document.querySelectorAll('.link-item');
+        let hasInvalidLink = false;
+        
+        linkItems.forEach(item => {
+          const textInput = item.querySelector('.link-text-input');
+          const urlInput = item.querySelector('.link-url-input');
+          
+          if (textInput && urlInput) {
+            const hasText = textInput.value.trim() !== '';
+            const hasUrl = urlInput.value.trim() !== '';
+            
+            if (hasText && !hasUrl) {
+              urlInput.setCustomValidity('URL is required when link text is provided');
+              urlInput.reportValidity();
+              hasInvalidLink = true;
+            } else if (hasUrl && !hasText) {
+              textInput.setCustomValidity('Link text is required when URL is provided');
+              textInput.reportValidity();
+              hasInvalidLink = true;
+            } else {
+              textInput.setCustomValidity('');
+              urlInput.setCustomValidity('');
+            }
+          }
+        });
+        
+        if (hasInvalidLink) {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Create" %> Blog';
+          }
+          return;
+        }
+
+        const formData = new FormData();
+        
+
+        const validLinks = [];
+        linkItems.forEach((item, index) => {
+          const textInput = item.querySelector('.link-text-input');
+          const urlInput = item.querySelector('.link-url-input');
+          
+          if (textInput && urlInput) {
+            const text = textInput.value.trim();
+            const url = urlInput.value.trim();
+            
+
+            if (text && url) {
+              formData.append(`links[${validLinks.length}][text]`, text);
+              formData.append(`links[${validLinks.length}][url]`, url);
+              validLinks.push({ text, url });
+            }
+          }
+        });
+
+        const formElements = blogForm.elements;
+        for (let element of formElements) {
+          if (element.name && element.name !== 'images' && element.type !== 'file' && !element.name.startsWith('links[')) {
+            if (element.type === 'checkbox') {
+              if (element.checked) {
+                formData.append(element.name, element.value);
+              }
+            } else if (element.type === 'radio') {
+              if (element.checked) {
+                formData.append(element.name, element.value);
+              }
+            } else {
+              formData.append(element.name, element.value);
+            }
+          }
+        }
+        
+
+        const indexMapping = new Map();
+        let newIndex = 0;
+        
+        if (imagesInput && imagesInput.files) {
+          for (let i = 0; i < imagesInput.files.length; i++) {
+            if (!removedFileIndices.has(i)) {
+              formData.append('images', imagesInput.files[i]);
+              indexMapping.set(i, newIndex);
+              newIndex++;
+            }
+          }
+        }
+        
+
+        const coverImageInput = document.getElementById('coverImageInput');
+        let coverImageValue = coverImageInput ? coverImageInput.value : '';
+        
+        if (coverImageValue && coverImageValue.startsWith('new_image_index_')) {
+          const originalIndex = parseInt(coverImageValue.replace('new_image_index_', ''));
+          if (!isNaN(originalIndex) && indexMapping.has(originalIndex)) {
+            const newCoverIndex = indexMapping.get(originalIndex);
+            coverImageValue = `new_image_index_${newCoverIndex}`;
+          } else if (removedFileIndices.has(originalIndex)) {
+            coverImageValue = '';
+          }
+        }
+        
+        if (coverImageInput && coverImageInput.name) {
+          formData.set('cover_image', coverImageValue);
+        }
+
+
+        const xhr = new XMLHttpRequest();
+
+        xhr.addEventListener('load', function() {
+          if (xhr.status >= 200 && xhr.status < 400) {
+            const finalUrl = xhr.responseURL;
+            if (finalUrl) {
+              try {
+                const url = new URL(finalUrl);
+                window.location.href = url.pathname + url.search;
+              } catch (e) {
+                const match = finalUrl.match(/https?:\/\/[^\/]+(\/.*)/);
+                if (match) {
+                  window.location.href = match[1];
+                } else {
+                  window.location.href = finalUrl;
+                }
+              }
+            } else {
+              window.location.reload();
+            }
+          } else {
+            alert('Error uploading blog. Please try again.');
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Create" %> Blog';
+            }
+          }
+        });
+
+        xhr.addEventListener('error', function() {
+          alert('Network error. Please check your connection and try again.');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Create" %> Blog';
+          }
+        });
+
+        xhr.open('POST', blogForm.action);
+        xhr.timeout = 300000;
+        
+        xhr.addEventListener('timeout', function() {
+          alert('Upload timeout. The file may be too large or your connection is slow.');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Create" %> Blog';
+          }
+        });
+        
+        xhr.send(formData);
+      });
+    }
+  </script>
+</body>
+</html>

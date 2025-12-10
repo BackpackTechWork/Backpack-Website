@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --border-primary: #e5e7eb;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --accent-red: #c51d34;
+      --accent-blue: #3b82f6;
+      --accent-green: #22c55e;
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      margin-right: 4rem;
+      background: var(--bg-secondary);
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+    }
+
+    .filters-section {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-group label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .filter-input,
+    .filter-select {
+      padding: 0.625rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-primary);
+      font-size: 0.875rem;
+      background: white;
+      transition: border-color 0.2s;
+    }
+
+    .filter-input:focus,
+    .filter-select:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .btn-filter {
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #c51d34, #d93850);
+      color: white;
+      white-space: nowrap;
+      box-shadow: 0 4px 15px rgba(197, 29, 52, 0.3);
+    }
+
+    .btn-filter:hover {
+      background: linear-gradient(135deg, #a01828, #c51d34);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .btn-filter-secondary {
+      background: #2e2e30;
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-filter-secondary:hover {
+      background: #1a1a1b;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .bulk-actions {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 1rem 1.5rem;
+      margin-bottom: 1rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .bulk-actions.active {
+      display: flex;
+    }
+
+    .bulk-actions-info {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .bulk-actions-controls {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .bulk-status-select {
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      border: 2px solid #e5e7eb;
+      font-size: 0.875rem;
+      background: white;
+      transition: all 0.3s ease;
+    }
+
+    .bulk-status-select:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .table-container {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table thead {
+      background: var(--bg-secondary);
+    }
+
+    .table th {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .table th.checkbox-column {
+      width: 40px;
+      text-align: center;
+    }
+
+    .table td {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-primary);
+      color: var(--text-primary);
+    }
+
+    .table td.checkbox-column {
+      text-align: center;
+    }
+
+    .table tbody tr:hover {
+      background: var(--bg-secondary);
+    }
+
+    .table tbody tr.selected {
+      background: rgba(197, 29, 52, 0.05);
+    }
+
+    .checkbox-input {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #c51d34;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .status-badge.new {
+      background: rgba(197, 29, 52, 0.1);
+      color: #c51d34;
+    }
+
+    .status-badge.in_progress {
+      background: rgba(251, 191, 36, 0.1);
+      color: #f59e0b;
+    }
+
+    .status-badge.resolved {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+
+    .select-status {
+      padding: 0.375rem 0.75rem;
+      border-radius: 8px;
+      border: 2px solid #e5e7eb;
+      font-size: 0.875rem;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .select-status:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-sm {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      width: 36px;
+      height: 36px;
+      justify-content: center;
+    }
+
+    .btn-icon-only {
+      padding: 0.5rem;
+      width: 36px;
+      height: 36px;
+      gap: 0;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-email {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-email:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .inquiry-message {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    /* Mobile Card Layout for Table */
+    /* Hide cards on desktop, show on mobile */
+    .mobile-card-view {
+      display: none;
+    }
+
+    /* Desktop: Show table, hide cards */
+    @media (min-width: 769px) {
+      .table-wrapper {
+        display: block;
+      }
+
+      .table {
+        display: table;
+      }
+
+      .mobile-card-view {
+        display: none !important;
+      }
+    }
+
+    /* Mobile: Hide table, show cards */
+    @media (max-width: 768px) {
+      .table-container .table-wrapper {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        overflow: hidden !important;
+      }
+
+      .table-container .table {
+        display: none !important;
+        visibility: hidden !important;
+      }
+
+      .table-container .mobile-card-view {
+        display: block !important;
+        visibility: visible !important;
+      }
+    }
+
+    .mobile-select-all-bar {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .mobile-select-all-label {
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      flex: 1;
+      font-size: 0.9375rem;
+      user-select: none;
+    }
+
+    .mobile-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-primary);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      transition: all 0.2s ease;
+    }
+
+    .mobile-card.selected {
+      background: rgba(197, 29, 52, 0.08);
+      border-color: rgba(197, 29, 52, 0.4);
+      box-shadow: 0 4px 16px rgba(197, 29, 52, 0.15);
+    }
+
+    .mobile-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-primary);
+    }
+
+    .mobile-card-checkbox {
+      margin-top: 0.25rem;
+    }
+
+    .mobile-card-title {
+      flex: 1;
+    }
+
+    .mobile-card-title h3 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .mobile-card-title p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .mobile-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .mobile-card-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      font-size: 0.875rem;
+    }
+
+    .mobile-card-label {
+      color: var(--text-secondary);
+      font-weight: 600;
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+
+    .mobile-card-value {
+      color: var(--text-primary);
+      text-align: right;
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .mobile-card-message {
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-primary);
+    }
+
+    .mobile-card-message-label {
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .mobile-card-message-text {
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .mobile-card-actions {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-primary);
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 1024px) {
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-main {
+        padding: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        margin-right: 0;
+        padding: 1rem;
+      }
+
+      .page-header {
+        margin-bottom: 1.5rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .page-header p {
+        font-size: 0.875rem;
+      }
+
+      .filters-section {
+        padding: 1.25rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .filters-grid {
+        gap: 1rem;
+      }
+
+      .filter-group label {
+        font-size: 0.8125rem;
+      }
+
+      .filter-input,
+      .filter-select {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+        min-height: 44px; /* Touch-friendly */
+      }
+
+      .btn-filter {
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        min-height: 44px;
+        justify-content: center;
+      }
+
+      .btn-filter-secondary {
+        margin-top: 0.5rem;
+      }
+
+      /* Table container adjustments for mobile */
+      .table-container {
+        overflow-x: visible;
+      }
+
+      .bulk-actions {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      .bulk-actions-info {
+        text-align: center;
+        font-size: 0.875rem;
+      }
+
+      .bulk-actions-controls {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .bulk-status-select {
+        width: 100%;
+        padding: 0.75rem;
+        min-height: 44px;
+        font-size: 0.875rem;
+      }
+
+      .btn {
+        min-height: 44px;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.875rem;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .action-buttons .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .select-status {
+        width: 100%;
+        padding: 0.625rem 0.75rem;
+        min-height: 44px;
+        font-size: 0.875rem;
+      }
+
+      .mobile-status-select {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-top: 0.25rem;
+      }
+
+      .mobile-card-status-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+
+      .mobile-card-status-row .mobile-card-label {
+        margin-bottom: 0;
+      }
+
+      .empty-state {
+        padding: 2rem 1.5rem;
+      }
+
+      .empty-state i {
+        font-size: 2.5rem;
+      }
+
+      /* Modal responsive styles */
+      .modal-content-wrapper {
+        padding: 1.5rem;
+        max-width: 95%;
+        margin: 1rem;
+      }
+
+      .modal-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 1rem;
+      }
+
+      .modal-icon i {
+        font-size: 2rem;
+      }
+
+      .modal-title {
+        font-size: 1.5rem;
+      }
+
+      .modal-message {
+        font-size: 0.9375rem;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-btn {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        justify-content: center;
+      }
+
+      .confirmation-modal .modal-content-wrapper {
+        padding: 1.5rem;
+        max-width: 95%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard-main {
+        padding: 0.75rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .filters-section {
+        padding: 1rem;
+      }
+
+      .mobile-card {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+
+      .mobile-card-header {
+        margin-bottom: 0.875rem;
+        padding-bottom: 0.875rem;
+      }
+
+      .mobile-card-title h3 {
+        font-size: 0.9375rem;
+        line-height: 1.3;
+      }
+
+      .mobile-card-title p {
+        font-size: 0.8125rem;
+      }
+
+      .mobile-card-body {
+        gap: 0.625rem;
+      }
+
+      .mobile-card-row {
+        font-size: 0.8125rem;
+        flex-direction: column;
+        gap: 0.375rem;
+        align-items: flex-start;
+      }
+
+      .mobile-card-label {
+        min-width: auto;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      .mobile-card-value {
+        text-align: left;
+        width: 100%;
+      }
+
+      .mobile-card-message {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+      }
+
+      .mobile-card-message-label {
+        font-size: 0.8125rem;
+        margin-bottom: 0.375rem;
+      }
+
+      .mobile-card-message-text {
+        font-size: 0.8125rem;
+        line-height: 1.6;
+      }
+
+      .mobile-card-actions {
+        margin-top: 0.875rem;
+        padding-top: 0.875rem;
+        gap: 0.625rem;
+      }
+
+      .mobile-card-actions .btn {
+        font-size: 0.8125rem;
+        padding: 0.625rem 1rem;
+      }
+
+      .mobile-select-all-bar {
+        padding: 0.875rem;
+        margin-bottom: 0.875rem;
+      }
+
+      .mobile-select-all-label {
+        font-size: 0.875rem;
+      }
+
+      .status-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.625rem;
+      }
+
+      .modal-content-wrapper {
+        padding: 1.25rem;
+      }
+
+      .modal-title {
+        font-size: 1.25rem;
+      }
+
+      .modal-message {
+        font-size: 0.875rem;
+      }
+    }
+
+    /* Disable hover effects on touch devices */
+    @media (hover: none) and (pointer: coarse) {
+      .table tbody tr:hover {
+        background: transparent;
+      }
+
+      .btn-filter:hover,
+      .btn:hover {
+        transform: none;
+      }
+    }
+
+    /* Success/Error Modal */
+    .success-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .success-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .success-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    .modal-icon.error {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    /* Confirmation Modal */
+    .confirmation-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .confirmation-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .confirmation-modal .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .confirmation-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .confirmation-modal .modal-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      margin-bottom: 1rem;
+    }
+
+    .confirmation-modal .modal-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .confirmation-modal .modal-message {
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="page-header">
+        <h1>Manage Inquiries</h1>
+        <p>View and manage customer inquiries</p>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="filters-section">
+        <form method="GET" action="/admin/inquiries" id="filterForm">
+          <div class="filters-grid">
+            <div class="filter-group">
+              <label for="search"><i class="fas fa-search"></i> Search</label>
+              <input 
+                type="text" 
+                id="search" 
+                name="search" 
+                class="filter-input" 
+                placeholder="Search by name, email, subject, or message..."
+                value="<%= filters.search || '' %>"
+              >
+            </div>
+            <div class="filter-group">
+              <label for="date_from"><i class="fas fa-calendar-alt"></i> From Date</label>
+              <input 
+                type="date" 
+                id="date_from" 
+                name="date_from" 
+                class="filter-input"
+                value="<%= filters.date_from || '' %>"
+              >
+            </div>
+            <div class="filter-group">
+              <label for="date_to"><i class="fas fa-calendar-alt"></i> To Date</label>
+              <input 
+                type="date" 
+                id="date_to" 
+                name="date_to" 
+                class="filter-input"
+                value="<%= filters.date_to || '' %>"
+              >
+            </div>
+            <div class="filter-group">
+              <label for="status"><i class="fas fa-filter"></i> Status</label>
+              <select id="status" name="status" class="filter-select">
+                <option value="">All Statuses</option>
+                <option value="new" <%= filters.status === 'new' ? 'selected' : '' %>>New</option>
+                <option value="in_progress" <%= filters.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                <option value="resolved" <%= filters.status === 'resolved' ? 'selected' : '' %>>Resolved</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <button type="submit" class="btn-filter">
+                <i class="fas fa-search"></i> Apply
+              </button>
+              <% if (filters.search || filters.date_from || filters.date_to || filters.status) { %>
+                <a href="/admin/inquiries" class="btn-filter btn-filter-secondary" style="margin-top: 0.5rem; text-decoration: none; display: block; text-align: center;">
+                  <i class="fas fa-times"></i> Clear
+                </a>
+              <% } %>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Bulk Actions Bar -->
+      <div class="bulk-actions" id="bulkActions">
+        <div class="bulk-actions-info">
+          <span id="selectedCount">0</span> inquiry/inquiries selected
+        </div>
+        <div class="bulk-actions-controls">
+          <select id="bulkStatusSelect" class="bulk-status-select">
+            <option value="">Change Status To...</option>
+            <option value="new">New</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <button class="btn btn-primary btn-sm" id="bulkUpdateBtn">
+            <i class="fas fa-check"></i> Update
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <% if (inquiries && inquiries.length > 0) { %>
+          <!-- Desktop Table View -->
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="checkbox-column">
+                    <input type="checkbox" id="selectAll" class="checkbox-input">
+                  </th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Subject</th>
+                  <th>Message</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% inquiries.forEach(inquiry => { %>
+                  <tr data-inquiry-id="<%= inquiry.id %>">
+                    <td class="checkbox-column">
+                      <input type="checkbox" class="checkbox-input inquiry-checkbox" value="<%= inquiry.id %>">
+                    </td>
+                    <td><%= inquiry.user_name || inquiry.name || 'Guest' %></td>
+                    <td><%= inquiry.email %></td>
+                    <td><%= inquiry.subject %></td>
+                    <td>
+                      <div class="inquiry-message" title="<%= inquiry.message %>">
+                        <%= inquiry.message %>
+                      </div>
+                    </td>
+                    <td>
+                      <select class="select-status" data-inquiry-id="<%= inquiry.id %>" data-current-status="<%= inquiry.status || 'new' %>">
+                        <option value="new" <%= (inquiry.status || 'new') === 'new' ? 'selected' : '' %>>New</option>
+                        <option value="in_progress" <%= inquiry.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                        <option value="resolved" <%= inquiry.status === 'resolved' ? 'selected' : '' %>>Resolved</option>
+                      </select>
+                    </td>
+                    <td><%= new Date(inquiry.created_at).toLocaleDateString() %></td>
+                    <td>
+                      <div class="action-buttons">
+                        <a 
+                          href="mailto:<%= inquiry.email %>?subject=Re: <%= encodeURIComponent(inquiry.subject) %>&body=<%= encodeURIComponent('Hello ' + (inquiry.user_name || inquiry.name || 'there') + ',\n\nRegarding your inquiry: ' + inquiry.subject + '\n\n') %>" 
+                          class="btn btn-email btn-sm btn-icon-only"
+                          style="text-decoration: none; display: inline-flex;"
+                          title="Email client"
+                        >
+                          <i class="fas fa-envelope"></i>
+                        </a>
+                        <button class="btn btn-danger btn-sm btn-icon-only delete-inquiry" data-inquiry-id="<%= inquiry.id %>" title="Delete Inquiry">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Card View -->
+          <div class="mobile-card-view">
+            <div class="mobile-select-all-bar">
+              <input type="checkbox" id="selectAllMobile" class="checkbox-input">
+              <label for="selectAllMobile" class="mobile-select-all-label">Select All Inquiries</label>
+            </div>
+            <% inquiries.forEach(inquiry => { %>
+              <div class="mobile-card" data-inquiry-id="<%= inquiry.id %>">
+                <div class="mobile-card-header">
+                  <div class="mobile-card-checkbox">
+                    <input type="checkbox" class="checkbox-input inquiry-checkbox" value="<%= inquiry.id %>">
+                  </div>
+                  <div class="mobile-card-title">
+                    <h3><%= inquiry.subject %></h3>
+                    <p><%= inquiry.user_name || inquiry.name || 'Guest' %></p>
+                  </div>
+                </div>
+                <div class="mobile-card-body">
+                  <div class="mobile-card-row">
+                    <span class="mobile-card-label">Email:</span>
+                    <span class="mobile-card-value"><%= inquiry.email %></span>
+                  </div>
+                  <div class="mobile-card-row mobile-card-status-row">
+                    <span class="mobile-card-label">Status:</span>
+                    <span class="mobile-card-value" style="width: 100%;">
+                      <select class="select-status mobile-status-select" data-inquiry-id="<%= inquiry.id %>" data-current-status="<%= inquiry.status || 'new' %>">
+                        <option value="new" <%= (inquiry.status || 'new') === 'new' ? 'selected' : '' %>>New</option>
+                        <option value="in_progress" <%= inquiry.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                        <option value="resolved" <%= inquiry.status === 'resolved' ? 'selected' : '' %>>Resolved</option>
+                      </select>
+                    </span>
+                  </div>
+                  <div class="mobile-card-row">
+                    <span class="mobile-card-label">Date:</span>
+                    <span class="mobile-card-value"><%= new Date(inquiry.created_at).toLocaleDateString() %></span>
+                  </div>
+                  <div class="mobile-card-message">
+                    <div class="mobile-card-message-label">Message:</div>
+                    <div class="mobile-card-message-text"><%= inquiry.message %></div>
+                  </div>
+                </div>
+                <div class="mobile-card-actions">
+                  <a 
+                    href="mailto:<%= inquiry.email %>?subject=Re: <%= encodeURIComponent(inquiry.subject) %>&body=<%= encodeURIComponent('Hello ' + (inquiry.user_name || inquiry.name || 'there') + ',\n\nRegarding your inquiry: ' + inquiry.subject + '\n\n') %>" 
+                    class="btn btn-email btn-sm"
+                    title="Email client"
+                    style="flex: 1; text-decoration: none; display: inline-flex; justify-content: center;"
+                  >
+                    <i class="fas fa-envelope"></i>
+                    <span>Email</span>
+                  </a>
+                  <button class="btn btn-danger btn-sm delete-inquiry" data-inquiry-id="<%= inquiry.id %>" title="Delete Inquiry" style="flex: 1;">
+                    <i class="fas fa-trash"></i>
+                    <span>Delete</span>
+                  </button>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>No inquiries found</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+
+    function showConfirmation(message, onConfirm) {
+      const modal = document.getElementById('confirmationModal');
+      const messageEl = document.getElementById('confirmationMessage');
+      if (modal && messageEl) {
+        messageEl.textContent = message;
+        modal.classList.add('show');
+        
+
+        const confirmBtn = document.getElementById('confirmBtn');
+        if (confirmBtn) {
+
+          const newConfirmBtn = confirmBtn.cloneNode(true);
+          confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+          
+          newConfirmBtn.onclick = function() {
+            closeModal('confirmationModal');
+            if (onConfirm) onConfirm();
+          };
+        }
+      }
+    }
+
+
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const selectAllMobileCheckbox = document.getElementById('selectAllMobile');
+    const inquiryCheckboxes = document.querySelectorAll('.inquiry-checkbox');
+    const bulkActions = document.getElementById('bulkActions');
+    const selectedCountSpan = document.getElementById('selectedCount');
+    const bulkStatusSelect = document.getElementById('bulkStatusSelect');
+    const bulkUpdateBtn = document.getElementById('bulkUpdateBtn');
+
+    function updateBulkActions() {
+      const selected = document.querySelectorAll('.inquiry-checkbox:checked');
+      const count = selected.length;
+      
+      selectedCountSpan.textContent = count;
+      
+      if (count > 0) {
+        bulkActions.classList.add('active');
+
+        inquiryCheckboxes.forEach(cb => {
+          const row = cb.closest('tr');
+          const card = cb.closest('.mobile-card');
+          if (cb.checked) {
+            if (row) row.classList.add('selected');
+            if (card) card.classList.add('selected');
+          } else {
+            if (row) row.classList.remove('selected');
+            if (card) card.classList.remove('selected');
+          }
+        });
+      } else {
+        bulkActions.classList.remove('active');
+        inquiryCheckboxes.forEach(cb => {
+          const row = cb.closest('tr');
+          const card = cb.closest('.mobile-card');
+          if (row) row.classList.remove('selected');
+          if (card) card.classList.remove('selected');
+        });
+      }
+    }
+
+    function syncSelectAll() {
+      const checkedCount = document.querySelectorAll('.inquiry-checkbox:checked').length;
+      const totalCount = inquiryCheckboxes.length;
+      
+      if (checkedCount === 0) {
+        if (selectAllCheckbox) {
+          selectAllCheckbox.indeterminate = false;
+          selectAllCheckbox.checked = false;
+        }
+        if (selectAllMobileCheckbox) {
+          selectAllMobileCheckbox.indeterminate = false;
+          selectAllMobileCheckbox.checked = false;
+        }
+      } else if (checkedCount === totalCount) {
+        if (selectAllCheckbox) {
+          selectAllCheckbox.indeterminate = false;
+          selectAllCheckbox.checked = true;
+        }
+        if (selectAllMobileCheckbox) {
+          selectAllMobileCheckbox.indeterminate = false;
+          selectAllMobileCheckbox.checked = true;
+        }
+      } else {
+        if (selectAllCheckbox) {
+          selectAllCheckbox.indeterminate = true;
+        }
+        if (selectAllMobileCheckbox) {
+          selectAllMobileCheckbox.indeterminate = true;
+        }
+      }
+    }
+
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener('change', function() {
+        inquiryCheckboxes.forEach(cb => {
+          cb.checked = this.checked;
+        });
+        updateBulkActions();
+        syncSelectAll();
+      });
+    }
+
+    if (selectAllMobileCheckbox) {
+      selectAllMobileCheckbox.addEventListener('change', function() {
+        inquiryCheckboxes.forEach(cb => {
+          cb.checked = this.checked;
+        });
+        updateBulkActions();
+        syncSelectAll();
+      });
+    }
+
+    inquiryCheckboxes.forEach(cb => {
+      cb.addEventListener('change', function() {
+        updateBulkActions();
+        syncSelectAll();
+      });
+    });
+
+
+    bulkUpdateBtn.addEventListener('click', async function() {
+      const selectedStatus = bulkStatusSelect.value;
+      if (!selectedStatus) {
+        document.getElementById('errorMessage').textContent = 'Please select a status';
+        showModal('errorModal');
+        return;
+      }
+
+      const selectedIds = Array.from(document.querySelectorAll('.inquiry-checkbox:checked'))
+        .map(cb => parseInt(cb.value));
+
+      if (selectedIds.length === 0) {
+        document.getElementById('errorMessage').textContent = 'Please select at least one inquiry';
+        showModal('errorModal');
+        return;
+      }
+
+      const statusText = selectedStatus.replace('_', ' ');
+      showConfirmation(`Update ${selectedIds.length} inquiry/inquiries to "${statusText}"?`, async function() {
+        try {
+          const response = await fetch('/admin/inquiries/bulk-status', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              inquiry_ids: selectedIds,
+              status: selectedStatus
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById('successMessage').textContent = data.message;
+            showModal('successModal');
+            setTimeout(() => {
+              location.reload();
+            }, 1500);
+          } else {
+            document.getElementById('errorMessage').textContent = data.message || 'Error updating inquiries';
+            showModal('errorModal');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          document.getElementById('errorMessage').textContent = 'An error occurred while updating inquiries';
+          showModal('errorModal');
+        }
+      });
+    });
+
+
+    document.querySelectorAll('.select-status').forEach(select => {
+      select.addEventListener('change', async function() {
+        const inquiryId = this.dataset.inquiryId;
+        const newStatus = this.value;
+        const currentStatus = this.dataset.currentStatus;
+
+        if (newStatus === currentStatus) return;
+
+        try {
+          const response = await fetch(`/admin/inquiries/${inquiryId}/status`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status: newStatus })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            this.dataset.currentStatus = newStatus;
+          } else {
+            document.getElementById('errorMessage').textContent = data.message || 'Error updating status';
+            showModal('errorModal');
+            this.value = currentStatus;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          document.getElementById('errorMessage').textContent = 'An error occurred while updating status';
+          showModal('errorModal');
+          this.value = currentStatus;
+        }
+      });
+    });
+
+
+    document.querySelectorAll('.delete-inquiry').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const inquiryId = this.dataset.inquiryId;
+
+        showConfirmation('Are you sure you want to delete this inquiry? This action cannot be undone.', async function() {
+          try {
+            const response = await fetch(`/admin/inquiries/${inquiryId}`, {
+              method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              document.getElementById('successMessage').textContent = 'Inquiry deleted successfully';
+              showModal('successModal');
+              setTimeout(() => {
+                location.reload();
+              }, 1500);
+            } else {
+              document.getElementById('errorMessage').textContent = data.message || 'Error deleting inquiry';
+              showModal('errorModal');
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('errorMessage').textContent = 'An error occurred while deleting the inquiry';
+            showModal('errorModal');
+          }
+        });
+      });
+    });
+
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('success-modal') || e.target.classList.contains('confirmation-modal')) {
+        closeModal(e.target.id);
+      }
+    });
+
+
+    updateBulkActions();
+    syncSelectAll();
+  </script>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title" id="successTitle">Success!</h3>
+      <p class="modal-message" id="successMessage">Operation completed successfully.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('successModal')" class="modal-btn modal-btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="success-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon error">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error Occurred</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong. Please try again.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('errorModal')" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 class="modal-title">Confirm Action</h3>
+      <p class="modal-message" id="confirmationMessage">Are you sure you want to proceed?</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('confirmationModal')" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirmBtn" class="modal-btn modal-btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

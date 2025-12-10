@@ -1,0 +1,172 @@
+<footer role="contentinfo">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section footer-info">
+        <h4 class="footer-brand">
+          <img src="/Backpack.ico" alt="Backpack Logo" class="footer-logo-img" draggable="false" oncontextmenu="return false;">
+          <span>Backpack Tech Works</span>
+        </h4>
+        <p>Building innovative software solutions that empower businesses to thrive in the digital age.</p>
+        <div class="footer-social">
+          <a href="https://www.tiktok.com/@backpacktechworks" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            <i class="fa-brands fa-tiktok"></i>
+          </a>
+          <a href="https://www.instagram.com/backpacktechworks/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61574869127595" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <i class="fa-brands fa-facebook-f"></i>
+          </a>
+          <a href="https://www.linkedin.com/company/backpacktechwork/?viewAsMember=true" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <i class="fa-brands fa-linkedin-in"></i>
+          </a>
+          <a href="https://www.youtube.com/@BackpackTechworks" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <i class="fa-brands fa-youtube"></i>
+          </a>
+          <a href="http://wa.link/2y0zm0" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+          <a href="https://x.com/backpacktechw" target="_blank" rel="noopener noreferrer" aria-label="X">
+            <i class="fa-brands fa-x-twitter"></i>
+          </a>
+          <a href="https://github.com/BackpackTechWork" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <i class="fa-brands fa-github"></i>
+          </a>
+        </div>
+        
+      </div>
+      
+      <div class="footer-links-wrapper">
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <% if (typeof footerServices !== 'undefined' && footerServices && footerServices.length > 0) { %>
+              <% footerServices.forEach(service => { %>
+                <li><a href="/services/<%= service.slug %>"><%= service.title %></a></li>
+              <% }) %>
+            <% } else { %>
+              <!-- Fallback if services are not available -->
+              <li><a href="/services">Our Services</a></li>
+            <% } %>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="/projects">Projects</a></li>
+            <li><a href="/team">Our Team</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/services">Our Services</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-section footer-cta-box">
+        <div class="footer-cta-card">
+          <div class="cta-icon">
+            <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+            </svg>
+          </div>
+          <h4>Ready to Start?</h4>
+          <p>Let's build something amazing together</p>
+          <a href="/contact" class="footer-cta-btn">Get in Touch</a>
+        </div>
+        <div class="footer-contact">
+          <p><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-right: 8px;"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><a href="mailto:backpacktechworks@gmail.com">backpacktechworks@gmail.com</a></p>
+          <p><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-right: 8px;"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><a href="tel:+15551234567">+601121194948
+          <p style="margin-top: 0.75rem; font-size: 0.8rem; opacity: 0.8;">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-right: 8px;"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            Mon-Fri: 9AM - 6PM UTC +8
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; <%= new Date().getFullYear() %> <strong>Backpack</strong>. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="/privacy">Privacy Policy</a>
+        <span>•</span>
+        <a href="/terms">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+
+  if (typeof window.preventImageInteraction === 'undefined') {
+    window.preventImageInteraction = (img) => {
+    if (!img) return;
+    
+
+    ['dragstart', 'drag', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(eventType => {
+      img.addEventListener(eventType, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }, { passive: false });
+    });
+    
+
+    ['click', 'mousedown', 'mouseup', 'mousemove', 'dblclick'].forEach(eventType => {
+      img.addEventListener(eventType, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }, { passive: false });
+    });
+    
+
+    img.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }, { passive: false });
+    
+
+    ['selectstart', 'select', 'copy'].forEach(eventType => {
+      img.addEventListener(eventType, (e) => {
+        e.preventDefault();
+        return false;
+      }, { passive: false });
+    });
+    
+
+    img.addEventListener('auxclick', (e) => {
+      if (e.button === 1) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }, { passive: false });
+    
+
+    img.style.pointerEvents = 'none';
+    img.style.userSelect = 'none';
+    img.style.webkitUserDrag = 'none';
+    img.style.MozUserSelect = 'none';
+    img.style.msUserSelect = 'none';
+    img.setAttribute('draggable', 'false');
+    img.setAttribute('oncontextmenu', 'return false;');
+    };
+  }
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.preventImageInteraction) {
+      document.querySelectorAll('.footer-logo-img').forEach(window.preventImageInteraction);
+    }
+  });
+</script>
+
+<style>
+  .footer-logo-img {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+</style>

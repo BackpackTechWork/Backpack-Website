@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      background: #f9fafb;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: #6b7280;
+      font-size: 0.9375rem;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .breadcrumb a {
+      color: #c51d34;
+      text-decoration: none;
+    }
+
+    .form-container {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.5s ease-out both;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.4s; }
+    .form-group:nth-child(2) { animation-delay: 0.45s; }
+    .form-group:nth-child(3) { animation-delay: 0.5s; }
+    .form-group:nth-child(4) { animation-delay: 0.55s; }
+
+    .form-container .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #111827 !important;
+      opacity: 1 !important;
+    }
+
+    .form-group label .required {
+      color: #c51d34;
+    }
+
+    .form-container .form-control,
+    .form-container input.form-control,
+    .form-container textarea.form-control {
+      width: 100% !important;
+      padding: 0.75rem !important;
+      border: 2px solid #e5e7eb !important;
+      border-radius: 6px !important;
+      font-size: 0.875rem !important;
+      font-family: inherit !important;
+      background: #ffffff !important;
+      color: #111827 !important;
+      box-sizing: border-box !important;
+      transition: all 0.2s ease !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+    }
+
+    .form-container .form-control:focus,
+    .form-container input.form-control:focus,
+    .form-container textarea.form-control:focus {
+      outline: none !important;
+      border-color: #c51d34 !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+
+    .form-container textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-help {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.8125rem;
+      color: #6b7280;
+      opacity: 1 !important;
+    }
+
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      background: #f9fafb;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin-top: 1rem;
+    }
+
+    .option-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+      align-items: center;
+      background: white;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .option-item input {
+      padding: 0.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .option-item input:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .option-remove-btn {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .option-remove-btn:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+    }
+
+    .option-add-btn {
+      padding: 0.75rem 1.5rem;
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .option-add-btn:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0;
+    }
+
+    .form-checkbox input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #c51d34;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .form-checkbox label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: #111827;
+      opacity: 1 !important;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+      animation: fadeInUp 0.5s ease-out 1s both;
+    }
+
+    .form-container .btn {
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.875rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 1 !important;
+      width: 40px;
+      height: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container .btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .form-container .btn-primary:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .form-container .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .form-container .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .form-container .btn-submit {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+      width: auto;
+      padding: 0.75rem 1.5rem;
+    }
+
+    .form-container .btn-submit:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .success-modal, .error-modal, .confirmation-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .success-modal.show, .error-modal.show, .confirmation-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .success-modal.show .modal-content-wrapper,
+    .error-modal.show .modal-content-wrapper,
+    .confirmation-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    .modal-icon.error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .modal-icon.warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="breadcrumb">
+        <a href="/admin/dashboard">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="/admin/activities/polls">Polls</a>
+        <i class="fas fa-chevron-right"></i>
+        <span><%= isEdit ? 'Edit' : 'Add' %> Poll</span>
+      </div>
+
+      <div class="page-header">
+        <h1><%= isEdit ? 'Edit' : 'Add' %> Poll</h1>
+        <p><%= isEdit ? 'Update poll question and options' : 'Create a new poll for visitors to vote on' %></p>
+      </div>
+
+      <div class="form-container">
+        <form method="POST" action="<%= isEdit ? `/admin/activities/polls/${poll.id}` : '/admin/activities/polls/add' %>" id="pollForm">
+          <!-- Question -->
+          <div class="form-group">
+            <label for="question">Question <span class="required">*</span></label>
+            <input type="text" id="question" name="question" class="form-control" required placeholder="What is your favorite programming language?" value="<%= isEdit && poll ? (poll.question || '') : '' %>">
+            <small class="form-help">Enter the poll question that visitors will see</small>
+          </div>
+
+          <!-- Options -->
+          <div class="form-group">
+            <label>Options <span class="required">*</span></label>
+            <small class="form-help">Add at least 2 options for the poll</small>
+            <div class="options-container" id="optionsContainer">
+              <% 
+                let optionsArray = [];
+                if (isEdit && poll && poll.options) {
+
+                  if (Array.isArray(poll.options)) {
+                    optionsArray = poll.options;
+                  } else if (typeof poll.options === 'string') {
+
+                    try {
+                      const parsed = JSON.parse(poll.options);
+                      optionsArray = Array.isArray(parsed) ? parsed : (parsed ? [parsed] : []);
+                    } catch (e) {
+                      optionsArray = [];
+                    }
+                  }
+                }
+                
+
+                if (optionsArray.length > 0) {
+                  optionsArray.forEach((option, index) => {
+
+                    const optionValue = typeof option === 'string' ? option : (option.text || option.value || String(option));
+              %>
+                <div class="option-item">
+                  <input type="text" name="options[]" placeholder="Option text" value="<%= optionValue %>" required>
+                  <button type="button" class="option-remove-btn" onclick="removeOption(this)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              <% 
+                  });
+                } else {
+              %>
+                <div class="option-item">
+                  <input type="text" name="options[]" placeholder="Option text" required>
+                  <button type="button" class="option-remove-btn" onclick="removeOption(this)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+                <div class="option-item">
+                  <input type="text" name="options[]" placeholder="Option text" required>
+                  <button type="button" class="option-remove-btn" onclick="removeOption(this)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              <% } %>
+            </div>
+            <button type="button" class="option-add-btn" onclick="addOption()">
+              <i class="fas fa-plus"></i> Add Option
+            </button>
+          </div>
+
+          <!-- Active Status -->
+          <div class="form-group">
+            <div class="form-checkbox">
+              <input type="checkbox" id="is_active" name="is_active" value="true" <%= isEdit && poll && poll.is_active ? 'checked' : '' %>>
+              <label for="is_active">Active Poll</label>
+            </div>
+            <small class="form-help">Only active polls are visible to visitors</small>
+          </div>
+
+          <div class="form-actions">
+            <a href="/admin/activities/polls" class="btn btn-secondary" title="Cancel">
+              <i class="fas fa-times"></i>
+            </a>
+            <button type="submit" class="btn btn-submit" title="<%= isEdit ? 'Update' : 'Create' %> Poll">
+              <i class="fas fa-<%= isEdit ? 'save' : 'plus' %>"></i> <%= isEdit ? 'Update' : 'Create' %> Poll
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function addOption() {
+      const container = document.getElementById('optionsContainer');
+      const optionItem = document.createElement('div');
+      optionItem.className = 'option-item';
+      optionItem.innerHTML = `
+        <input type="text" name="options[]" placeholder="Option text" required>
+        <button type="button" class="option-remove-btn" onclick="removeOption(this)">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      container.appendChild(optionItem);
+    }
+
+    function showConfirmation(message, onConfirm) {
+      const modal = document.getElementById('confirmationModal');
+      const messageEl = document.getElementById('confirmationMessage');
+      const confirmBtn = document.getElementById('confirmBtn');
+      
+      if (modal && messageEl) {
+        messageEl.textContent = message;
+        modal.classList.add('show');
+        
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        newConfirmBtn.onclick = function() {
+          closeModal('confirmationModal');
+          if (onConfirm) onConfirm();
+        };
+      }
+    }
+
+    function removeOption(btn) {
+      const container = document.getElementById('optionsContainer');
+      if (container.children.length > 2) {
+        showConfirmation('Are you sure you want to remove this option?', function() {
+          btn.closest('.option-item').remove();
+        });
+      } else {
+        showModal('errorModal');
+        const errorMessageEl = document.getElementById('errorMessage');
+        if (errorMessageEl) {
+          errorMessageEl.textContent = 'Poll must have at least 2 options';
+        }
+        setTimeout(() => closeModal('errorModal'), 3000);
+      }
+    }
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('success') === 'true') {
+        showModal('successModal');
+        setTimeout(() => closeModal('successModal'), 2000);
+      }
+      if (urlParams.get('error') === 'true') {
+        const message = urlParams.get('message') || 'An error occurred';
+        const errorMessageEl = document.getElementById('errorMessage');
+        if (errorMessageEl) {
+          errorMessageEl.textContent = decodeURIComponent(message);
+        }
+        showModal('errorModal');
+      }
+    });
+
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('success-modal') || e.target.classList.contains('error-modal') || e.target.classList.contains('confirmation-modal')) {
+        closeModal(e.target.id);
+      }
+    });
+  </script>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title">Success!</h3>
+      <p class="modal-message">Poll saved successfully!</p>
+      <div class="modal-actions">
+        <a href="/admin/activities/polls" class="modal-btn modal-btn-secondary">View Polls</a>
+        <button onclick="closeModal('successModal')" class="modal-btn modal-btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="error-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon error">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('errorModal')" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon warning">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 class="modal-title">Confirm Action</h3>
+      <p class="modal-message" id="confirmationMessage">Are you sure you want to proceed?</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('confirmationModal')" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirmBtn" class="modal-btn modal-btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

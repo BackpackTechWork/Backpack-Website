@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('../partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/services'
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+  <style>
+    .related-projects-section {
+      margin-top: 5rem;
+    }
+    
+    .related-projects-section .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    .related-projects-section .project-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .related-projects-section .project-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 30px rgba(197, 29, 52, 0.2);
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .related-projects-section .project-card:hover .project-overlay {
+      opacity: 1;
+    }
+    
+    .related-projects-section .project-image {
+      position: relative;
+      width: 100%;
+      padding-top: 60%;
+      overflow: hidden;
+      background: #f5f5f5;
+    }
+    
+    .related-projects-section .project-image img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .related-projects-section .project-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(197, 29, 52, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .related-projects-section .project-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 2;
+    }
+    
+    .related-projects-section .project-content {
+      padding: 1.5rem;
+    }
+    
+    .related-projects-section .project-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      color: var(--gray);
+    }
+    
+    .related-projects-section .project-content h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--dark);
+      line-height: 1.4;
+    }
+    
+    .related-projects-section .project-links {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .related-projects-section .project-link {
+      width: 50px;
+      height: 50px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 1.25rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .related-projects-section .project-link:hover {
+      transform: scale(1.1);
+    }
+    
+    .related-projects-section .project-tech-icons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    
+    .related-projects-section .tech-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--gray);
+    }
+    
+    .related-projects-section .tech-tag i {
+      font-size: 1rem;
+    }
+    
+    .related-projects-section .tech-more {
+      font-size: 0.875rem;
+      color: var(--gray);
+    }
+    
+    @media (max-width: 768px) {
+      .related-projects-section .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .related-projects-section .project-overlay {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <!-- Service Detail Hero -->
+  <section class="service-detail-hero">
+    <!-- Flying Tech Icons (Programming Languages) -->
+    <div class="flying-tech-icons">
+      <i class="fab fa-react" style="--i:1;"></i>
+      <i class="fab fa-python" style="--i:2;"></i>
+      <i class="fab fa-js-square" style="--i:3;"></i>
+      <i class="fab fa-node-js" style="--i:4;"></i>
+      <i class="fab fa-html5" style="--i:5;"></i>
+      <i class="fab fa-css3-alt" style="--i:6;"></i>
+      <i class="fab fa-vuejs" style="--i:7;"></i>
+      <i class="fab fa-angular" style="--i:8;"></i>
+      <i class="fab fa-java" style="--i:9;"></i>
+      <i class="fab fa-php" style="--i:10;"></i>
+      <i class="fab fa-laravel" style="--i:11;"></i>
+      <i class="fab fa-swift" style="--i:12;"></i>
+      <i class="fab fa-android" style="--i:13;"></i>
+      <i class="fas fa-database" style="--i:16;"></i>
+      <i class="fab fa-git-alt" style="--i:17;"></i>
+      <i class="fab fa-github" style="--i:18;"></i>
+      <i class="fab fa-npm" style="--i:19;"></i>
+      <i class="fab fa-bootstrap" style="--i:20;"></i>
+      <i class="devicon-typescript-plain" style="--i:19;"></i>
+      <i class="devicon-tailwindcss-original" style="--i:20;"></i>
+      <i class="devicon-nextjs-original" style="--i:21;"></i>
+      <i class="devicon-vercel-original" style="--i:22;"></i>
+    </div>
+    <div class="container">
+      <div style="text-align: center;">
+        <div class="service-hero-icon">
+          <% if (service.icon) { %>
+            <% if (service.icon.startsWith('/')) { %>
+              <img src="<%= service.icon %>" alt="<%= service.title %> Icon" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <i class="fas fa-cog" style="display: none;"></i>
+            <% } else { %>
+              <i class="fas fa-<%= service.icon %>"></i>
+            <% } %>
+          <% } else { %>
+            <i class="fas fa-cog"></i>
+          <% } %>
+        </div>
+        <h1 class="service-detail-title"><%= service.title %></h1>
+        <p class="service-detail-description" style="font-size: 1.25rem; max-width: 700px; margin: 1rem auto 0; color: var(--gray); line-height: 1.7;"><%= service.full_description %></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="service-detail-content">
+    <div class="container">
+      <div class="service-details-grid">
+        <div class="detail-card">
+          <div class="detail-card-header">
+            <i class="fas fa-star"></i>
+            <h3>Key Features</h3>
+          </div>
+          <ul class="feature-list">
+            <% if (service.features) {
+              const features = typeof service.features === 'string' ? JSON.parse(service.features) : service.features;
+              if (features && features.length > 0) {
+                features.forEach(feature => { %>
+                  <li><i class="fas fa-check-circle"></i> <%= feature %></li>
+                <% });
+              } else { %>
+                <li><i class="fas fa-check-circle"></i> Custom solutions tailored to your needs</li>
+              <% }
+            } else { %>
+              <li><i class="fas fa-check-circle"></i> Custom solutions tailored to your needs</li>
+            <% } %>
+          </ul>
+        </div>
+
+        <div class="detail-card">
+          <div class="detail-card-header">
+            <i class="fas fa-cogs"></i>
+            <h3>Technologies We Use</h3>
+          </div>
+          <div class="tech-badges">
+            <% 
+
+              function getTechIcon(techName) {
+                const iconMap = {
+                  'PHP': 'devicon-php-plain',
+                  'Laravel': 'devicon-laravel-plain',
+                  'Vue': 'devicon-vuejs-plain',
+                  'React': 'devicon-react-original',
+                  'React Native': 'devicon-react-original',
+                  'TypeScript': 'devicon-typescript-plain',
+                  'JavaScript': 'devicon-javascript-plain',
+                  'Livewire': 'devicon-livewire-plain-wordmark',
+                  'Supabase': 'devicon-supabase-plain',
+                  'EJS': 'fas fa-file-code',
+                  'MySQL': 'devicon-mysql-plain',
+                  'jQuery': 'devicon-jquery-plain',
+                  'Premire Pro': 'devicon-premierepro-plain',
+                  'PostgreSQL': 'devicon-postgresql-plain',
+                  'Google Workspace': 'fab fa-google',
+                  'Node.js': 'fab fa-node-js',
+                  'Node JS': 'fab fa-node-js',
+                  'Bootstrap': 'devicon-bootstrap-plain',
+                  'Express.js': 'devicon-express-original',
+                  'Express': 'devicon-express-original',
+                  'HTML': 'devicon-html5-plain',
+                  'HTML5': 'devicon-html5-plain',
+                  'CSS': 'devicon-css3-plain',
+                  'CSS3': 'devicon-css3-plain',
+                  'Python': 'devicon-python-plain',
+                  'Django': 'devicon-django-plain',
+                  'Flask': 'devicon-flask-original',
+                  'MongoDB': 'devicon-mongodb-plain',
+                  'Git': 'devicon-git-plain',
+                  'Docker': 'devicon-docker-plain',
+                  'AWS': 'devicon-amazonwebservices-plain-wordmark',
+                  'Firebase': 'devicon-firebase-plain',
+                  'Next.js': 'devicon-nextjs-plain',
+                  'Tailwind CSS': 'devicon-tailwindcss-plain',
+                  'Redux': 'devicon-redux-original',
+                  'GraphQL': 'devicon-graphql-plain',
+                  'Sass': 'devicon-sass-original',
+                  'Webpack': 'devicon-webpack-plain',
+                  'Figma': 'devicon-figma-plain',
+                  'Java': 'devicon-java-plain',
+                  'Spring': 'devicon-spring-plain',
+                  'C++': 'devicon-cplusplus-plain',
+                  'C#': 'devicon-csharp-plain',
+                  'Go': 'devicon-go-plain',
+                  'Ruby': 'devicon-ruby-plain',
+                  'Rails': 'devicon-rails-plain',
+                  'Angular': 'devicon-angularjs-plain',
+                  'Svelte': 'devicon-svelte-plain',
+                  'Chart JS': 'fas fa-chart-line',
+                  'ChartJS': 'fas fa-chart-line',
+                  'Sheet API': 'fas fa-table'
+                };
+                return iconMap[techName] || 'fas fa-code';
+              }
+              
+              if (service.technologies) {
+                const technologies = typeof service.technologies === 'string' ? JSON.parse(service.technologies) : service.technologies;
+                if (technologies && technologies.length > 0) {
+                  technologies.forEach(tech => { 
+                    const iconClass = getTechIcon(tech);
+                  %>
+                    <span class="tech-badge-icon" style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, rgba(197, 29, 52, 0.1), rgba(66, 133, 244, 0.1)); transition: all 0.3s ease; cursor: pointer;" title="<%= tech %>">
+                      <i class="<%= iconClass %>" style="font-size: 1.25rem; color: var(--red); transition: all 0.3s ease;"></i>
+                    </span>
+                  <% });
+                } else { %>
+                  <span class="tech-badge-icon" style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, rgba(197, 29, 52, 0.1), rgba(66, 133, 244, 0.1)); transition: all 0.3s ease; cursor: pointer;" title="Modern Stack">
+                    <i class="fas fa-code" style="font-size: 1.25rem; color: var(--red); transition: all 0.3s ease;"></i>
+                  </span>
+                <% }
+              } else { %>
+                <span class="tech-badge-icon" style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, rgba(197, 29, 52, 0.1), rgba(66, 133, 244, 0.1)); transition: all 0.3s ease; cursor: pointer;" title="Modern Stack">
+                  <i class="fas fa-code" style="font-size: 1.25rem; color: var(--red); transition: all 0.3s ease;"></i>
+                </span>
+              <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Process Section -->
+      <div class="service-process-section">
+        <h2 style="text-align: center; margin-bottom: 3rem;">Our Process</h2>
+        <div class="process-steps">
+          <div class="process-step">
+            <div class="process-number">1</div>
+            <div class="process-icon"><i class="fas fa-comments"></i></div>
+            <h4>Discovery</h4>
+            <p>We discuss your requirements and goals</p>
+          </div>
+          <div class="process-step">
+            <div class="process-number">2</div>
+            <div class="process-icon"><i class="fas fa-pencil-ruler"></i></div>
+            <h4>Planning</h4>
+            <p>We create a detailed roadmap and design</p>
+          </div>
+          <div class="process-step">
+            <div class="process-number">3</div>
+            <div class="process-icon"><i class="fas fa-code"></i></div>
+            <h4>Development</h4>
+            <p>We build your solution with precision</p>
+          </div>
+          <div class="process-step">
+            <div class="process-number">4</div>
+            <div class="process-icon"><i class="fas fa-rocket"></i></div>
+            <h4>Launch</h4>
+            <p>We deploy and support your project</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Projects Section -->
+      <% if (projects && projects.length > 0) { %>
+        <div class="related-projects-section" style="margin-bottom: 5rem;">
+          <h2 style="text-align: center; margin-bottom: 3rem;">Related Projects</h2>
+          <div class="projects-grid">
+            <% projects.forEach((project, index) => { %>
+              <a href="/projects/<%= project.slug %>" class="project-card">
+                <div class="project-image">
+                  <% if (project.thumbnail) { %>
+                    <img src="<%= project.thumbnail %>" alt="<%= project.displayName %>" draggable="false" oncontextmenu="return false;" onerror="this.src='https://via.placeholder.com/600x400/c51d34/ffffff?text=<%= encodeURIComponent(project.displayName) %>'">
+                  <% } else { %>
+                    <img src="https://via.placeholder.com/600x400/c51d34/ffffff?text=<%= encodeURIComponent(project.displayName) %>" alt="<%= project.displayName %>" draggable="false" oncontextmenu="return false;">
+                  <% } %>
+                  <div class="project-overlay">
+                    <div class="project-links">
+                      <span class="project-link" title="View Details">
+                        <i class="fas fa-eye"></i>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="project-badge">
+                    <i class="fas fa-star"></i> Featured
+                  </div>
+                </div>
+                <div class="project-content">
+                  <div class="project-meta">
+                    <span class="project-category">
+                      <i class="fas fa-folder"></i> <%= service.title %>
+                    </span>
+                    <span class="project-stats">
+                      <i class="fas fa-images"></i> <%= project.images ? project.images.length : 0 %>
+                    </span>
+                  </div>
+                  <h3><%= project.displayName %></h3>
+                  <% if (project.techStack && project.techStack.length > 0) { %>
+                    <div class="project-tech-icons">
+                      <% 
+                        function getTechIcon(techName) {
+                          const iconMap = {
+                            'PHP': 'devicon-php-plain',
+                            'Laravel': 'devicon-laravel-plain',
+                            'Vue': 'devicon-vuejs-plain',
+                            'React': 'devicon-react-original',
+                            'React Native': 'devicon-react-original',
+                            'TypeScript': 'devicon-typescript-plain',
+                            'JavaScript': 'devicon-javascript-plain',
+                            'Livewire': 'devicon-livewire-plain-wordmark',
+                            'Supabase': 'devicon-supabase-plain',
+                            'EJS': 'fas fa-file-code',
+                            'MySQL': 'devicon-mysql-plain',
+                            'jQuery': 'devicon-jquery-plain',
+                            'Premire Pro': 'devicon-premierepro-plain',
+                            'PostgreSQL': 'devicon-postgresql-plain',
+                            'Google Workspace': 'fab fa-google',
+                            'Node.js': 'fab fa-node-js',
+                            'Node JS': 'fab fa-node-js',
+                            'Bootstrap': 'devicon-bootstrap-plain',
+                            'Express.js': 'devicon-express-original',
+                            'Express': 'devicon-express-original',
+                            'HTML': 'devicon-html5-plain',
+                            'HTML5': 'devicon-html5-plain',
+                            'CSS': 'devicon-css3-plain',
+                            'CSS3': 'devicon-css3-plain',
+                            'Python': 'devicon-python-plain',
+                            'Django': 'devicon-django-plain',
+                            'Flask': 'devicon-flask-original',
+                            'MongoDB': 'devicon-mongodb-plain',
+                            'Git': 'devicon-git-plain',
+                            'Docker': 'devicon-docker-plain',
+                            'AWS': 'devicon-amazonwebservices-plain-wordmark',
+                            'Firebase': 'devicon-firebase-plain',
+                            'Next.js': 'devicon-nextjs-plain',
+                            'Tailwind CSS': 'devicon-tailwindcss-plain',
+                            'Redux': 'devicon-redux-original',
+                            'GraphQL': 'devicon-graphql-plain',
+                            'Sass': 'devicon-sass-original',
+                            'Webpack': 'devicon-webpack-plain',
+                            'Figma': 'devicon-figma-plain',
+                            'Java': 'devicon-java-plain',
+                            'Spring': 'devicon-spring-plain',
+                            'C++': 'devicon-cplusplus-plain',
+                            'C#': 'devicon-csharp-plain',
+                            'Go': 'devicon-go-plain',
+                            'Ruby': 'devicon-ruby-plain',
+                            'Rails': 'devicon-rails-plain',
+                            'Angular': 'devicon-angularjs-plain',
+                            'Svelte': 'devicon-svelte-plain',
+                            'Chart JS': 'fas fa-chart-line',
+                            'ChartJS': 'fas fa-chart-line',
+                            'Sheet API': 'fas fa-table'
+                          };
+                          return iconMap[techName] || 'fas fa-code';
+                        }
+                        const techsToShow = project.techStack.slice(0, 3);
+                        techsToShow.forEach(tech => {
+                          const iconClass = getTechIcon(tech);
+                      %>
+                        <span class="tech-badge-icon" style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, rgba(197, 29, 52, 0.1), rgba(66, 133, 244, 0.1)); transition: all 0.3s ease; cursor: pointer;" title="<%= tech %>">
+                          <i class="<%= iconClass %>" style="font-size: 1.25rem; color: var(--red); transition: all 0.3s ease;"></i>
+                        </span>
+                      <% }); %>
+                      <% if (project.techStack.length > 3) { %>
+                        <span class="tech-more">+<%= project.techStack.length - 3 %> more</span>
+                      <% } %>
+                    </div>
+                  <% } %>
+                </div>
+              </a>
+            <% }); %>
+          </div>
+        </div>
+      <% } %>
+
+      <div class="service-cta">
+        <div class="cta-particles">
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+          <div class="particle"></div>
+        </div>
+        <div class="cta-glow"></div>
+        <div class="cta-icon">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <h2>Ready to Get Started?</h2>
+        <p>Let's discuss how we can help with your <%= service.title.toLowerCase() %> needs</p>
+        <a href="/contact" class="btn btn-primary cta-btn-large">
+          <i class="fas fa-paper-plane"></i> Contact Us Today
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  
+  <!-- Scroll Animation Script -->
+  <script>
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+    const footer = document.querySelector('footer');
+    if (footer) {
+      observer.observe(footer);
+    }
+  </script>
+</body>
+</html>
+

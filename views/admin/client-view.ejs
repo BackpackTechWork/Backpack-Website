@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --border-primary: #e5e7eb;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --accent-red: #c51d34;
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      background: var(--bg-secondary);
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .breadcrumb a {
+      color: var(--accent-red);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .client-info-card {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .client-avatar-large {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--border-primary);
+    }
+
+    .client-details h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .client-details p {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .client-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-red);
+    }
+
+    .section-card {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      display: flex !important;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-primary);
+      animation: none !important;
+      animation-play-state: running !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      text-align: left !important;
+      flex-direction: row !important;
+    }
+
+    .section-header h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table thead {
+      background: var(--bg-secondary);
+    }
+
+    .table th {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .table td {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-primary);
+      color: var(--text-primary);
+    }
+
+    .table tbody tr:hover {
+      background: var(--bg-secondary);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .status-badge.new {
+      background: rgba(197, 29, 52, 0.1);
+      color: #c51d34;
+    }
+
+    .status-badge.in_progress {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+    }
+
+    .status-badge.resolved {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-sm {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      width: 36px;
+      height: 36px;
+    }
+
+    .btn-icon-only {
+      padding: 0.5rem;
+      width: 36px;
+      height: 36px;
+      gap: 0;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .btn-info {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-info:hover {
+      background: #2563eb;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    .project-image {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    /* Success/Error/Confirmation Modal Styles */
+    .success-modal,
+    .confirmation-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .success-modal.show,
+    .confirmation-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .success-modal.show .modal-content-wrapper,
+    .confirmation-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    .modal-icon.error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .modal-icon.warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    /* Assignment Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-primary);
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
+
+    .close-modal:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid var(--border-primary);
+      border-radius: 6px;
+      font-size: 0.875rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-red);
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+
+      .client-info-card {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .client-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .page-header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="breadcrumb">
+        <a href="/admin/dashboard">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="/admin/clients">Clients</a>
+        <i class="fas fa-chevron-right"></i>
+        <span><%= client.name %></span>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <h1><%= client.name %></h1>
+          <p>Client Details and Management</p>
+        </div>
+        <div class="header-actions">
+          <a href="/admin/clients/edit/<%= client.id %>" class="btn btn-secondary">
+            <i class="fas fa-edit"></i> Edit Client
+          </a>
+          <a href="/admin/clients" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Clients
+          </a>
+        </div>
+      </div>
+
+      <div class="client-info-card">
+        <img src="<%= client.avatar || '/images/default-avatar.png' %>" alt="<%= client.name %>" class="client-avatar-large" onerror="this.onerror=null; this.src='/images/default-avatar.png';" referrerpolicy="no-referrer">
+        <div class="client-details">
+          <h2><%= client.name %></h2>
+          <p><i class="fas fa-envelope"></i> <%= client.email %></p>
+          <% if (client.brand_name) { %>
+            <p>
+              <i class="fas fa-tag"></i> Brand: 
+              <% if (client.brand_logo) { %>
+                <img src="<%= client.brand_logo %>" alt="<%= client.brand_name %>" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle; margin: 0 0.25rem;" onerror="this.style.display='none';">
+              <% } %>
+              <%= client.brand_name %>
+            </p>
+          <% } %>
+          <p><i class="fas fa-calendar"></i> Joined: <%= new Date(client.created_at).toLocaleDateString() %></p>
+        </div>
+      </div>
+
+      <div class="client-stats">
+        <div class="stat-card">
+          <h3>Total Projects</h3>
+          <div class="stat-value"><%= projects.length %></div>
+        </div>
+        <div class="stat-card">
+          <h3>Total Inquiries</h3>
+          <div class="stat-value"><%= inquiries.length %></div>
+        </div>
+        <div class="stat-card">
+          <h3>Account Status</h3>
+          <div class="stat-value" style="font-size: 1.25rem; color: #22c55e;">Active</div>
+        </div>
+      </div>
+
+      <!-- Projects Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2>Projects</h2>
+        </div>
+        <% if (projects && projects.length > 0) { %>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Service</th>
+                <th>Status</th>
+                <th>Completed</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% projects.forEach(project => { %>
+                <tr>
+                  <td>
+                    <% if (project.image) { %>
+                      <img src="<%= project.image %>" alt="<%= project.title %>" class="project-image">
+                    <% } else { %>
+                      <div style="width: 60px; height: 60px; background: var(--bg-secondary); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-image" style="color: var(--text-secondary);"></i>
+                      </div>
+                    <% } %>
+                  </td>
+                  <td><strong><%= project.title %></strong></td>
+                  <td><%= project.service_title || 'N/A' %></td>
+                  <td>
+                    <span class="status-badge <%= project.is_featured ? 'featured' : 'normal' %>">
+                      <%= project.is_featured ? 'Featured' : 'Normal' %>
+                    </span>
+                  </td>
+                  <td><%= project.completed_at ? new Date(project.completed_at).toLocaleDateString() : 'N/A' %></td>
+                  <td>
+                    <a href="/admin/projects" class="btn btn-info btn-sm btn-icon-only" title="View Project">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <p>No projects assigned to this client</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Inquiries Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2>Inquiries</h2>
+        </div>
+        <% if (inquiries && inquiries.length > 0) { %>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% inquiries.forEach(inquiry => { %>
+                <tr>
+                  <td><strong><%= inquiry.subject %></strong></td>
+                  <td>
+                    <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<%= inquiry.message %>">
+                      <%= inquiry.message %>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="status-badge <%= inquiry.status || 'new' %>">
+                      <%= (inquiry.status || 'new').replace('_', ' ') %>
+                    </span>
+                  </td>
+                  <td><%= new Date(inquiry.created_at).toLocaleDateString() %></td>
+                  <td>
+                    <a href="/admin/inquiries" class="btn btn-info btn-sm btn-icon-only" title="View Inquiry">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>No inquiries for this client</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign Project Modal -->
+  <div class="modal" id="assignProjectModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Assign Project to Client</h3>
+        <button class="close-modal" onclick="closeModal('assignProjectModal')">&times;</button>
+      </div>
+      <form id="assignProjectForm">
+        <div class="form-group">
+          <label for="projectSelect">Select Project</label>
+          <select id="projectSelect" class="form-control" required>
+            <option value="">Loading projects...</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('assignProjectModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Assign Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Assign Inquiry Modal -->
+  <div class="modal" id="assignInquiryModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Assign Inquiry to Client</h3>
+        <button class="close-modal" onclick="closeModal('assignInquiryModal')">&times;</button>
+      </div>
+      <form id="assignInquiryForm">
+        <div class="form-group">
+          <label for="inquirySelect">Select Inquiry</label>
+          <select id="inquirySelect" class="form-control" required>
+            <option value="">Loading inquiries...</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('assignInquiryModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Assign Inquiry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const clientId = <%= client.id %>;
+
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+    function openAssignProjectModal() {
+      openModal('assignProjectModal');
+      loadUnassignedProjects();
+    }
+
+    function openAssignInquiryModal() {
+      openModal('assignInquiryModal');
+      loadUnassignedInquiries();
+    }
+
+    async function loadUnassignedProjects() {
+      try {
+        const response = await fetch('/admin/projects');
+        const text = await response.text();
+
+
+        const projectsResponse = await fetch('/admin/api/unassigned-projects');
+        const data = await projectsResponse.json();
+        
+        const select = document.getElementById('projectSelect');
+        select.innerHTML = '<option value="">Select a project...</option>';
+        
+        if (data.projects && data.projects.length > 0) {
+          data.projects.forEach(project => {
+            const option = document.createElement('option');
+            option.value = project.id;
+            option.textContent = project.title;
+            select.appendChild(option);
+          });
+        } else {
+          select.innerHTML = '<option value="">No unassigned projects available</option>';
+        }
+      } catch (error) {
+        console.error('Error loading projects:', error);
+        document.getElementById('projectSelect').innerHTML = '<option value="">Error loading projects</option>';
+      }
+    }
+
+    async function loadUnassignedInquiries() {
+      try {
+        const response = await fetch('/admin/api/unassigned-inquiries');
+        const data = await response.json();
+        
+        const select = document.getElementById('inquirySelect');
+        select.innerHTML = '<option value="">Select an inquiry...</option>';
+        
+        if (data.inquiries && data.inquiries.length > 0) {
+          data.inquiries.forEach(inquiry => {
+            const option = document.createElement('option');
+            option.value = inquiry.id;
+            option.textContent = `${inquiry.subject} - ${inquiry.email}`;
+            select.appendChild(option);
+          });
+        } else {
+          select.innerHTML = '<option value="">No unassigned inquiries available</option>';
+        }
+      } catch (error) {
+        console.error('Error loading inquiries:', error);
+        document.getElementById('inquirySelect').innerHTML = '<option value="">Error loading inquiries</option>';
+      }
+    }
+
+
+    function showConfirmation(message, onConfirm) {
+      const modal = document.getElementById('confirmationModal');
+      const messageEl = document.getElementById('confirmationMessage');
+      const confirmBtn = document.getElementById('confirmBtn');
+      
+      messageEl.textContent = message;
+      
+
+      const newConfirmBtn = confirmBtn.cloneNode(true);
+      confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+      
+      newConfirmBtn.addEventListener('click', () => {
+        closeModal('confirmationModal');
+        onConfirm();
+      });
+      
+      openModal('confirmationModal');
+    }
+
+
+    document.getElementById('assignProjectForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const projectId = document.getElementById('projectSelect').value;
+      
+      if (!projectId) return;
+
+      showConfirmation('Are you sure you want to assign this project to this client?', async () => {
+        try {
+          const response = await fetch(`/admin/clients/${clientId}/assign-project`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ project_id: projectId })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById('successMessage').textContent = 'Project assigned successfully';
+            openModal('successModal');
+            setTimeout(() => {
+              location.reload();
+            }, 1500);
+          } else {
+            document.getElementById('errorMessage').textContent = data.message || 'Error assigning project';
+            openModal('errorModal');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          document.getElementById('errorMessage').textContent = 'An error occurred while assigning the project';
+          openModal('errorModal');
+        }
+      });
+    });
+
+
+    document.getElementById('assignInquiryForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const inquiryId = document.getElementById('inquirySelect').value;
+      
+      if (!inquiryId) return;
+
+      showConfirmation('Are you sure you want to assign this inquiry to this client?', async () => {
+        try {
+          const response = await fetch(`/admin/clients/${clientId}/assign-inquiry`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ inquiry_id: inquiryId })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            document.getElementById('successMessage').textContent = 'Inquiry assigned successfully';
+            openModal('successModal');
+            setTimeout(() => {
+              location.reload();
+            }, 1500);
+          } else {
+            document.getElementById('errorMessage').textContent = data.message || 'Error assigning inquiry';
+            openModal('errorModal');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          document.getElementById('errorMessage').textContent = 'An error occurred while assigning the inquiry';
+          openModal('errorModal');
+        }
+      });
+    });
+
+
+    document.querySelectorAll('.modal, .success-modal, .confirmation-modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal(modal.id);
+        }
+      });
+    });
+  </script>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title">Success!</h3>
+      <p class="modal-message" id="successMessage">Operation completed successfully.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('successModal')" class="modal-btn modal-btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="success-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon error">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error Occurred</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong. Please try again.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('errorModal')" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon warning">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 class="modal-title">Confirm Action</h3>
+      <p class="modal-message" id="confirmationMessage">Are you sure you want to proceed?</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('confirmationModal')" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirmBtn" class="modal-btn modal-btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+

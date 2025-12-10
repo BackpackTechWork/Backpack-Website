@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('../partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/blogs'
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+  <style>
+    .blogs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .blog-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .blog-card-image {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      background: #e5e7eb;
+    }
+
+    .blog-card-content {
+      padding: 1.5rem;
+    }
+
+    .blog-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 1rem;
+    }
+
+    .blog-card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .blog-card-excerpt {
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .blog-card-link {
+      color: #c51d34;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .blog-card-link:hover {
+      text-decoration: underline;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #6b7280;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    .search-container {
+      max-width: 700px;
+      margin: 1.5rem auto 2rem;
+      position: relative;
+    }
+
+    .services-list-section {
+      padding: 2rem 0 5rem;
+    }
+
+    .search-form {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .search-form:focus-within {
+      box-shadow: 0 4px 20px rgba(197, 29, 52, 0.15);
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 1rem 1.25rem;
+      border: none;
+      border-radius: 12px 0 0 12px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      font-family: 'Inter', sans-serif;
+      background: transparent;
+      color: #111827;
+    }
+
+    .search-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .search-input:focus {
+      outline: none;
+    }
+
+    .search-button {
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      border: none;
+      border-radius: 0 12px 12px 0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      font-size: 1rem;
+    }
+
+    .search-button:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1220 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .search-button:active {
+      transform: translateY(0);
+    }
+
+    .search-results-info {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #f9fafb;
+      border-radius: 8px;
+      color: #4b5563;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    .search-results-info strong {
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .clear-search {
+      color: #c51d34;
+      text-decoration: none;
+      margin-left: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+
+    .clear-search:hover {
+      background: rgba(197, 29, 52, 0.1);
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      .blogs-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .search-form {
+        flex-direction: column;
+        border-radius: 12px;
+      }
+
+      .search-input {
+        border-radius: 12px 12px 0 0;
+      }
+
+      .search-button {
+        width: 100%;
+        justify-content: center;
+        border-radius: 0 0 12px 12px;
+      }
+
+      .search-button span {
+        display: inline;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <!-- Blogs Hero Section -->
+  <section class="services-hero">
+    <div class="flying-tech-icons">
+      <i class="fab fa-react" style="--i:1;"></i>
+      <i class="fab fa-python" style="--i:2;"></i>
+      <i class="fab fa-js-square" style="--i:3;"></i>
+      <i class="fab fa-node-js" style="--i:4;"></i>
+      <i class="fab fa-html5" style="--i:5;"></i>
+      <i class="fab fa-css3-alt" style="--i:6;"></i>
+      <i class="fab fa-vuejs" style="--i:7;"></i>
+      <i class="fab fa-angular" style="--i:8;"></i>
+      <i class="fab fa-java" style="--i:9;"></i>
+      <i class="fab fa-php" style="--i:10;"></i>
+      <i class="fab fa-laravel" style="--i:11;"></i>
+      <i class="fab fa-swift" style="--i:12;"></i>
+      <i class="fab fa-android" style="--i:13;"></i>
+      <i class="fas fa-database" style="--i:16;"></i>
+      <i class="fab fa-git-alt" style="--i:17;"></i>
+      <i class="fab fa-github" style="--i:18;"></i>
+      <i class="fab fa-npm" style="--i:19;"></i>
+      <i class="fab fa-bootstrap" style="--i:20;"></i>
+      <i class="devicon-typescript-plain" style="--i:19;"></i>
+      <i class="devicon-tailwindcss-original" style="--i:20;"></i>
+      <i class="devicon-nextjs-original" style="--i:21;"></i>
+      <i class="devicon-vercel-original" style="--i:22;"></i>
+    </div>
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">OUR BLOGS</div>
+        <h2>Stay Updated with Our <span class="highlight">Latest Insights</span></h2>
+        <p>Discover our latest news, insights, and updates from the world of technology</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blogs Section -->
+  <section class="services-list-section">
+    <div class="container">
+      <!-- Search Bar -->
+      <div class="search-container">
+        <form action="/blogs" method="GET" class="search-form">
+          <div class="search-input-wrapper">
+            <input 
+              type="text" 
+              name="search" 
+              class="search-input" 
+              placeholder="Search blogs by title or content..." 
+              value="<%= searchQuery || '' %>"
+            >
+          </div>
+          <button type="submit" class="search-button">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
+          </button>
+        </form>
+        <% if (searchQuery && searchQuery.trim()) { %>
+          <div class="search-results-info">
+            <% if (blogs && blogs.length > 0) { %>
+              Found <strong><%= blogs.length %></strong> result(s) for "<strong><%= searchQuery %></strong>"
+            <% } else { %>
+              No results found for "<strong><%= searchQuery %></strong>"
+            <% } %>
+            <a href="/blogs" class="clear-search">Clear search</a>
+          </div>
+        <% } %>
+      </div>
+
+      <% if (blogs && blogs.length > 0) { %>
+        <div class="blogs-grid">
+          <% blogs.forEach(blog => { %>
+            <div class="blog-card" onclick="window.location.href='/blogs/<%= blog.slug %>'">
+              <% if (blog.cover_image) { %>
+                <img src="<%= blog.cover_image %>" alt="<%= blog.title %>" class="blog-card-image">
+              <% } else { %>
+                <div class="blog-card-image" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);">
+                  <i class="fas fa-blog" style="font-size: 3rem; color: white; opacity: 0.5;"></i>
+                </div>
+              <% } %>
+              <div class="blog-card-content">
+                <div class="blog-card-meta">
+                  <span><i class="fas fa-user"></i> <%= blog.author_name || 'Admin' %></span>
+                  <span><i class="fas fa-calendar"></i> <%= new Date(blog.created_at).toLocaleDateString() %></span>
+                </div>
+                <h3 class="blog-card-title"><%= blog.title %></h3>
+                <p class="blog-card-excerpt">
+                  <%= blog.content.substring(0, 150).replace(/<[^>]*>/g, '') %>...
+                </p>
+                <a href="/blogs/<%= blog.slug %>" class="blog-card-link">
+                  Read More <i class="fas fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <i class="fas fa-blog"></i>
+          <% if (searchQuery && searchQuery.trim()) { %>
+            <h3>No Results Found</h3>
+            <p>Try searching with different keywords or <a href="/blogs" style="color: #c51d34; text-decoration: none; font-weight: 600;">view all blogs</a></p>
+          <% } else { %>
+            <h3>No Blog Posts Yet</h3>
+            <p>Check back soon for our latest updates!</p>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  
+  <!-- Scroll Animation Script -->
+  <script>
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+    const footer = document.querySelector('footer');
+    if (footer) {
+      observer.observe(footer);
+    }
+  </script>
+</body>
+</html>
+

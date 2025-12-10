@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('../partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/team'
+  }) %>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <!-- Team Hero -->
+  <section class="team-hero">
+    <div class="flying-tech-icons">
+      <i class="fab fa-react" style="--i:1;"></i>
+      <i class="fab fa-python" style="--i:2;"></i>
+      <i class="fab fa-js-square" style="--i:3;"></i>
+      <i class="fab fa-node-js" style="--i:4;"></i>
+      <i class="fab fa-html5" style="--i:5;"></i>
+      <i class="fab fa-css3-alt" style="--i:6;"></i>
+      <i class="fab fa-vuejs" style="--i:7;"></i>
+      <i class="fab fa-angular" style="--i:8;"></i>
+      <i class="fab fa-java" style="--i:9;"></i>
+      <i class="fab fa-php" style="--i:10;"></i>
+      <i class="fab fa-laravel" style="--i:11;"></i>
+      <i class="fab fa-swift" style="--i:12;"></i>
+      <i class="fab fa-android" style="--i:13;"></i>
+      <i class="fas fa-database" style="--i:16;"></i>
+      <i class="fab fa-git-alt" style="--i:17;"></i>
+      <i class="fab fa-github" style="--i:18;"></i>
+      <i class="fab fa-npm" style="--i:19;"></i>
+      <i class="fab fa-bootstrap" style="--i:20;"></i>
+    </div>
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">OUR TEAM</div>
+        <h2>Meet the Minds Behind <span class="highlight">Backpack</span></h2>
+        <p>Talented professionals dedicated to delivering exceptional results</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Grid Section -->
+  <section class="team-section">
+    <div class="container">
+      <% if (teamMembers.length > 0) { %>
+        <div class="team-grid">
+          <% teamMembers.forEach(member => { %>
+            <div class="team-card" onclick="window.location.href='/team/<%= member.id %>'">
+              <div class="team-card-image-wrapper">
+                <%
+                  let profileImgSrc = member.avatar || '/images/default-avatar.png';
+
+                  if (profileImgSrc && profileImgSrc.includes('googleusercontent.com')) {
+                    profileImgSrc = profileImgSrc.replace(/=s\d+-c$/, '');
+                    profileImgSrc += '=s256-c';
+                    const cacheBuster = Math.floor(Date.now() / (1000 * 60 * 60));
+                    profileImgSrc = '/avatar-proxy?url=' + encodeURIComponent(profileImgSrc) + '&t=' + cacheBuster;
+                  }
+                %>
+                <img src="<%= profileImgSrc %>" alt="<%= member.name %>" class="team-card-image">
+                <div class="team-card-overlay">
+                  <span class="view-profile-btn">
+                    <i class="fas fa-user"></i> View Profile
+                  </span>
+                </div>
+              </div>
+              <div class="team-card-content">
+                <h3><%= member.name %></h3>
+                <p class="position"><%= member.position %></p>
+                <p class="bio-text"><%= member.bio ? member.bio.substring(0, 100) + (member.bio.length > 100 ? '...' : '') : 'Passionate about creating innovative solutions.' %></p>
+                
+                <% if (member.linkedin || member.github || member.twitter || member.instagram || member.facebook) { %>
+                  <div class="team-social-links" onclick="event.stopPropagation();">
+                    <% if (member.linkedin) { %>
+                      <a href="<%= member.linkedin %>" target="_blank" class="team-social-link" title="LinkedIn" onclick="event.stopPropagation();">
+                        <i class="fab fa-linkedin"></i>
+                      </a>
+                    <% } %>
+                    <% if (member.github) { %>
+                      <a href="<%= member.github %>" target="_blank" class="team-social-link" title="GitHub" onclick="event.stopPropagation();">
+                        <i class="fab fa-github"></i>
+                      </a>
+                    <% } %>
+                    <% if (member.twitter) { %>
+                      <a href="<%= member.twitter %>" target="_blank" class="team-social-link" title="X (Twitter)" onclick="event.stopPropagation();">
+                        <i class="fab fa-x-twitter"></i>
+                      </a>
+                    <% } %>
+                    <% if (member.instagram) { %>
+                      <a href="<%= member.instagram %>" target="_blank" class="team-social-link" title="Instagram" onclick="event.stopPropagation();">
+                        <i class="fab fa-instagram"></i>
+                      </a>
+                    <% } %>
+                    <% if (member.facebook) { %>
+                      <a href="<%= member.facebook %>" target="_blank" class="team-social-link" title="Facebook" onclick="event.stopPropagation();">
+                        <i class="fab fa-facebook"></i>
+                      </a>
+                    <% } %>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3>Team Profiles Coming Soon</h3>
+          <p>Our team profiles are being updated. Check back soon to meet our talented professionals!</p>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  
+  <!-- Scroll Animation Script -->
+  <script>
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.style.opacity = '1';
+      footer.style.visibility = 'visible';
+      footer.classList.add('visible');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /client/
+Disallow: /auth/
+Disallow: /staff/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://backpacktechworks.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+
+

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .polls-section {
+      padding: 4rem 0;
+      background: #f9fafb;
+      min-height: 60vh;
+    }
+
+    .polls-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-header .highlight {
+      color: #c51d34;
+    }
+
+    .section-header p {
+      color: #6b7280;
+      font-size: 1.125rem;
+    }
+
+    .poll-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+    }
+
+    .poll-card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .poll-question {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 1.5rem;
+    }
+
+    .poll-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .poll-option {
+      padding: 1rem;
+      background: #f9fafb;
+      border-radius: 8px;
+      border: 2px solid #e5e7eb;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .poll-option:hover {
+      border-color: #10b981;
+      background: #f0fdf4;
+    }
+
+    .poll-option input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #10b981;
+    }
+
+    .poll-option label {
+      flex: 1;
+      cursor: pointer;
+      color: #111827;
+      font-weight: 500;
+    }
+
+    .poll-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .poll-vote-count {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .poll-results {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .poll-result-item {
+      margin-bottom: 0.75rem;
+    }
+
+    .poll-result-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+      font-size: 0.875rem;
+      color: #111827;
+    }
+
+    .poll-result-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .poll-result-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+      transition: width 0.3s ease;
+    }
+
+    .poll-result-percentage {
+      font-weight: 600;
+      color: #10b981;
+    }
+
+    .poll-voted {
+      pointer-events: none;
+    }
+
+    .poll-voted .poll-option {
+      cursor: default;
+    }
+
+    .success-message {
+      background: #f0fdf4;
+      border: 1px solid #10b981;
+      color: #059669;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #6b7280;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.3;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Already Voted Modal */
+    .already-voted-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .already-voted-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .already-voted-modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8) translateY(20px);
+      transition: transform 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .already-voted-modal.show .already-voted-modal-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .already-voted-modal-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #10b981 0%, #059669 50%, #10b981 100%);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .already-voted-image {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 1.5rem;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      animation: bounceIn 0.6s ease-out;
+    }
+
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .already-voted-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .already-voted-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+      animation: slideInUp 0.5s ease-out 0.2s both;
+    }
+
+    .already-voted-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+      animation: slideInUp 0.5s ease-out 0.3s both;
+    }
+
+    .already-voted-button {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      animation: slideInUp 0.5s ease-out 0.4s both;
+    }
+
+    .already-voted-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <section class="polls-section">
+    <div class="container">
+      <div class="section-header">
+        <h1>Active <span class="highlight">Polls</span></h1>
+        <p>Share your opinion and help us improve</p>
+      </div>
+
+      <div class="polls-container">
+        <% if (polls && polls.length > 0) { %>
+          <% polls.forEach(poll => { %>
+            <% 
+
+              let pollOptions = [];
+              if (poll.options) {
+                if (Array.isArray(poll.options)) {
+                  pollOptions = poll.options;
+                } else if (typeof poll.options === 'string') {
+                  try {
+                    pollOptions = JSON.parse(poll.options);
+                  } catch (e) {
+                    pollOptions = [];
+                  }
+                } else if (typeof poll.options === 'object') {
+                  pollOptions = Object.values(poll.options);
+                }
+              }
+            %>
+            <div class="poll-card" id="poll-<%= poll.id %>">
+              <h2 class="poll-question"><%= poll.question %></h2>
+              
+              <form class="poll-form" data-poll-id="<%= poll.id %>" data-has-voted="false">
+                <div class="poll-options">
+                  <% if (pollOptions && pollOptions.length > 0) { %>
+                    <% pollOptions.forEach((option, index) => { %>
+                      <div class="poll-option">
+                        <input type="radio" id="poll-<%= poll.id %>-option-<%= index %>" name="poll-<%= poll.id %>" value="<%= index %>" required>
+                        <label for="poll-<%= poll.id %>-option-<%= index %>"><%= typeof option === 'string' ? option : (option.text || option.value || String(option)) %></label>
+                      </div>
+                    <% }) %>
+                  <% } else { %>
+                    <div class="empty-state" style="padding: 2rem; text-align: center; color: #6b7280;">
+                      <p>No options available for this poll.</p>
+                    </div>
+                  <% } %>
+                </div>
+                
+                <div class="poll-info">
+                  <div class="poll-vote-count">
+                    <i class="fas fa-users"></i>
+                    <span><%= poll.totalVotes || 0 %> votes</span>
+                  </div>
+                  <button type="submit" class="btn btn-primary vote-btn" style="background: #10b981; border: none; padding: 0.5rem 1.5rem; border-radius: 6px; color: white; font-weight: 600; cursor: pointer;">
+                    <i class="fas fa-check"></i> Vote
+                  </button>
+                </div>
+                
+                <!-- Results will be shown here after voting -->
+                <div class="poll-results" style="display: none;"></div>
+              </form>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="empty-state">
+            <i class="fas fa-poll"></i>
+            <h3>No Active Polls</h3>
+            <p>There are no active polls at the moment. Check back soon!</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+
+  <!-- Already Voted Modal -->
+  <div class="already-voted-modal" id="alreadyVotedModal">
+    <div class="already-voted-modal-content">
+      <div class="already-voted-image">
+        <img src="/images/Assets/Why you lying.png" alt="Why you lying?">
+      </div>
+      <h3 class="already-voted-title">Wait a minute...</h3>
+      <p class="already-voted-message">
+        You've already voted on this poll!<br>
+        One vote per person, that's the rule!
+      </p>
+      <button class="already-voted-button" onclick="closeAlreadyVotedModal()">
+        <i class="fas fa-check"></i> Got it!
+      </button>
+    </div>
+  </div>
+
+  <script>
+
+    document.querySelectorAll('.poll-form').forEach(form => {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+
+        if (this.dataset.hasVoted === 'true') {
+          showAlreadyVotedModal();
+          return;
+        }
+        
+        const pollId = this.dataset.pollId;
+        const selectedOption = this.querySelector('input[type="radio"]:checked');
+        const voteBtn = this.querySelector('.vote-btn');
+        const resultsDiv = this.querySelector('.poll-results');
+        const pollCard = this.closest('.poll-card');
+        
+        if (!selectedOption) {
+          alert('Please select an option');
+          return;
+        }
+
+
+        voteBtn.disabled = true;
+        voteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Voting...';
+        
+        try {
+          const response = await fetch(`/polls/${pollId}/vote`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              option_index: selectedOption.value
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+
+            this.dataset.hasVoted = 'true';
+            pollCard.classList.add('poll-voted');
+            
+
+            voteBtn.style.display = 'none';
+            
+
+            const resultsResponse = await fetch(`/polls/${pollId}/results`);
+            const resultsData = await resultsResponse.json();
+            
+            if (resultsData.success) {
+
+              displayResults(resultsDiv, resultsData.poll, pollCard);
+            }
+            
+
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-message';
+            successMsg.innerHTML = '<i class="fas fa-check-circle"></i> Your vote has been recorded!';
+            this.insertBefore(successMsg, this.querySelector('.poll-options'));
+          } else {
+
+            if (data.message && (data.message.toLowerCase().includes('already voted') || data.message.toLowerCase().includes('already voted'))) {
+              showAlreadyVotedModal();
+            } else {
+              alert(data.message || 'Error submitting vote');
+            }
+            voteBtn.disabled = false;
+            voteBtn.innerHTML = '<i class="fas fa-check"></i> Vote';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An error occurred while submitting your vote. Please try again.');
+          voteBtn.disabled = false;
+          voteBtn.innerHTML = '<i class="fas fa-check"></i> Vote';
+        }
+      });
+    });
+    
+    function displayResults(resultsDiv, poll, pollCard) {
+      resultsDiv.style.display = 'block';
+      
+
+      let pollOptions = [];
+      if (poll.options) {
+        if (Array.isArray(poll.options)) {
+          pollOptions = poll.options;
+        } else if (typeof poll.options === 'string') {
+          try {
+            pollOptions = JSON.parse(poll.options);
+          } catch (e) {
+            pollOptions = [];
+          }
+        } else if (typeof poll.options === 'object') {
+          pollOptions = Object.values(poll.options);
+        }
+      }
+      
+      let html = '<h4 style="margin-bottom: 1rem; color: #111827; font-size: 1.125rem;">Results:</h4>';
+      
+      pollOptions.forEach((option, index) => {
+        const optionText = typeof option === 'string' ? option : (option.text || option.value || String(option));
+        const votes = poll.optionVotes && poll.optionVotes[index] ? poll.optionVotes[index] : 0;
+        const percentage = poll.totalVotes > 0 ? ((votes / poll.totalVotes) * 100).toFixed(1) : 0;
+        
+        html += `
+          <div class="poll-result-item">
+            <div class="poll-result-label">
+              <span>${optionText}</span>
+              <span class="poll-result-percentage">${percentage}% (${votes} votes)</span>
+            </div>
+            <div class="poll-result-bar">
+              <div class="poll-result-fill" style="width: ${percentage}%"></div>
+            </div>
+          </div>
+        `;
+      });
+      
+      resultsDiv.innerHTML = html;
+      
+
+      const voteCountEl = pollCard.querySelector('.poll-vote-count span');
+      if (voteCountEl) {
+        voteCountEl.textContent = `${poll.totalVotes || 0} votes`;
+      }
+    }
+
+
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+
+    const footer = document.querySelector('footer');
+    if (footer) {
+      observer.observe(footer);
+    }
+
+
+    function showAlreadyVotedModal() {
+      const modal = document.getElementById('alreadyVotedModal');
+      if (modal) {
+        modal.classList.add('show');
+
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeAlreadyVotedModal() {
+      const modal = document.getElementById('alreadyVotedModal');
+      if (modal) {
+        modal.classList.remove('show');
+
+        document.body.style.overflow = '';
+      }
+    }
+
+
+    document.getElementById('alreadyVotedModal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeAlreadyVotedModal();
+      }
+    });
+
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeAlreadyVotedModal();
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+
