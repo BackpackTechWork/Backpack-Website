@@ -556,7 +556,7 @@
 
                         if (!newAttributes.match(/target=/i)) {
 
-                          if (href && href.match(/^https?:\/\
+                          if (href && href.match(/^https?:\/\//)) {
                             newAttributes += ' target="_blank" rel="noopener noreferrer"';
                           }
                         }
