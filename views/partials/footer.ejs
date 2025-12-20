@@ -180,6 +180,52 @@
     transform: none !important;
     animation: none !important;
   }
+  
+  /* Mobile Performance Optimizations */
+  @media (max-width: 768px) {
+    footer {
+      contain: layout style paint;
+      will-change: auto;
+    }
+    
+    .footer-content,
+    .footer-section,
+    .footer-social {
+      will-change: auto;
+    }
+    
+    .footer-social a {
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      transform: translateZ(0);
+    }
+    
+    .footer-social a:hover {
+      transform: translateZ(0) scale(1.1);
+    }
+    
+    .footer-social a:active {
+      transform: translateZ(0) scale(0.95);
+    }
+    
+    /* Reduce complex effects on mobile */
+    .footer-cta-card {
+      will-change: auto;
+    }
+  }
+  
+  /* Disable hover effects on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .footer-social a:hover {
+      transform: none;
+    }
+  }
+  
+  /* Reduce motion */
+  @media (prefers-reduced-motion: reduce) {
+    .footer-social a {
+      transition: none !important;
+    }
+  }
 </style>
 
 <!-- Fallback for no-JS: ensure footer is visible -->
