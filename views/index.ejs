@@ -859,16 +859,31 @@
   
     <script defer>
     (function() {
+
+      const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isLowEnd = navigator.hardwareConcurrency <= 4 || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+      
+
       const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px'
+        threshold: isMobile ? 0.05 : 0.1,
+        rootMargin: isMobile ? '0px 0px -50px 0px' : '0px 0px -100px 0px'
       };
 
+
+      let rafId = null;
       const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+
+              if (isMobile || isLowEnd) {
+                observer.unobserve(entry.target);
+              }
+            }
+          });
+          rafId = null;
         });
       }, observerOptions);
 
@@ -880,23 +895,39 @@
       }
 
       function initScrollAnimations() {
-        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-        document.querySelectorAll('section:not(.hero)').forEach(section => observer.observe(section));
-        
+
+        const animateElements = document.querySelectorAll('.animate-on-scroll');
+        const sections = document.querySelectorAll('section:not(.hero)');
         const footer = document.querySelector('footer');
+        
+
+        animateElements.forEach(el => observer.observe(el));
+        sections.forEach(section => observer.observe(section));
+        
         if (footer) {
           observer.observe(footer);
         }
 
+
         const approachObserver = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
-            if (entry.isIntersecting && !entry.target.classList.contains('animate-active')) {
-              entry.target.classList.add('animate-active');
+            if (entry.isIntersecting) {
+
+              if (!entry.target.classList.contains('visible')) {
+                entry.target.classList.add('visible');
+              }
+
+              if (window.innerWidth >= 1200 && !entry.target.classList.contains('animate-active')) {
+                entry.target.classList.add('animate-active');
+              }
+              if (isLowEnd) {
+                approachObserver.unobserve(entry.target);
+              }
             }
           });
         }, {
-          threshold: 0.2,
-          rootMargin: '0px'
+          threshold: isMobile ? 0.05 : 0.2,
+          rootMargin: isMobile ? '0px 0px -50px 0px' : '0px'
         });
 
         const approachSection = document.querySelector('.approach-section');
@@ -2231,9 +2262,362 @@
     .testimonials-section.visible .testimonial-card:nth-child(6){animation-delay:0.35s,1.5s;animation-duration:0.9s,8.3s}
     .testimonials-section.visible .testimonial-card:nth-child(7){animation-delay:0.4s,1.6s;animation-duration:0.9s,8s}
     @media (max-width:1024px){.testimonial-card:hover{transform:translateY(-6px) scale(1.01)}.testimonial-quote-icon{width:28px;height:28px;top:1.25rem;right:1.25rem}}
-    @media (max-width:768px){.testimonial-card:hover{transform:translateY(-4px) scale(1.01)}.testimonial-quote-icon{width:24px;height:24px;top:1rem;right:1rem;opacity:0.1}.testimonial-card-glow{filter:blur(4px)}}
+    
+    /* Mobile Optimizations - Reduce lag on low-end devices */
+    @media (max-width:768px){
+      /* Disable expensive effects on mobile */
+      .testimonial-card{will-change:auto;animation:testimonialFadeInUpSimple 0.5s ease-out both}
+      .testimonial-card:hover{transform:none;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+      .testimonial-card-glow{display:none}
+      .avatar-glow{display:none}
+      .testimonial-card:hover .avatar-glow{display:none}
+      .testimonial-card:hover .testimonial-author img{transform:none;box-shadow:none}
+      .testimonial-card:hover .testimonial-rating i{transform:none;filter:none}
+      .testimonial-card:hover .testimonial-content{transform:none}
+      .testimonial-quote-icon{width:24px;height:24px;top:1rem;right:1rem;opacity:0.1;animation:none}
+      .testimonials-section.visible .testimonial-card{animation:testimonialFadeInUpSimple 0.5s ease-out both;animation-delay:calc(var(--index, 0) * 0.1s)}
+      .testimonials-section.visible .testimonial-card{animation-duration:0.5s}
+      
+      /* Simplify featured card on mobile */
+      .testimonial-featured{animation:none;transform:scale(1);box-shadow:0 8px 24px rgba(197,29,52,0.2)}
+      .testimonial-featured::before,.testimonial-featured::after{display:none}
+      .testimonial-featured .testimonial-content::before,.testimonial-featured .testimonial-content::after{display:none}
+      .testimonial-featured:hover{animation:none;transform:scale(1)}
+      .testimonial-featured .testimonial-card-glow{display:none}
+      .testimonial-featured .avatar-glow{display:none}
+      .testimonial-featured .testimonial-rating i{animation:none;filter:none}
+      .testimonial-featured .testimonial-quote-icon{animation:none}
+      
+      /* Simplify background gradients */
+      .testimonials-section::before{background:none}
+    }
+    
+    @keyframes testimonialFadeInUpSimple{
+      from{opacity:0;transform:translateY(20px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    
+    /* Disable hover effects on touch devices */
+    @media (hover:none) and (pointer:coarse){
+      .testimonial-card:hover{transform:none;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+      .testimonial-card-glow{display:none}
+      .avatar-glow{display:none}
+      .testimonial-card:hover .testimonial-author img{transform:none}
+      .testimonial-card:hover .testimonial-rating i{transform:none;filter:none}
+      .testimonial-card:hover .testimonial-content{transform:none}
+      .testimonial-featured:hover{animation:none;transform:scale(1)}
+    }
+    
     @media (prefers-reduced-motion:reduce){.testimonial-card,.testimonial-card:hover,.testimonial-content,.testimonial-rating i,.testimonial-author img,.testimonial-quote-icon{animation:none!important;transition:none!important;transform:none!important}}
-    .testimonial-card,.testimonial-content,.testimonial-author img{will-change:transform;transform:translateZ(0)}
+    
+    /* Optimize will-change - only use when animating */
+    .testimonial-card{will-change:auto}
+    .testimonials-section.visible .testimonial-card{will-change:transform,opacity}
+    .testimonial-card,.testimonial-content,.testimonial-author img{transform:translateZ(0)}
+  </style>
+  
+  <!-- Mobile Performance Optimizations for CTA and Footer -->
+  <style>
+    /* Grid Background - Same style as footer, optimized for CTA */
+    .tech-grid-bg{
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
+      background-size:50px 50px;
+      opacity:1;
+      z-index:0;
+      transform:translateZ(0);
+      pointer-events:none;
+      backface-visibility:hidden
+    }
+    
+    /* Desktop grid - same size, slightly more visible */
+    @media (min-width:769px){
+      .tech-grid-bg{
+        background-image:
+          linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),
+          linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);
+        background-size:50px 50px
+      }
+    }
+    
+    /* Mobile grid - slightly smaller for better visibility */
+    @media (max-width:768px){
+      .tech-grid-bg{
+        background-image:
+          linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),
+          linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
+        background-size:40px 40px
+      }
+    }
+    
+    /* CTA Section Mobile Optimizations */
+    @media (max-width:768px){
+      .cta-section{contain:layout style paint}
+      /* Hide gridlines on mobile */
+      .tech-grid-bg{display:none}
+      .cta-title,.cta-subtitle,.cta-button{will-change:auto;animation-duration:0.4s}
+      .cta-button::after{display:none}
+      
+      /* Optimize tech icons on mobile - keep visual appeal but reduce complexity */
+      .tech-icons{contain:layout;gap:1.25rem;margin-top:2rem}
+      .tech-icon-item{
+        width:52px;
+        height:52px;
+        font-size:1.75rem;
+        backdrop-filter:none;
+        background:rgba(255,255,255,0.12);
+        border:1px solid rgba(255,255,255,0.1);
+        will-change:transform,opacity;
+        animation:techIconPopSimple 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+        animation-play-state:paused;
+        transform:translateZ(0);
+        box-shadow:0 2px 8px rgba(0,0,0,0.1);
+        transition:transform 0.2s ease,background-color 0.2s ease,box-shadow 0.2s ease;
+        position:relative
+      }
+      /* Small optimized glow on mobile */
+      .tech-icon-item::before{
+        content:'';
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform:translate(-50%,-50%) translateZ(0);
+        width:120%;
+        height:120%;
+        border-radius:12px;
+        background:radial-gradient(circle,rgba(197,29,52,0.2) 0%,transparent 70%);
+        opacity:0;
+        transition:opacity 0.3s ease;
+        pointer-events:none;
+        z-index:-1;
+        will-change:opacity
+      }
+      .tech-icon-item:hover::before{opacity:0.4}
+      .tech-icon-item:hover{transform:translateZ(0) translateY(-3px) scale(1.05);background:rgba(197,29,52,0.8);box-shadow:0 4px 12px rgba(197,29,52,0.3)}
+      /* Active state for mobile tap/click */
+      .tech-icon-item:active::before{opacity:0.5}
+      .tech-icon-item:active{transform:translateZ(0) translateY(-2px) scale(1.08);background:rgba(197,29,52,0.9);box-shadow:0 6px 16px rgba(197,29,52,0.4)}
+      section.visible .tech-icon-item{animation-play-state:running}
+      section.visible .tech-icon-item:nth-child(1){animation-delay:0.1s}
+      section.visible .tech-icon-item:nth-child(2){animation-delay:0.15s}
+      section.visible .tech-icon-item:nth-child(3){animation-delay:0.2s}
+      section.visible .tech-icon-item:nth-child(4){animation-delay:0.25s}
+      section.visible .tech-icon-item:nth-child(5){animation-delay:0.3s}
+      section.visible .tech-icon-item:nth-child(6){animation-delay:0.35s}
+      section.visible .tech-icon-item:nth-child(7){animation-delay:0.4s}
+      section.visible .tech-icon-item:nth-child(8){animation-delay:0.45s}
+      section.visible .tech-icon-item:nth-child(9){animation-delay:0.5s}
+      section.visible .tech-icon-item:nth-child(10){animation-delay:0.55s}
+      section.visible .tech-icon-item:nth-child(11){animation-delay:0.6s}
+      section.visible .tech-icon-item:nth-child(12){animation-delay:0.65s}
+    }
+    
+    
+    /* Very small screens - keep all icons but adjust size */
+    @media (max-width:480px){
+      .tech-icons{gap:1rem;margin-top:1.5rem}
+      .tech-icon-item{
+        width:48px;
+        height:48px;
+        font-size:1.5rem;
+        animation-duration:0.4s
+      }
+    }
+    
+    @keyframes techIconPopSimple{
+      0%{opacity:0;transform:translateZ(0) translateY(15px) scale(0.85)}
+      60%{transform:translateZ(0) translateY(-3px) scale(1.08)}
+      80%{transform:translateZ(0) translateY(1px) scale(0.98)}
+      100%{opacity:1;transform:translateZ(0) translateY(0) scale(1)}
+    }
+    
+    /* Desktop - Enhanced glow effects (optimized) */
+    @media (min-width:769px){
+      .tech-icon-item{
+        position:relative;
+        will-change:transform,opacity
+      }
+      /* Ensure glow is only on desktop */
+      .tech-icon-item::before{
+        content:'';
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform:translate(-50%,-50%) translateZ(0);
+        width:140%;
+        height:140%;
+        border-radius:12px;
+        background:radial-gradient(circle,rgba(197,29,52,0.25) 0%,transparent 70%);
+        opacity:0;
+        transition:opacity 0.3s ease;
+        pointer-events:none;
+        z-index:-1;
+        will-change:opacity
+      }
+      .tech-icon-item:hover::before{
+        opacity:0.5;
+        transform:translate(-50%,-50%) translateZ(0) scale(1.05)
+      }
+    }
+    
+    /* Touch device optimizations - use active instead of hover */
+    @media (hover:none) and (pointer:coarse){
+      .tech-icon-item:hover{transform:none;background:rgba(255,255,255,0.12);box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+      .tech-icon-item:hover::before{opacity:0}
+      /* Active state for touch - glow on tap */
+      .tech-icon-item:active::before{opacity:0.5!important}
+      .tech-icon-item:active{transform:translateZ(0) translateY(-2px) scale(1.08)!important;background:rgba(197,29,52,0.9)!important;box-shadow:0 6px 16px rgba(197,29,52,0.4)!important}
+    }
+    
+    /* Reduce motion preference */
+    @media (prefers-reduced-motion:reduce){
+      .tech-icon-item::before{transition:none}
+    }
+    
+    /* Ensure approach section is visible on mobile - always show cards */
+    @media (max-width:768px){
+      .approach-section{
+        opacity:1!important;
+        visibility:visible!important;
+        display:block!important
+      }
+      /* Always show cards, even if section not observed yet */
+      .approach-step{
+        opacity:1!important;
+        visibility:visible!important;
+        transform:translateZ(0) translateY(0)!important;
+        animation-play-state:running!important;
+        animation:approachStepFadeIn 0.4s ease-out both!important
+      }
+      .step-card{
+        opacity:1!important;
+        visibility:visible!important;
+        transform:translateZ(0)!important
+      }
+      .approach-step-1{animation-delay:0.1s!important}
+      .approach-step-2{animation-delay:0.2s!important}
+      .approach-step-3{animation-delay:0.3s!important}
+      .approach-step-4{animation-delay:0.4s!important}
+      
+      /* Fallback - ensure cards are visible immediately */
+      .approach-section .approach-step,
+      .approach-section .step-card{
+        opacity:1!important;
+        visibility:visible!important
+      }
+      
+      /* Fix step order to be 1, 2, 3, 4 when backpack is hidden - preserve card styling */
+      .approach-container{
+        display:flex!important;
+        flex-direction:column!important;
+        gap:1.5rem
+      }
+      .approach-steps-left,
+      .approach-steps-right{
+        display:contents!important;
+        position:static!important;
+        width:auto!important;
+        transform:none!important
+      }
+      .approach-step{
+        width:100%;
+        max-width:500px;
+        margin:0 auto
+      }
+      .approach-step-1{order:1!important;top:0!important;margin-bottom:1.5rem}
+      .approach-step-2{order:2!important;top:0!important;margin-bottom:1.5rem}
+      .approach-step-3{order:3!important;top:0!important;margin-bottom:1.5rem}
+      .approach-step-4{order:4!important;top:0!important;margin-bottom:0}
+      
+      /* Ensure step cards maintain their styling */
+      .step-card{
+        background:var(--white)!important;
+        padding:2rem 1.5rem!important;
+        border-radius:16px!important;
+        box-shadow:0 8px 30px rgba(0,0,0,0.1)!important;
+        text-align:center!important;
+        position:relative!important;
+        transition:transform 0.3s ease,box-shadow 0.3s ease!important;
+        border:2px solid transparent!important;
+        transform:translateZ(0)!important;
+        max-width:500px!important;
+        margin:0 auto!important
+      }
+    }
+    
+    /* Also fix for tablet sizes - preserve card styling */
+    @media (min-width:769px) and (max-width:1199px){
+      .approach-container{
+        display:flex!important;
+        flex-direction:column!important;
+        gap:2rem
+      }
+      .approach-steps-left,
+      .approach-steps-right{
+        display:contents!important;
+        position:static!important;
+        width:auto!important;
+        transform:none!important
+      }
+      .approach-step{
+        width:100%;
+        max-width:550px;
+        margin:0 auto
+      }
+      .approach-step-1{order:1!important;top:0!important;margin-bottom:1.5rem}
+      .approach-step-2{order:2!important;top:0!important;margin-bottom:1.5rem}
+      .approach-step-3{order:3!important;top:0!important;margin-bottom:1.5rem}
+      .approach-step-4{order:4!important;top:0!important;margin-bottom:0}
+      
+      /* Ensure step cards maintain their styling on tablet */
+      .step-card{
+        background:var(--white)!important;
+        padding:2.5rem 2rem!important;
+        border-radius:16px!important;
+        box-shadow:0 8px 30px rgba(0,0,0,0.1)!important;
+        text-align:center!important;
+        position:relative!important;
+        transition:transform 0.3s ease,box-shadow 0.3s ease!important;
+        border:2px solid transparent!important;
+        transform:translateZ(0)!important;
+        max-width:550px!important;
+        margin:0 auto!important
+      }
+    }
+    
+    @keyframes approachStepFadeIn{
+      from{opacity:0;transform:translateY(20px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    
+    /* Footer Mobile Optimizations */
+    @media (max-width:768px){
+      footer{contain:layout style paint}
+      /* Hide the colored line between footer and CTA on mobile */
+      footer::before{display:none!important}
+      .footer-section{will-change:auto}
+      .footer-social a{
+        transition:transform 0.2s ease,opacity 0.2s ease;
+        will-change:auto
+      }
+      .footer-social a:hover{transform:scale(1.1)}
+      .footer-social a:active{transform:scale(0.95)}
+    }
+    
+    @media (hover:none) and (pointer:coarse){
+      .footer-social a:hover{transform:none}
+    }
+    
+    /* Reduce motion for all sections on mobile */
+    @media (max-width:768px) and (prefers-reduced-motion:no-preference){
+      .cta-title,.cta-subtitle,.cta-button,.tech-icon-item{animation-duration:0.3s}
+    }
   </style>
   
 </body>
