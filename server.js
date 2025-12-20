@@ -79,9 +79,9 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(methodOverride("_method"))
 
-// Security and SEO headers
+
 app.use((req, res, next) => {
-  // Security headers
+
   res.setHeader('X-Content-Type-Options', 'nosniff')
   res.setHeader('X-XSS-Protection', '1; mode=block')
   res.setHeader('X-Frame-Options', 'DENY')
@@ -94,14 +94,15 @@ app.use((req, res, next) => {
       img-src 'self' data: https:;
       font-src 'self' https: data:;
       connect-src 'self' https:;
-      frame-ancestors 'none';
+      frame-src 'self' https://www.youtube.com https://youtube.com https://youtu.be https://player.vimeo.com https://vimeo.com;
+      frame-ancestors 'self';
     `.replace(/\s+/g, ' ')
   )
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
   res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()')
   
-  // SEO-friendly headers
+
   if (req.path.endsWith('.xml') || req.path === '/sitemap.xml') {
     res.setHeader('Content-Type', 'application/xml; charset=utf-8')
   }
@@ -157,6 +158,10 @@ app.use((req, res, next) => {
   res.locals.req = req
   next()
 })
+
+
+const { updateLastActive } = require("./middleware/auth")
+app.use(updateLastActive)
 
 
 app.use(async (req, res, next) => {

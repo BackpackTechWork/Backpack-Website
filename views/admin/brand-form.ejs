@@ -654,7 +654,7 @@
             </div>
             <small class="form-help">
               <i class="fas fa-info-circle" style="margin-right: 0.25rem;"></i>
-              Upload a brand logo (optional, max 5MB)<%= isEdit ? '. Leave empty to keep current logo.' : '' %> Drag and drop an image here or click to browse.
+              Upload a brand logo (optional, max 1MB, will be converted to WebP)<%= isEdit ? '. Leave empty to keep current logo.' : '' %> Drag and drop an image here or click to browse.
             </small>
           </div>
 
@@ -787,14 +787,28 @@
         if (!file) return;
 
 
-        if (file.size > 5 * 1024 * 1024) {
-          alert('File size must be less than 5MB');
+        if (file.size > 1 * 1024 * 1024) {
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = 'File size must be less than 1MB. Please select a smaller image.';
+          }
+          showModal('errorModal');
+          if (logoInput) {
+            logoInput.value = '';
+          }
           return;
         }
 
 
         if (!file.type.startsWith('image/')) {
-          alert('Please select an image file');
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = 'Please select an image file.';
+          }
+          showModal('errorModal');
+          if (logoInput) {
+            logoInput.value = '';
+          }
           return;
         }
 

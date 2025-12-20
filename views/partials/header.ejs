@@ -2,7 +2,7 @@
   <div class="container-wide">
     <nav class="navbar">
       <a href="/" class="logo">
-        <img src="/Backpack.ico" alt="Backpack Logo" class="logo-img" draggable="false" oncontextmenu="return false;">
+        <img src="/Backpack.webp" alt="Backpack Logo" class="logo-img" draggable="false" oncontextmenu="return false;">
         <span class="logo-text">Backpack</span>
       </a>
       
@@ -22,7 +22,7 @@
           <% } else if (user.role === 'team_member') { %>
             <a href="/team/profile" class="header-profile-link" title="Profile">
               <% 
-                let headerProfileImgSrc = user.avatar || '/images/default-avatar.png';
+                let headerProfileImgSrc = user.avatar || '/images/default-avatar.webp';
 
                 if (headerProfileImgSrc && headerProfileImgSrc.includes('googleusercontent.com')) {
 
@@ -35,7 +35,7 @@
                   headerProfileImgSrc = '/avatar-proxy?url=' + encodeURIComponent(headerProfileImgSrc) + '&t=' + cacheBuster;
                 }
               %>
-              <img src="<%= headerProfileImgSrc %>" alt="<%= user.name %>" class="header-profile-img" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+              <img src="<%= headerProfileImgSrc %>" alt="<%= user.name %>" class="header-profile-img" onerror="this.onerror=null; this.src='/images/default-avatar.webp';">
             </a>
             <a href="/staff/logout" class="btn btn-secondary">Logout</a>
           <% } else if (user.role === 'client') { %>
@@ -52,7 +52,7 @@
       <button class="mobile-user-menu-btn" id="mobileUserMenuBtn" aria-label="Toggle user menu" aria-expanded="false">
         <% if (user && user.role === 'team_member') { %>
           <% 
-            let mobileProfileImgSrc = user.avatar || '/images/default-avatar.png';
+            let mobileProfileImgSrc = user.avatar || '/images/default-avatar.webp';
 
             if (mobileProfileImgSrc && mobileProfileImgSrc.includes('googleusercontent.com')) {
               mobileProfileImgSrc = mobileProfileImgSrc.replace(/=s\d+-c$/, '');
@@ -61,7 +61,7 @@
               mobileProfileImgSrc = '/avatar-proxy?url=' + encodeURIComponent(mobileProfileImgSrc) + '&t=' + cacheBuster;
             }
           %>
-          <img src="<%= mobileProfileImgSrc %>" alt="<%= user.name %>" class="mobile-profile-img" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+          <img src="<%= mobileProfileImgSrc %>" alt="<%= user.name %>" class="mobile-profile-img" onerror="this.onerror=null; this.src='/images/default-avatar.webp';">
         <% } else if (user) { %>
           <i class="fas fa-user-circle"></i>
         <% } else { %>

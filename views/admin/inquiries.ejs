@@ -32,6 +32,8 @@
       margin-left: 280px;
       margin-right: 4rem;
       background: var(--bg-secondary);
+      width: calc(100% - 280px - 4rem);
+      min-width: 0;
     }
 
     .page-header {
@@ -43,11 +45,13 @@
       font-weight: 700;
       color: var(--text-primary);
       margin-bottom: 0.5rem;
+      line-height: 1.2;
     }
 
     .page-header p {
       color: var(--text-secondary);
       font-size: 0.9375rem;
+      margin: 0;
     }
 
     .filters-section {
@@ -85,6 +89,8 @@
       font-size: 0.875rem;
       background: white;
       transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .filter-input:focus,
@@ -106,6 +112,8 @@
       color: white;
       white-space: nowrap;
       box-shadow: 0 4px 15px rgba(197, 29, 52, 0.3);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .btn-filter:hover {
@@ -150,17 +158,33 @@
 
     .bulk-actions-controls {
       display: flex;
-      gap: 0.75rem;
+      gap: 1.5rem;
       align-items: center;
+      flex-wrap: wrap;
+      flex: 1;
+      min-width: 0;
     }
 
     .bulk-status-select {
-      padding: 0.5rem 0.75rem;
+      padding: 0.625rem 1rem;
       border-radius: 8px;
       border: 2px solid #e5e7eb;
       font-size: 0.875rem;
       background: white;
       transition: all 0.3s ease;
+      min-width: 200px;
+      max-width: 300px;
+      min-height: 40px;
+      flex-shrink: 1;
+    }
+
+    #bulkUpdateBtn {
+      white-space: nowrap;
+      min-height: 40px;
+      flex-shrink: 0;
+      padding: 0.625rem 1.5rem;
+      margin-left: 0;
+      min-width: 120px;
     }
 
     .bulk-status-select:focus {
@@ -174,11 +198,19 @@
       border-radius: 12px;
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
       overflow: hidden;
+      width: 100%;
+      max-width: 100%;
     }
 
     .table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: auto;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .table thead {
@@ -277,6 +309,8 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .btn-sm {
@@ -357,6 +391,13 @@
     .action-buttons {
       display: flex;
       gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .action-buttons .btn {
+      min-width: 36px;
+      min-height: 36px;
+      touch-action: manipulation;
     }
 
     .inquiry-message {
@@ -382,6 +423,7 @@
     /* Hide cards on desktop, show on mobile */
     .mobile-card-view {
       display: none;
+      padding: 0.5rem;
     }
 
     /* Desktop: Show table, hide cards */
@@ -419,6 +461,132 @@
       }
     }
 
+    /* Tablet and Desktop: 769px and above - Ensure proper spacing for bulk actions */
+    @media (min-width: 769px) {
+      .bulk-actions {
+        padding: 1rem 1.5rem;
+        gap: 1.25rem;
+      }
+
+      .bulk-actions-controls {
+        gap: 1.5rem;
+      }
+
+      .bulk-status-select {
+        min-width: 200px;
+        max-width: 280px;
+        padding: 0.625rem 1rem;
+        flex-shrink: 1;
+      }
+
+      #bulkUpdateBtn {
+        padding: 0.625rem 1.5rem;
+        margin-left: 0;
+        min-width: 120px;
+        flex-shrink: 0;
+      }
+    }
+
+    /* Tablet landscape: 1024px - 1199px */
+    @media (min-width: 1024px) and (max-width: 1199px) {
+      .dashboard-main {
+        padding: 1.5rem 2rem;
+        margin-left: 260px;
+        margin-right: 2rem;
+        width: calc(100% - 260px - 2rem);
+      }
+
+      .page-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .filters-grid {
+        grid-template-columns: 2fr 1fr 1fr auto;
+        gap: 0.875rem;
+      }
+
+      .table th,
+      .table td {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.875rem;
+      }
+
+      .bulk-actions {
+        padding: 1rem 1.5rem;
+        gap: 1.25rem;
+        flex-wrap: nowrap;
+      }
+
+      .bulk-actions-info {
+        font-size: 0.875rem;
+        flex-shrink: 0;
+      }
+
+      .bulk-actions-controls {
+        flex: 1;
+        gap: 1.5rem;
+        min-width: 0;
+      }
+
+      .bulk-status-select {
+        min-width: 180px;
+        max-width: 280px;
+        flex-shrink: 1;
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+      }
+
+      #bulkUpdateBtn {
+        flex-shrink: 0;
+        min-height: 40px;
+        padding: 0.625rem 1.5rem;
+        margin-left: 0;
+        min-width: 120px;
+      }
+    }
+
+    /* Large desktop: 1200px - 1400px */
+    @media (min-width: 1200px) and (max-width: 1399px) {
+      .dashboard-main {
+        padding: 2rem 3rem;
+        margin-left: 280px;
+        margin-right: 3rem;
+        width: calc(100% - 280px - 3rem);
+      }
+
+      .page-header h1 {
+        font-size: 1.875rem;
+      }
+
+      .table th,
+      .table td {
+        padding: 1rem 1.5rem;
+      }
+
+      .bulk-actions {
+        padding: 1rem 1.5rem;
+        gap: 1.25rem;
+      }
+
+      .bulk-actions-controls {
+        gap: 1.5rem;
+      }
+
+      .bulk-status-select {
+        min-width: 200px;
+        max-width: 280px;
+        padding: 0.625rem 1rem;
+        flex-shrink: 1;
+      }
+
+      #bulkUpdateBtn {
+        padding: 0.625rem 1.5rem;
+        margin-left: 0;
+        min-width: 120px;
+        flex-shrink: 0;
+      }
+    }
+
     .mobile-select-all-bar {
       margin-bottom: 1rem;
       padding: 1rem;
@@ -442,10 +610,10 @@
     .mobile-card {
       background: var(--bg-primary);
       border: 1px solid var(--border-primary);
-      border-radius: 16px;
-      padding: 1.25rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       transition: all 0.2s ease;
     }
 
@@ -459,10 +627,11 @@
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
       border-bottom: 1px solid var(--border-primary);
+      flex-wrap: wrap;
     }
 
     .mobile-card-checkbox {
@@ -475,14 +644,21 @@
 
     .mobile-card-title h3 {
       margin: 0 0 0.25rem 0;
-      font-size: 1rem;
+      font-size: 0.9375rem;
       font-weight: 700;
       color: var(--text-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
+      line-height: 1.3;
     }
 
     .mobile-card-title p {
       margin: 0;
-      font-size: 0.875rem;
+      font-size: 0.8125rem;
       color: var(--text-secondary);
     }
 
@@ -496,15 +672,16 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 1rem;
-      font-size: 0.875rem;
+      gap: 0.75rem;
+      font-size: 0.8125rem;
     }
 
     .mobile-card-label {
       color: var(--text-secondary);
       font-weight: 600;
-      min-width: 80px;
+      min-width: 60px;
       flex-shrink: 0;
+      font-size: 0.8125rem;
     }
 
     .mobile-card-value {
@@ -512,6 +689,7 @@
       text-align: right;
       flex: 1;
       word-break: break-word;
+      font-size: 0.8125rem;
     }
 
     .mobile-card-message {
@@ -535,37 +713,58 @@
     }
 
     .mobile-card-actions {
-      margin-top: 1rem;
-      padding-top: 1rem;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
       border-top: 1px solid var(--border-primary);
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
     }
 
-    @media (max-width: 1024px) {
-      .filters-grid {
-        grid-template-columns: 1fr;
+    .mobile-card-actions .btn {
+      flex: 1;
+      justify-content: center;
+      min-height: 44px;
+      font-size: 0.8125rem;
+      padding: 0.625rem 0.75rem;
+      min-width: 0;
+    }
+
+    .mobile-card-actions .btn i {
+      font-size: 0.875rem;
+    }
+
+    /* Desktop large screen adjustments */
+    @media (min-width: 1400px) {
+      .dashboard-main {
+        padding: 2.5rem 4rem;
       }
 
-      .dashboard-main {
-        padding: 1.5rem;
+      .table th,
+      .table td {
+        padding: 1.25rem 2rem;
       }
     }
 
-    @media (max-width: 768px) {
+    @media (min-width: 1600px) {
       .dashboard-main {
+        padding: 3rem 5rem;
+      }
+    }
+
+
+
+    /* Tablet portrait: 769px - 1023px */
+    @media (max-width: 1023px) and (min-width: 769px) {
+      .dashboard-main {
+        padding: 1.5rem;
         margin-left: 0;
         margin-right: 0;
-        padding: 1rem;
-      }
-
-      .page-header {
-        margin-bottom: 1.5rem;
+        width: 100%;
       }
 
       .page-header h1 {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
       }
 
       .page-header p {
@@ -573,12 +772,119 @@
       }
 
       .filters-section {
-        padding: 1.25rem;
-        margin-bottom: 1.25rem;
+        padding: 1rem;
       }
 
       .filters-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
+
+      .filter-group:first-child {
+        grid-column: span 2;
+      }
+
+      .filter-group:last-child {
+        grid-column: span 2;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      .table th,
+      .table td {
+        padding: 0.75rem 1rem;
+        font-size: 0.8125rem;
+        white-space: nowrap;
+      }
+
+      .table td:nth-child(4),
+      .table td:nth-child(5) {
+        white-space: normal;
+        max-width: 150px;
+      }
+
+      .bulk-actions {
+        flex-direction: row;
+        align-items: center;
+        padding: 1rem;
         gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .bulk-actions-info {
+        font-size: 0.875rem;
+        flex: 0 0 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .bulk-actions {
+        padding: 1rem 1.25rem;
+        gap: 1rem;
+      }
+
+      .bulk-actions-controls {
+        flex: 1;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        min-width: 0;
+      }
+
+      .bulk-status-select {
+        flex-shrink: 1;
+        min-width: 180px;
+        max-width: 280px;
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        min-height: 40px;
+      }
+
+      #bulkUpdateBtn {
+        flex-shrink: 0;
+        min-height: 40px;
+        padding: 0.625rem 1.5rem;
+        margin-left: 0;
+        min-width: 120px;
+      }
+    }
+
+
+    /* Mobile landscape: 481px - 768px */
+    @media (max-width: 768px) and (min-width: 481px) {
+      .dashboard-main {
+        margin-left: 0;
+        margin-right: 0;
+        padding: 1rem;
+        width: 100%;
+      }
+
+      .page-header {
+        margin-bottom: 1.5rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .page-header p {
+        font-size: 0.8125rem;
+      }
+
+      .filters-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
       }
 
       .filter-group label {
@@ -588,71 +894,74 @@
       .filter-input,
       .filter-select {
         padding: 0.75rem;
-        font-size: 0.875rem;
-        min-height: 44px; /* Touch-friendly */
+        font-size: 16px; /* Prevents zoom on iOS */
+        min-height: 44px;
+        border-radius: 8px;
       }
 
       .btn-filter {
         width: 100%;
-        padding: 0.75rem 1.5rem;
+        padding: 0.75rem 1rem;
         min-height: 44px;
         justify-content: center;
+        font-size: 0.875rem;
       }
 
       .btn-filter-secondary {
         margin-top: 0.5rem;
       }
 
-      /* Table container adjustments for mobile */
       .table-container {
-        overflow-x: visible;
+        border-radius: 8px;
       }
 
       .bulk-actions {
         flex-direction: column;
         align-items: stretch;
         padding: 1rem;
-        gap: 1rem;
+        gap: 0.75rem;
+        border-radius: 8px;
       }
 
       .bulk-actions-info {
         text-align: center;
         font-size: 0.875rem;
+        word-break: break-word;
+        overflow-wrap: break-word;
       }
 
       .bulk-actions-controls {
         flex-direction: column;
         gap: 0.75rem;
+        width: 100%;
       }
 
       .bulk-status-select {
         width: 100%;
         padding: 0.75rem;
         min-height: 44px;
-        font-size: 0.875rem;
+        font-size: 16px;
+        min-width: 0;
       }
 
-      .btn {
+      #bulkUpdateBtn {
+        width: 100%;
         min-height: 44px;
-        padding: 0.75rem 1.25rem;
-        font-size: 0.875rem;
-      }
-
-      .action-buttons {
-        flex-direction: column;
-        width: 100%;
-      }
-
-      .action-buttons .btn {
-        width: 100%;
+        padding: 0.75rem 1rem;
         justify-content: center;
       }
 
-      .select-status {
-        width: 100%;
-        padding: 0.625rem 0.75rem;
-        min-height: 44px;
-        font-size: 0.875rem;
+      .mobile-card-view {
+        padding: 0.25rem;
+      }
+
+      .mobile-card {
+        padding: 0.875rem;
+      }
+
+      .mobile-select-all-bar {
+        padding: 0.875rem;
+        margin-bottom: 0.875rem;
       }
 
       .mobile-status-select {
@@ -660,6 +969,9 @@
         max-width: 100% !important;
         margin-left: 0 !important;
         margin-top: 0.25rem;
+        font-size: 16px;
+        padding: 0.75rem;
+        min-height: 44px;
       }
 
       .mobile-card-status-row {
@@ -668,33 +980,10 @@
         gap: 0.5rem;
       }
 
-      .mobile-card-status-row .mobile-card-label {
-        margin-bottom: 0;
-      }
-
-      .empty-state {
-        padding: 2rem 1.5rem;
-      }
-
-      .empty-state i {
-        font-size: 2.5rem;
-      }
-
-      /* Modal responsive styles */
       .modal-content-wrapper {
         padding: 1.5rem;
-        max-width: 95%;
-        margin: 1rem;
-      }
-
-      .modal-icon {
-        width: 60px;
-        height: 60px;
-        margin-bottom: 1rem;
-      }
-
-      .modal-icon i {
-        font-size: 2rem;
+        width: 95%;
+        max-height: 85vh;
       }
 
       .modal-title {
@@ -713,45 +1002,142 @@
       .modal-btn {
         width: 100%;
         padding: 0.875rem 1.5rem;
-        justify-content: center;
-      }
-
-      .confirmation-modal .modal-content-wrapper {
-        padding: 1.5rem;
-        max-width: 95%;
       }
     }
 
+    /* Mobile portrait: up to 480px */
     @media (max-width: 480px) {
       .dashboard-main {
+        margin-left: 0;
+        margin-right: 0;
         padding: 0.75rem;
+        width: 100%;
+      }
+
+      .page-header {
+        margin-bottom: 1rem;
       }
 
       .page-header h1 {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+        line-height: 1.3;
+      }
+
+      .page-header p {
+        font-size: 0.75rem;
       }
 
       .filters-section {
-        padding: 1rem;
+        padding: 0.875rem;
+        margin-bottom: 0.875rem;
+        border-radius: 8px;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 0.625rem;
+      }
+
+      .filter-group label {
+        font-size: 0.8125rem;
+      }
+
+      .filter-input,
+      .filter-select {
+        padding: 0.75rem 0.875rem;
+        font-size: 16px; /* Prevents zoom on iOS */
+        min-height: 44px;
+        border-radius: 8px;
+      }
+
+      .btn-filter {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        min-height: 44px;
+        justify-content: center;
+        font-size: 0.875rem;
+      }
+
+      .btn-filter-secondary {
+        margin-top: 0.5rem;
+      }
+
+      .table-container {
+        border-radius: 8px;
+      }
+
+      .bulk-actions {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.875rem;
+        gap: 0.75rem;
+        border-radius: 8px;
+      }
+
+      .bulk-actions-info {
+        text-align: center;
+        font-size: 0.8125rem;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.4;
+      }
+
+      .bulk-actions-controls {
+        flex-direction: column;
+        gap: 0.625rem;
+        width: 100%;
+      }
+
+      .bulk-status-select {
+        width: 100%;
+        padding: 0.75rem;
+        min-height: 44px;
+        font-size: 16px;
+        min-width: 0;
+      }
+
+      #bulkUpdateBtn {
+        width: 100%;
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+        justify-content: center;
+        font-size: 0.875rem;
+      }
+
+      .mobile-card-view {
+        padding: 0;
+      }
+
+      .mobile-select-all-bar {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        border-radius: 8px;
+      }
+
+      .mobile-select-all-label {
+        font-size: 0.8125rem;
       }
 
       .mobile-card {
-        padding: 1rem;
-        border-radius: 12px;
+        padding: 0.75rem;
+        margin-bottom: 0.625rem;
+        border-radius: 8px;
       }
 
       .mobile-card-header {
-        margin-bottom: 0.875rem;
-        padding-bottom: 0.875rem;
+        gap: 0.625rem;
+        margin-bottom: 0.625rem;
+        padding-bottom: 0.625rem;
       }
 
       .mobile-card-title h3 {
-        font-size: 0.9375rem;
+        font-size: 0.875rem;
         line-height: 1.3;
       }
 
       .mobile-card-title p {
-        font-size: 0.8125rem;
+        font-size: 0.75rem;
       }
 
       .mobile-card-body {
@@ -759,7 +1145,7 @@
       }
 
       .mobile-card-row {
-        font-size: 0.8125rem;
+        font-size: 0.75rem;
         flex-direction: column;
         gap: 0.375rem;
         align-items: flex-start;
@@ -774,6 +1160,7 @@
       .mobile-card-value {
         text-align: left;
         width: 100%;
+        font-size: 0.75rem;
       }
 
       .mobile-card-message {
@@ -782,50 +1169,170 @@
       }
 
       .mobile-card-message-label {
-        font-size: 0.8125rem;
+        font-size: 0.75rem;
         margin-bottom: 0.375rem;
       }
 
       .mobile-card-message-text {
-        font-size: 0.8125rem;
+        font-size: 0.75rem;
         line-height: 1.6;
       }
 
       .mobile-card-actions {
-        margin-top: 0.875rem;
-        padding-top: 0.875rem;
-        gap: 0.625rem;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        gap: 0.5rem;
+        flex-direction: column;
       }
 
       .mobile-card-actions .btn {
+        width: 100%;
         font-size: 0.8125rem;
-        padding: 0.625rem 1rem;
+        padding: 0.625rem;
+        min-height: 42px;
       }
 
-      .mobile-select-all-bar {
-        padding: 0.875rem;
-        margin-bottom: 0.875rem;
+      .mobile-card-actions .btn i {
+        font-size: 0.8125rem;
       }
 
-      .mobile-select-all-label {
-        font-size: 0.875rem;
+      .mobile-status-select {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-top: 0.25rem;
+        font-size: 16px;
+        padding: 0.75rem;
+        min-height: 44px;
+      }
+
+      .mobile-card-status-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
       }
 
       .status-badge {
         font-size: 0.75rem;
-        padding: 0.2rem 0.625rem;
+        padding: 0.25rem 0.625rem;
+      }
+
+      .empty-state {
+        padding: 2rem 1rem;
+      }
+
+      .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .empty-state p {
+        font-size: 0.875rem;
       }
 
       .modal-content-wrapper {
         padding: 1.25rem;
+        width: 95%;
+        max-height: 90vh;
+        border-radius: 12px;
+      }
+
+      .modal-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 1rem;
+      }
+
+      .modal-icon i {
+        font-size: 2rem;
       }
 
       .modal-title {
         font-size: 1.25rem;
+        margin-bottom: 0.5rem;
       }
 
       .modal-message {
         font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+        gap: 0.625rem;
+      }
+
+      .modal-btn {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        font-size: 0.875rem;
+      }
+
+      .confirmation-modal .modal-content-wrapper {
+        padding: 1.25rem;
+        width: 95%;
+      }
+    }
+
+    /* Extra small devices: up to 360px */
+    @media (max-width: 360px) {
+      .dashboard-main {
+        padding: 0.5rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.125rem;
+      }
+
+      .filters-section {
+        padding: 0.75rem;
+      }
+
+      .bulk-actions {
+        padding: 0.75rem;
+        gap: 0.625rem;
+      }
+
+      .bulk-actions-info {
+        font-size: 0.75rem;
+      }
+
+      .bulk-status-select {
+        font-size: 16px;
+        padding: 0.625rem;
+      }
+
+      .mobile-card {
+        padding: 0.625rem;
+      }
+
+      .mobile-card-title h3 {
+        font-size: 0.8125rem;
+      }
+
+      .mobile-card-title p {
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-row {
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-label {
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-value {
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-message-label {
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-message-text {
+        font-size: 0.6875rem;
       }
     }
 
@@ -870,6 +1377,8 @@
       padding: 2.5rem;
       max-width: 480px;
       width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       transform: scale(0.8);
       transition: transform 0.3s ease;
@@ -1134,14 +1643,14 @@
                     <td class="checkbox-column">
                       <input type="checkbox" class="checkbox-input inquiry-checkbox" value="<%= inquiry.id %>">
                     </td>
-                    <td><%= inquiry.user_name || inquiry.name || 'Guest' %></td>
-                    <td><%= inquiry.email %></td>
-                    <td><%= inquiry.subject %></td>
-                    <td>
-                      <div class="inquiry-message" title="<%= inquiry.message %>">
-                        <%= inquiry.message %>
-                      </div>
-                    </td>
+                  <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;"><%= inquiry.user_name || inquiry.name || 'Guest' %></td>
+                  <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;"><%= inquiry.email %></td>
+                  <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;"><%= inquiry.subject %></td>
+                  <td>
+                    <div class="inquiry-message" title="<%= inquiry.message %>" style="max-width: 250px;">
+                      <%= inquiry.message %>
+                    </div>
+                  </td>
                     <td>
                       <select class="select-status" data-inquiry-id="<%= inquiry.id %>" data-current-status="<%= inquiry.status || 'new' %>">
                         <option value="new" <%= (inquiry.status || 'new') === 'new' ? 'selected' : '' %>>New</option>
@@ -1290,7 +1799,12 @@
 
     function updateBulkActions() {
       const selected = document.querySelectorAll('.inquiry-checkbox:checked');
-      const count = selected.length;
+
+      const uniqueIds = new Set();
+      selected.forEach(cb => {
+        uniqueIds.add(cb.value);
+      });
+      const count = uniqueIds.size;
       
       selectedCountSpan.textContent = count;
       
@@ -1320,8 +1834,20 @@
     }
 
     function syncSelectAll() {
-      const checkedCount = document.querySelectorAll('.inquiry-checkbox:checked').length;
-      const totalCount = inquiryCheckboxes.length;
+      const selected = document.querySelectorAll('.inquiry-checkbox:checked');
+
+      const uniqueIds = new Set();
+      selected.forEach(cb => {
+        uniqueIds.add(cb.value);
+      });
+      const checkedCount = uniqueIds.size;
+      
+
+      const allIds = new Set();
+      inquiryCheckboxes.forEach(cb => {
+        allIds.add(cb.value);
+      });
+      const totalCount = allIds.size;
       
       if (checkedCount === 0) {
         if (selectAllCheckbox) {
@@ -1373,6 +1899,13 @@
 
     inquiryCheckboxes.forEach(cb => {
       cb.addEventListener('change', function() {
+
+        const inquiryId = this.value;
+        inquiryCheckboxes.forEach(otherCb => {
+          if (otherCb.value === inquiryId && otherCb !== this) {
+            otherCb.checked = this.checked;
+          }
+        });
         updateBulkActions();
         syncSelectAll();
       });
@@ -1387,8 +1920,13 @@
         return;
       }
 
-      const selectedIds = Array.from(document.querySelectorAll('.inquiry-checkbox:checked'))
-        .map(cb => parseInt(cb.value));
+
+      const selectedCheckboxes = document.querySelectorAll('.inquiry-checkbox:checked');
+      const uniqueIds = new Set();
+      selectedCheckboxes.forEach(cb => {
+        uniqueIds.add(parseInt(cb.value));
+      });
+      const selectedIds = Array.from(uniqueIds);
 
       if (selectedIds.length === 0) {
         document.getElementById('errorMessage').textContent = 'Please select at least one inquiry';

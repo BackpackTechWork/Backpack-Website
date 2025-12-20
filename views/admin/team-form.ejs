@@ -761,7 +761,7 @@
 
       <% if (isEdit) { %>
       <div class="user-info-card">
-        <img src="<%= member.avatar || '/images/default-avatar.png' %>" alt="<%= member.name %>" class="user-avatar" id="currentAvatar">
+        <img src="<%= member.avatar || '/images/default-avatar.webp' %>" alt="<%= member.name %>" class="user-avatar" id="currentAvatar">
         <div class="user-details">
           <h3><%= member.name %></h3>
           <p><%= member.email %></p>
@@ -778,7 +778,7 @@
               <label for="avatar">Profile Picture</label>
               <div class="avatar-upload-container">
                 <div class="avatar-preview" id="avatarPreview">
-                  <img src="/images/default-avatar.png" alt="Preview" id="avatarPreviewImg">
+                  <img src="/images/default-avatar.webp" alt="Preview" id="avatarPreviewImg">
                   <div class="avatar-upload-overlay">
                     <i class="fas fa-camera"></i>
                     <span>Choose Photo</span>
@@ -786,7 +786,7 @@
                 </div>
                 <input type="file" id="avatar" name="profilePicture" class="avatar-input" accept="image/*">
               </div>
-              <small class="form-help">Upload a profile picture (optional, max 5MB). You can drag and drop an image here or click to browse.</small>
+              <small class="form-help">Upload a profile picture (optional, max 5MB, will be converted to WebP). You can drag and drop an image here or click to browse.</small>
             </div>
 
             <!-- Name and Email -->
@@ -815,7 +815,7 @@
               <label for="avatar">Profile Picture</label>
               <div class="avatar-upload-container">
                 <div class="avatar-preview" id="avatarPreview">
-                  <img src="<%= member.avatar || '/images/default-avatar.png' %>" alt="Preview" id="avatarPreviewImg">
+                  <img src="<%= member.avatar || '/images/default-avatar.webp' %>" alt="Preview" id="avatarPreviewImg">
                   <div class="avatar-upload-overlay">
                     <i class="fas fa-camera"></i>
                     <span>Change Photo</span>
@@ -823,7 +823,7 @@
                 </div>
                 <input type="file" id="avatar" name="profilePicture" class="avatar-input" accept="image/*">
               </div>
-              <small class="form-help">Upload a new profile picture (optional, max 5MB). You can drag and drop an image here or click to browse. Leave empty to keep current picture.</small>
+              <small class="form-help">Upload a new profile picture (optional, max 5MB, will be converted to WebP). You can drag and drop an image here or click to browse. Leave empty to keep current picture.</small>
             </div>
 
             <!-- Edit Mode: Name -->
@@ -1068,7 +1068,7 @@
 
               const avatarPreviewImg = document.getElementById('avatarPreviewImg');
               if (avatarPreviewImg) {
-                avatarPreviewImg.src = '/images/default-avatar.png';
+                avatarPreviewImg.src = '/images/default-avatar.webp';
               }
             }
           }, 100);
@@ -1082,11 +1082,138 @@
 
 
     const teamForm = document.getElementById('teamForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
     if (teamForm) {
-      teamForm.addEventListener('submit', function() {
-        const roleSelect = document.getElementById('role');
-        if (roleSelect) {
-          localStorage.setItem('lastCreatedRole', roleSelect.value);
+      teamForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        }
+
+        try {
+
+          if (avatarInput && avatarInput.files && avatarInput.files.length > 0) {
+            const file = avatarInput.files[0];
+            try {
+              uploadedAvatarUrl = await uploadAvatarChunked(file);
+            } catch (error) {
+              console.error('Error uploading avatar:', error);
+              alert(`Failed to upload avatar: ${error.message}`);
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Team Member';
+              }
+              return;
+            }
+          }
+
+          if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+          }
+
+
+          const roleSelect = document.getElementById('role');
+          if (roleSelect) {
+            localStorage.setItem('lastCreatedRole', roleSelect.value);
+          }
+
+
+          const formData = new FormData();
+          
+
+          const formInputs = teamForm.querySelectorAll('input:not([type="file"]), select, textarea');
+          formInputs.forEach(input => {
+            if (input.name && input.type !== 'file') {
+              if (input.type === 'checkbox') {
+                if (input.checked) {
+                  formData.append(input.name, input.value || 'true');
+                }
+              } else if (input.type === 'radio') {
+                if (input.checked) {
+                  formData.append(input.name, input.value);
+                }
+              } else {
+                formData.append(input.name, input.value);
+              }
+            }
+          });
+          
+
+          const skillsSelect = document.getElementById('skills');
+          if (skillsSelect) {
+            const selectedSkills = $(skillsSelect).val();
+            if (selectedSkills && Array.isArray(selectedSkills)) {
+              selectedSkills.forEach(skill => {
+                formData.append('skills[]', skill);
+              });
+            }
+          }
+          
+
+          if (uploadedAvatarUrl) {
+            formData.append('avatarUrl', uploadedAvatarUrl);
+          }
+
+
+          const xhr = new XMLHttpRequest();
+
+          xhr.addEventListener('load', function() {
+            if (xhr.status >= 200 && xhr.status < 400) {
+              const finalUrl = xhr.responseURL;
+              if (finalUrl) {
+                try {
+                  const url = new URL(finalUrl);
+                  window.location.href = url.pathname + url.search;
+                } catch (e) {
+                  const match = finalUrl.match(/https?:\/\/[^\/]+(\/.*)/);
+                  if (match) {
+                    window.location.href = match[1];
+                  } else {
+                    window.location.href = finalUrl;
+                  }
+                }
+              } else {
+                window.location.reload();
+              }
+            } else {
+              alert('Error saving team member. Please try again.');
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Team Member';
+              }
+            }
+          });
+
+          xhr.addEventListener('error', function() {
+            alert('Network error. Please check your connection and try again.');
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Team Member';
+            }
+          });
+
+          xhr.open('POST', teamForm.action);
+          xhr.timeout = 300000;
+          
+          xhr.addEventListener('timeout', function() {
+            alert('Upload timeout. The file may be too large or your connection is slow.');
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Team Member';
+            }
+          });
+          
+          xhr.send(formData);
+        } catch (error) {
+          console.error('Error submitting form:', error);
+          alert('An error occurred: ' + error.message);
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Team Member';
+          }
         }
       });
     }
@@ -1146,18 +1273,160 @@
     const currentAvatar = document.getElementById('currentAvatar');
 
 
+
+
+    const CHUNK_SIZE = 750 * 1024; 
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; 
+    let uploadedAvatarUrl = null;
+
+    /**
+     * Upload avatar using chunked upload
+     */
+    async function uploadAvatarChunked(file) {
+      return new Promise(async (resolve, reject) => {
+        try {
+
+          if (file.size > MAX_FILE_SIZE) {
+            reject(new Error(`File "${file.name}" exceeds 5MB limit`));
+            return;
+          }
+
+
+          const uploadIdResponse = await fetch('/admin/api/chunked-upload/upload-id');
+          
+          if (!uploadIdResponse.ok) {
+            const errorText = await uploadIdResponse.text();
+            reject(new Error(`Failed to get upload ID: ${uploadIdResponse.status} ${uploadIdResponse.statusText}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+          const contentType = uploadIdResponse.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            const errorText = await uploadIdResponse.text();
+            reject(new Error(`Invalid response format. Expected JSON but got: ${contentType}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+          const uploadIdData = await uploadIdResponse.json();
+          
+          if (!uploadIdData.success) {
+            reject(new Error(uploadIdData.message || 'Failed to get upload ID'));
+            return;
+          }
+
+          const uploadId = uploadIdData.uploadId;
+          const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+
+          for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+            const start = chunkIndex * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, file.size);
+            const chunk = file.slice(start, end);
+
+
+            const chunkBase64 = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                const base64 = reader.result.split(',')[1];
+                resolve(base64);
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(chunk);
+            });
+
+
+            const formData = new FormData();
+            formData.append('uploadId', uploadId);
+            formData.append('chunkIndex', chunkIndex);
+            formData.append('totalChunks', totalChunks);
+            formData.append('fileName', file.name);
+            formData.append('fileSize', file.size);
+            formData.append('chunkData', chunkBase64);
+
+            const chunkResponse = await fetch('/admin/api/chunked-upload/chunk', {
+              method: 'POST',
+              body: formData
+            });
+
+            if (!chunkResponse.ok) {
+              const errorText = await chunkResponse.text();
+              reject(new Error(`Upload failed: ${chunkResponse.status} ${chunkResponse.statusText}. ${errorText.substring(0, 100)}`));
+              return;
+            }
+
+            const contentType = chunkResponse.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+              const errorText = await chunkResponse.text();
+              reject(new Error(`Invalid response format. Expected JSON but got: ${contentType}. ${errorText.substring(0, 100)}`));
+              return;
+            }
+
+            const chunkResult = await chunkResponse.json();
+            
+            if (!chunkResult.success) {
+              reject(new Error(chunkResult.message || 'Failed to upload chunk'));
+              return;
+            }
+          }
+
+
+          const completeFormData = new FormData();
+          completeFormData.append('uploadId', uploadId);
+          completeFormData.append('fileName', file.name);
+          completeFormData.append('type', 'avatar');
+
+          const completeResponse = await fetch('/admin/api/chunked-upload/complete', {
+            method: 'POST',
+            body: completeFormData
+          });
+
+          if (!completeResponse.ok) {
+            const errorText = await completeResponse.text();
+            reject(new Error(`Complete upload failed: ${completeResponse.status} ${completeResponse.statusText}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+          const completeContentType = completeResponse.headers.get('content-type');
+          if (!completeContentType || !completeContentType.includes('application/json')) {
+            const errorText = await completeResponse.text();
+            reject(new Error(`Invalid response format. Expected JSON but got: ${completeContentType}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+          const completeResult = await completeResponse.json();
+          
+          if (!completeResult.success) {
+            reject(new Error(completeResult.message || 'Failed to complete upload'));
+            return;
+          }
+
+          resolve(completeResult.url);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+
     function processFile(file) {
       if (!file) return;
 
-
       if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+        const errorMessageEl = document.getElementById('errorMessage');
+        if (errorMessageEl) {
+          errorMessageEl.textContent = 'File size must be less than 5MB. Please select a smaller image.';
+        }
+        showModal('errorModal');
+        if (avatarInput) {
+          avatarInput.value = '';
+        }
         return;
       }
 
-
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file');
+        if (avatarInput) {
+          avatarInput.value = '';
+        }
         return;
       }
 
@@ -1173,9 +1442,13 @@
       reader.readAsDataURL(file);
 
 
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
-      avatarInput.files = dataTransfer.files;
+      uploadedAvatarUrl = null; 
+
+      if (avatarInput) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        avatarInput.files = dataTransfer.files;
+      }
     }
 
     if (avatarPreview && avatarInput) {

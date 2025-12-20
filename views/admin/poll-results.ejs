@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --border-primary: #e5e7eb;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --accent-red: #c51d34;
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      background: var(--bg-secondary);
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .breadcrumb a {
+      color: var(--accent-red);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .results-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .results-card {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+    }
+
+    .results-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .results-card h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .results-card h3 i {
+      color: var(--accent-red);
+    }
+
+    .poll-question-display {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .poll-meta {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-primary);
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .meta-item i {
+      color: var(--accent-red);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+
+    .status-badge.active {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+
+    .status-badge.inactive {
+      background: rgba(107, 114, 128, 0.1);
+      color: #6b7280;
+    }
+
+    .total-votes-display {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, var(--accent-red) 0%, #e63946 100%);
+      border-radius: 12px;
+      color: white;
+    }
+
+    .total-votes-display .number {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .total-votes-display .label {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .result-item {
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      border: 1px solid var(--border-primary);
+    }
+
+    .result-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .result-item-label {
+      font-weight: 600;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .result-item-stats {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .result-item-count {
+      background: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+
+    .result-item-percentage {
+      font-weight: 700;
+      color: var(--accent-red);
+      font-size: 1rem;
+      min-width: 60px;
+      text-align: right;
+    }
+
+    .result-item-bar {
+      height: 12px;
+      background: var(--bg-primary);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .result-item-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-red) 0%, #e63946 100%);
+      border-radius: 6px;
+      transition: width 0.5s ease;
+    }
+
+    .recent-votes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .recent-vote-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      background: var(--bg-secondary);
+      border-radius: 6px;
+      font-size: 0.875rem;
+    }
+
+    .recent-vote-user {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .recent-vote-option {
+      color: var(--text-secondary);
+    }
+
+    .recent-vote-time {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    @media (max-width: 1024px) {
+      .results-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .poll-meta {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="breadcrumb">
+        <a href="/admin/dashboard">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="/admin/activities/polls">Polls</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>Results</span>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <h1>Poll Results</h1>
+          <p class="poll-question-display"><%= poll.question %></p>
+        </div>
+        <a href="/admin/activities/polls" class="btn btn-secondary">
+          <i class="fas fa-arrow-left"></i> Back to Polls
+        </a>
+      </div>
+
+      <div class="poll-meta">
+        <div class="meta-item">
+          <i class="fas fa-calendar"></i>
+          <span>Created: <%= new Date(poll.created_at).toLocaleDateString() %></span>
+        </div>
+        <div class="meta-item">
+          <i class="fas fa-toggle-<%= poll.is_active ? 'on' : 'off' %>"></i>
+          <span>Status: <span class="status-badge <%= poll.is_active ? 'active' : 'inactive' %>"><%= poll.is_active ? 'Active' : 'Inactive' %></span></span>
+        </div>
+        <% if (poll.video_url) { %>
+          <div class="meta-item">
+            <i class="fas fa-video"></i>
+            <span>Has Video</span>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="results-container">
+        <!-- Total Votes Card -->
+        <div class="results-card">
+          <div class="total-votes-display">
+            <div class="number"><%= totalVotes %></div>
+            <div class="label">Total Votes</div>
+          </div>
+        </div>
+
+        <!-- Options Count Card -->
+        <div class="results-card">
+          <h3><i class="fas fa-list"></i> Options</h3>
+          <div style="text-align: center; padding: 1rem;">
+            <div style="font-size: 2rem; font-weight: 700; color: var(--accent-red);"><%= poll.options.length %></div>
+            <div style="color: var(--text-secondary); margin-top: 0.5rem;">Poll Options</div>
+          </div>
+        </div>
+
+        <!-- Results List -->
+        <div class="results-card full-width">
+          <h3><i class="fas fa-chart-bar"></i> Results Breakdown</h3>
+          <% if (poll.options && poll.options.length > 0 && totalVotes > 0) { %>
+            <div class="results-list">
+              <% poll.options.forEach((option, index) => { %>
+                <% 
+                  const votes = optionVotes[index] || 0;
+                  const percentage = totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(1) : 0;
+                %>
+                <div class="result-item">
+                  <div class="result-item-header">
+                    <div class="result-item-label"><%= typeof option === 'string' ? option : (option.text || option.value || String(option)) %></div>
+                    <div class="result-item-stats">
+                      <span class="result-item-count"><%= votes %> votes</span>
+                      <span class="result-item-percentage"><%= percentage %>%</span>
+                    </div>
+                  </div>
+                  <div class="result-item-bar">
+                    <div class="result-item-fill" style="width: <%= percentage %>%"></div>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          <% } else if (poll.options && poll.options.length > 0) { %>
+            <div class="empty-state">
+              <i class="fas fa-poll"></i>
+              <p>No votes yet for this poll.</p>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <i class="fas fa-exclamation-triangle"></i>
+              <p>No options available for this poll.</p>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Chart Card -->
+        <% if (votesByDate && votesByDate.length > 0) { %>
+          <div class="results-card full-width">
+            <h3><i class="fas fa-chart-line"></i> Votes Over Time</h3>
+            <div class="chart-container">
+              <canvas id="votesChart"></canvas>
+            </div>
+          </div>
+        <% } %>
+
+        <!-- Recent Votes Card -->
+        <% if (recentVotes && recentVotes.length > 0) { %>
+          <div class="results-card full-width">
+            <h3><i class="fas fa-clock"></i> Recent Votes</h3>
+            <div class="recent-votes-list">
+              <% recentVotes.forEach(vote => { %>
+                <div class="recent-vote-item">
+                  <div class="recent-vote-user">
+                    <i class="fas fa-user"></i>
+                    <span><%= vote.user_name || vote.user_email || 'Anonymous' %></span>
+                  </div>
+                  <div class="recent-vote-option">
+                    Voted: <%= poll.options[vote.option_index] || 'Option ' + (vote.option_index + 1) %>
+                  </div>
+                  <div class="recent-vote-time">
+                    <%= new Date(vote.created_at).toLocaleString() %>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    <% if (votesByDate && votesByDate.length > 0) { %>
+      const ctx = document.getElementById('votesChart').getContext('2d');
+      const votesData = {
+        labels: <%- JSON.stringify(votesByDate.map(v => new Date(v.vote_date).toLocaleDateString())) %>,
+        datasets: [{
+          label: 'Votes',
+          data: <%- JSON.stringify(votesByDate.map(v => v.count)) %>,
+          borderColor: '#c51d34',
+          backgroundColor: 'rgba(197, 29, 52, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4
+        }]
+      };
+
+      new Chart(ctx, {
+        type: 'line',
+        data: votesData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+    <% } %>
+  </script>
+</body>
+</html>
+

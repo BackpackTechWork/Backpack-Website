@@ -48,7 +48,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
             const newAvatar = profile.photos[0]?.value || existingUser[0].avatar
             const newName = profile.displayName || existingUser[0].name
             await db.query(
-              "UPDATE users SET avatar = ?, name = ? WHERE id = ?",
+              "UPDATE users SET avatar = ?, name = ?, last_login = NOW() WHERE id = ?",
               [newAvatar, newName, existingUser[0].id]
             )
 
@@ -69,7 +69,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
             const newAvatar = profile.photos[0]?.value || shellAccount[0].avatar
             const newName = profile.displayName || shellAccount[0].name
             await db.query(
-              "UPDATE users SET provider = ?, provider_id = ?, avatar = ?, name = ? WHERE id = ?",
+              "UPDATE users SET provider = ?, provider_id = ?, avatar = ?, name = ?, last_login = NOW() WHERE id = ?",
               ["google", profile.id, newAvatar, newName, shellAccount[0].id]
             )
 
@@ -79,7 +79,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
 
 
           const [result] = await db.query(
-            "INSERT INTO users (email, name, avatar, provider, provider_id, role) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO users (email, name, avatar, provider, provider_id, role, last_login) VALUES (?, ?, ?, ?, ?, ?, NOW())",
             [email, profile.displayName, profile.photos[0]?.value, "google", profile.id, "client"],
           )
 
@@ -126,7 +126,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET && process.
             const newAvatar = profile.photos[0]?.value || existingUser[0].avatar
             const newName = profile.displayName || profile.username || existingUser[0].name
             await db.query(
-              "UPDATE users SET avatar = ?, name = ? WHERE id = ?",
+              "UPDATE users SET avatar = ?, name = ?, last_login = NOW() WHERE id = ?",
               [newAvatar, newName, existingUser[0].id]
             )
 
@@ -147,7 +147,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET && process.
             const newAvatar = profile.photos[0]?.value || shellAccount[0].avatar
             const newName = profile.displayName || profile.username || shellAccount[0].name
             await db.query(
-              "UPDATE users SET provider = ?, provider_id = ?, avatar = ?, name = ? WHERE id = ?",
+              "UPDATE users SET provider = ?, provider_id = ?, avatar = ?, name = ?, last_login = NOW() WHERE id = ?",
               ["github", profile.id, newAvatar, newName, shellAccount[0].id]
             )
 
@@ -157,7 +157,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET && process.
 
 
           const [result] = await db.query(
-            "INSERT INTO users (email, name, avatar, provider, provider_id, role) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO users (email, name, avatar, provider, provider_id, role, last_login) VALUES (?, ?, ?, ?, ?, ?, NOW())",
             [email, profile.displayName || profile.username, profile.photos[0]?.value, "github", profile.id, "client"],
           )
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,10 +13,67 @@
     currentPath: typeof currentPath !== 'undefined' ? currentPath : '/team'
   }) %>
   
+  <!-- Mark that JS is enabled -->
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.documentElement.classList.remove('no-js');
+  </script>
+  
   <link rel="stylesheet" href="/css/style.css">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+  
+  <style>
+    /* Smooth scroll behavior - optimized for animations */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+    
+    /* Ensure smooth scrolling isn't blocked by animations */
+    * {
+      scroll-margin-top: 80px;
+    }
+    
+    /* Optimize scroll performance during animations */
+    html, body {
+      will-change: scroll-position;
+    }
+    
+    /* Ensure content is visible for no-JS users */
+    html.no-js .team-hero,
+    html.no-js .team-card,
+    html.no-js .team-grid,
+    html.no-js section,
+    html.no-js footer,
+    html.no-js .section-header,
+    html.no-js .animate-on-scroll {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      animation: none !important;
+    }
+  </style>
+  
+  <!-- Fallback for no-JS: ensure content is visible -->
+  <noscript>
+    <style>
+      .team-hero,
+      .team-card,
+      .team-grid,
+      section,
+      footer,
+      .section-header,
+      .animate-on-scroll {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        animation: none !important;
+      }
+    </style>
+  </noscript>
 </head>
 <body>
   <%- include('../partials/header') %>
@@ -58,10 +115,11 @@
       <% if (teamMembers.length > 0) { %>
         <div class="team-grid">
           <% teamMembers.forEach(member => { %>
-            <div class="team-card" onclick="window.location.href='/team/<%= member.id %>'">
+            <div class="team-card">
+              <a href="/team/<%= member.id %>" class="team-card-link" aria-label="View <%= member.name %>'s profile"></a>
               <div class="team-card-image-wrapper">
                 <%
-                  let profileImgSrc = member.avatar || '/images/default-avatar.png';
+                  let profileImgSrc = member.avatar || '/images/default-avatar.webp';
 
                   if (profileImgSrc && profileImgSrc.includes('googleusercontent.com')) {
                     profileImgSrc = profileImgSrc.replace(/=s\d+-c$/, '');
@@ -83,29 +141,29 @@
                 <p class="bio-text"><%= member.bio ? member.bio.substring(0, 100) + (member.bio.length > 100 ? '...' : '') : 'Passionate about creating innovative solutions.' %></p>
                 
                 <% if (member.linkedin || member.github || member.twitter || member.instagram || member.facebook) { %>
-                  <div class="team-social-links" onclick="event.stopPropagation();">
+                  <div class="team-social-links">
                     <% if (member.linkedin) { %>
-                      <a href="<%= member.linkedin %>" target="_blank" class="team-social-link" title="LinkedIn" onclick="event.stopPropagation();">
+                      <a href="<%= member.linkedin %>" target="_blank" class="team-social-link" title="LinkedIn">
                         <i class="fab fa-linkedin"></i>
                       </a>
                     <% } %>
                     <% if (member.github) { %>
-                      <a href="<%= member.github %>" target="_blank" class="team-social-link" title="GitHub" onclick="event.stopPropagation();">
+                      <a href="<%= member.github %>" target="_blank" class="team-social-link" title="GitHub">
                         <i class="fab fa-github"></i>
                       </a>
                     <% } %>
                     <% if (member.twitter) { %>
-                      <a href="<%= member.twitter %>" target="_blank" class="team-social-link" title="X (Twitter)" onclick="event.stopPropagation();">
+                      <a href="<%= member.twitter %>" target="_blank" class="team-social-link" title="X (Twitter)">
                         <i class="fab fa-x-twitter"></i>
                       </a>
                     <% } %>
                     <% if (member.instagram) { %>
-                      <a href="<%= member.instagram %>" target="_blank" class="team-social-link" title="Instagram" onclick="event.stopPropagation();">
+                      <a href="<%= member.instagram %>" target="_blank" class="team-social-link" title="Instagram">
                         <i class="fab fa-instagram"></i>
                       </a>
                     <% } %>
                     <% if (member.facebook) { %>
-                      <a href="<%= member.facebook %>" target="_blank" class="team-social-link" title="Facebook" onclick="event.stopPropagation();">
+                      <a href="<%= member.facebook %>" target="_blank" class="team-social-link" title="Facebook">
                         <i class="fab fa-facebook"></i>
                       </a>
                     <% } %>

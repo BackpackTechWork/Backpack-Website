@@ -679,7 +679,7 @@
 
       <% if (isEdit) { %>
       <div class="user-info-card">
-        <img src="<%= client.avatar || '/images/default-avatar.png' %>" alt="<%= client.name %>" class="user-avatar" id="currentAvatar" onerror="this.onerror=null; this.src='/images/default-avatar.png';" referrerpolicy="no-referrer">
+        <img src="<%= client.avatar || '/images/default-avatar.webp' %>" alt="<%= client.name %>" class="user-avatar" id="currentAvatar" onerror="this.onerror=null; this.src='/images/default-avatar.webp';" referrerpolicy="no-referrer">
         <div class="user-details">
           <h3><%= client.name %></h3>
           <p><%= client.email %></p>
@@ -696,7 +696,7 @@
               <label>Profile Picture</label>
               <div class="avatar-upload-container">
                 <div class="avatar-preview" style="cursor: default;">
-                  <img src="<%= client.avatar || '/images/default-avatar.png' %>" alt="Profile Picture" id="avatarPreviewImg" onerror="this.onerror=null; this.src='/images/default-avatar.png';" referrerpolicy="no-referrer">
+                  <img src="<%= client.avatar || '/images/default-avatar.webp' %>" alt="Profile Picture" id="avatarPreviewImg" onerror="this.onerror=null; this.src='/images/default-avatar.webp';" referrerpolicy="no-referrer">
                 </div>
               </div>
               <small class="form-help">Profile picture cannot be changed</small>
@@ -964,7 +964,7 @@
 
         const testImg = new Image();
         testImg.onerror = function() {
-          img.src = '/images/default-avatar.png';
+          img.src = '/images/default-avatar.webp';
         };
         testImg.onload = function() {
 

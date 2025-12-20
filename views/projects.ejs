@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,11 +13,51 @@
     currentPath: typeof currentPath !== 'undefined' ? currentPath : '/projects'
   }) %>
   
+  <!-- Mark that JS is enabled -->
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.documentElement.classList.remove('no-js');
+  </script>
+  
   <link rel="stylesheet" href="/css/style.css">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
   <style>
+    /* Smooth scroll behavior - optimized for animations */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+    
+    /* Ensure smooth scrolling isn't blocked by animations */
+    * {
+      scroll-margin-top: 80px;
+    }
+    
+    /* Optimize scroll performance during animations */
+    html, body {
+      will-change: scroll-position;
+    }
+    
+    /* Ensure content is visible for no-JS users */
+    html.no-js .projects-hero,
+    html.no-js .projects-section,
+    html.no-js .projects-grid,
+    html.no-js .project-card,
+    html.no-js .project-filters,
+    html.no-js .filter-btn,
+    html.no-js .empty-state,
+    html.no-js section,
+    html.no-js footer,
+    html.no-js .section-header,
+    html.no-js .animate-on-scroll {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      animation: none !important;
+    }
     /* Image Protection Styles */
     .image-protection-overlay {
       position: absolute;
@@ -322,7 +362,113 @@
         width: 100%;
       }
     }
+
+    /* Large desktop adjustments */
+    @media (min-width: 1400px) {
+      .projects-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.5rem;
+      }
+    }
+
+    @media (min-width: 1600px) {
+      .projects-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 3rem;
+      }
+
+      .container {
+        max-width: 1500px;
+      }
+    }
+
+    @media (min-width: 1800px) {
+      .container {
+        max-width: 1700px;
+      }
+    }
+
+    /* Medium desktop */
+    @media (min-width: 992px) and (max-width: 1199px) {
+      .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+      }
+    }
+
+    /* Small desktop */
+    @media (min-width: 769px) and (max-width: 991px) {
+      .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+    }
+
+    /* Tablet */
+    @media (max-width: 768px) {
+      .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 0 1rem;
+      }
+
+      .project-filters {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0 1rem;
+      }
+
+      .filter-btn {
+        flex: 1 1 calc(50% - 0.25rem);
+        min-width: 120px;
+        justify-content: center;
+        font-size: 0.8125rem;
+        padding: 0.75rem 1rem;
+      }
+
+      .section-header h2 {
+        font-size: 1.75rem;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      .filter-btn {
+        flex: 1 1 100%;
+        font-size: 0.875rem;
+      }
+
+      .section-header h2 {
+        font-size: 1.5rem;
+      }
+
+      .project-content h3 {
+        font-size: 1rem;
+      }
+    }
   </style>
+  
+  <!-- Fallback for no-JS: ensure content is visible -->
+  <noscript>
+    <style>
+      .projects-hero,
+      .projects-section,
+      .projects-grid,
+      .project-card,
+      .project-filters,
+      .filter-btn,
+      .empty-state,
+      section,
+      footer,
+      .section-header,
+      .animate-on-scroll {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        animation: none !important;
+      }
+    </style>
+  </noscript>
 </head>
 <body>
   <%- include('partials/header') %>
@@ -531,7 +677,7 @@
       <div class="empty-state" style="display: none;">
         <div class="empty-state-content">
           <div class="empty-state-image">
-            <img src="/images/Assets/We will work on that.png" alt="Coming Soon" draggable="false" oncontextmenu="return false;">
+            <img src="/images/Assets/We will work on that.webp" alt="Coming Soon" draggable="false" oncontextmenu="return false;">
             <div class="image-protection-overlay"></div>
           </div>
           <h3>We'll Work On That!</h3>
@@ -707,23 +853,28 @@
 
         let visibleCount = 0;
 
-        projectCards.forEach(card => {
-          const cardSlug = card.getAttribute('data-category');
-          if (slug === 'all' || cardSlug === slug) {
-            card.style.display = 'block';
-            setTimeout(() => {
-              card.style.opacity = '1';
-              card.style.transform = 'translateY(0)';
-            }, 10);
-            visibleCount++;
-          } else {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-              card.style.display = 'none';
-            }, 300);
-          }
-        });
+
+        const animateCards = () => {
+          projectCards.forEach(card => {
+            const cardSlug = card.getAttribute('data-category');
+            if (slug === 'all' || cardSlug === slug) {
+              card.style.display = 'block';
+              requestAnimationFrame(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateZ(0) translateY(0)';
+              });
+              visibleCount++;
+            } else {
+              card.style.opacity = '0';
+              card.style.transform = 'translateZ(0) translateY(15px)';
+              setTimeout(() => {
+                card.style.display = 'none';
+              }, 250);
+            }
+          });
+        };
+        
+        requestAnimationFrame(animateCards);
 
 
         setTimeout(() => {
@@ -759,11 +910,11 @@
 
         if (window.matchMedia('(hover: hover)').matches) {
           card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-10px)';
+            this.style.transform = 'translateZ(0) translateY(-8px)';
           });
           
           card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
+            this.style.transform = 'translateZ(0) translateY(0)';
           });
         }
         
@@ -808,12 +959,13 @@
 
 
       filterBtns.forEach(btn => {
+
         btn.addEventListener('mouseenter', function() {
-          this.style.transform = 'translateY(-2px)';
+          this.style.transform = 'translateZ(0) translateY(-2px)';
         });
         
         btn.addEventListener('mouseleave', function() {
-          this.style.transform = 'translateY(0)';
+          this.style.transform = 'translateZ(0) translateY(0)';
         });
       });
     });
@@ -878,14 +1030,14 @@
     const protectImageContainer = (container) => {
       if (!container) return;
       
-      // Don't prevent clicks on overlay elements that should be clickable
+
       const isClickableOverlay = container.classList.contains('image-protection-overlay') && container.hasAttribute('data-project-url');
       
-      // If this is a project-image container, check if it has a clickable overlay
+
       const hasClickableOverlay = container.classList.contains('project-image') && 
                                    container.querySelector('.image-protection-overlay[data-project-url]');
       
-      // Prevent all drag and context menu events
+
       ['dragstart', 'drag', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop',
        'contextmenu', 'selectstart', 'select', 'copy', 'auxclick'].forEach(eventType => {
         container.addEventListener(eventType, (e) => {
@@ -896,11 +1048,11 @@
         }, { passive: false, capture: true });
       });
       
-      // Only prevent click events on non-clickable overlays and containers without clickable overlays
-      // But check the target to allow clicks on clickable overlays
+
+
       if (!isClickableOverlay && !hasClickableOverlay) {
         container.addEventListener('click', (e) => {
-          // Don't prevent if clicking on a clickable overlay
+
           if (e.target.closest && e.target.closest('.image-protection-overlay[data-project-url]')) {
             return;
           }
@@ -908,11 +1060,11 @@
           e.stopPropagation();
           e.stopImmediatePropagation();
           return false;
-        }, { passive: false, capture: false }); // Use bubble so clickable handler runs first
+        }, { passive: false, capture: false }); 
       } else if (hasClickableOverlay) {
-        // For containers with clickable overlays, only prevent clicks that aren't on the overlay
+
         container.addEventListener('click', (e) => {
-          // Allow clicks on clickable overlay to pass through
+
           if (e.target.closest && e.target.closest('.image-protection-overlay[data-project-url]')) {
             return;
           }
@@ -926,9 +1078,9 @@
 
 
     document.addEventListener('DOMContentLoaded', function() {
-      // Make overlay clickable to navigate to project detail page - add FIRST with capture phase
+
       document.querySelectorAll('.image-protection-overlay[data-project-url]').forEach(overlay => {
-        // Remove any existing protection
+
         overlay.style.pointerEvents = 'auto';
         overlay.style.cursor = 'pointer';
         
@@ -941,15 +1093,15 @@
             window.location.href = projectUrl;
           }
           return false;
-        }, true); // Capture phase - runs before other handlers
+        }, true); 
       });
 
       document.querySelectorAll('.project-image img, .empty-state-image img').forEach(preventImageInteraction);
       
 
-      // Protect containers but exclude clickable overlays
+
       document.querySelectorAll('.project-image').forEach(container => {
-        // Only protect if it doesn't have a clickable overlay
+
         if (!container.querySelector('.image-protection-overlay[data-project-url]')) {
           protectImageContainer(container);
         }
@@ -957,7 +1109,7 @@
       
       document.querySelectorAll('.empty-state-image').forEach(protectImageContainer);
       
-      // Only protect non-clickable overlays
+
       document.querySelectorAll('.image-protection-overlay:not([data-project-url])').forEach(protectImageContainer);
     });
   </script>

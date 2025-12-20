@@ -1,17 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
   <link rel="icon" type="image/x-icon" href="/Backpack.ico">
   <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  
+  <!-- Mark that JS is enabled -->
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.documentElement.classList.remove('no-js');
+  </script>
+  
   <link rel="stylesheet" href="/css/style.css">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
+    /* Smooth scroll behavior - optimized for animations */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+    
+    /* Ensure smooth scrolling isn't blocked by animations */
+    * {
+      scroll-margin-top: 80px;
+    }
+    
+    /* Optimize scroll performance during animations */
+    html, body {
+      will-change: scroll-position;
+    }
+    
+    /* Ensure content is visible for no-JS users */
+    html.no-js .polls-section,
+    html.no-js .polls-container,
+    html.no-js .poll-card,
+    html.no-js section,
+    html.no-js footer,
+    html.no-js .section-header {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      animation: none !important;
+    }
     .polls-section {
       padding: 4rem 0;
       background: #f9fafb;
@@ -44,13 +80,19 @@
       font-size: 1.125rem;
     }
 
+    .polls-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
     .poll-card {
       background: white;
       border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
+      padding: 1.5rem;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       transition: all 0.3s;
+      cursor: pointer;
     }
 
     .poll-card:hover {
@@ -59,13 +101,14 @@
     }
 
     .poll-question {
-      font-size: 1.5rem;
+      font-size: 1.125rem;
       font-weight: 700;
       color: #111827;
-      margin-bottom: 1.5rem;
+      margin: 0 0 1rem 0;
+      line-height: 1.4;
     }
 
-    .poll-options {
+    .poll-results {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
@@ -73,109 +116,56 @@
     }
 
     .poll-option {
-      padding: 1rem;
-      background: #f9fafb;
-      border-radius: 8px;
-      border: 2px solid #e5e7eb;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
+      width: 100%;
     }
 
-    .poll-option:hover {
-      border-color: #10b981;
-      background: #f0fdf4;
-    }
-
-    .poll-option input[type="radio"] {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      accent-color: #10b981;
-    }
-
-    .poll-option label {
-      flex: 1;
-      cursor: pointer;
-      color: #111827;
-      font-weight: 500;
-    }
-
-    .poll-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid #e5e7eb;
-      color: #6b7280;
-      font-size: 0.875rem;
-    }
-
-    .poll-vote-count {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .poll-results {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid #e5e7eb;
-    }
-
-    .poll-result-item {
-      margin-bottom: 0.75rem;
-    }
-
-    .poll-result-label {
+    .poll-option-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 0.25rem;
-      font-size: 0.875rem;
-      color: #111827;
+      gap: 0.5rem;
     }
 
-    .poll-result-bar {
+    .poll-option-text {
+      color: #111827;
+      font-weight: 500;
+      font-size: 0.875rem;
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .poll-option-stats {
+      font-weight: 600;
+      color: #10b981;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .poll-bar {
       height: 8px;
       background: #e5e7eb;
       border-radius: 4px;
       overflow: hidden;
     }
 
-    .poll-result-fill {
+    .poll-bar-fill {
       height: 100%;
       background: linear-gradient(90deg, #10b981 0%, #059669 100%);
       transition: width 0.3s ease;
     }
 
-    .poll-result-percentage {
-      font-weight: 600;
-      color: #10b981;
-    }
-
-    .poll-voted {
-      pointer-events: none;
-    }
-
-    .poll-voted .poll-option {
-      cursor: default;
-    }
-
-    .success-message {
-      background: #f0fdf4;
-      border: 1px solid #10b981;
-      color: #059669;
-      padding: 0.75rem 1rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
+    .poll-footer {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #e5e7eb;
     }
+
 
     .empty-state {
       text-align: center;
@@ -334,6 +324,23 @@
       }
     }
   </style>
+  
+  <!-- Fallback for no-JS: ensure content is visible -->
+  <noscript>
+    <style>
+      .polls-section,
+      .polls-container,
+      .poll-card,
+      section,
+      footer,
+      .section-header {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        animation: none !important;
+      }
+    </style>
+  </noscript>
 </head>
 <body>
   <%- include('../partials/header') %>
@@ -347,6 +354,7 @@
 
       <div class="polls-container">
         <% if (polls && polls.length > 0) { %>
+          <div class="polls-list">
           <% polls.forEach(poll => { %>
             <% 
 
@@ -365,40 +373,46 @@
                 }
               }
             %>
-            <div class="poll-card" id="poll-<%= poll.id %>">
-              <h2 class="poll-question"><%= poll.question %></h2>
+            <div class="poll-card" id="poll-<%= poll.id %>" onclick="window.location.href='/polls/<%= poll.id %>'">
+              <h4 class="poll-question">
+                <%= poll.question %>
+              </h4>
               
-              <form class="poll-form" data-poll-id="<%= poll.id %>" data-has-voted="false">
-                <div class="poll-options">
-                  <% if (pollOptions && pollOptions.length > 0) { %>
-                    <% pollOptions.forEach((option, index) => { %>
-                      <div class="poll-option">
-                        <input type="radio" id="poll-<%= poll.id %>-option-<%= index %>" name="poll-<%= poll.id %>" value="<%= index %>" required>
-                        <label for="poll-<%= poll.id %>-option-<%= index %>"><%= typeof option === 'string' ? option : (option.text || option.value || String(option)) %></label>
+              <!-- Poll Results -->
+              <div class="poll-results">
+                <% if (pollOptions && pollOptions.length > 0 && poll.totalVotes > 0) { %>
+                  <% pollOptions.forEach((option, index) => { %>
+                    <% 
+                      const votes = poll.optionVotes && poll.optionVotes[index] ? poll.optionVotes[index] : 0;
+                      const percentage = poll.totalVotes > 0 ? ((votes / poll.totalVotes) * 100).toFixed(1) : 0;
+                    %>
+                    <div class="poll-option">
+                      <div class="poll-option-header">
+                        <span class="poll-option-text"><%= typeof option === 'string' ? option : (option.text || option.value || String(option)) %></span>
+                        <span class="poll-option-stats"><%= percentage %>% (<%= votes %> votes)</span>
                       </div>
-                    <% }) %>
-                  <% } else { %>
-                    <div class="empty-state" style="padding: 2rem; text-align: center; color: #6b7280;">
-                      <p>No options available for this poll.</p>
+                      <div class="poll-bar">
+                        <div class="poll-bar-fill" style="width: <%= percentage %>%;"></div>
+                      </div>
                     </div>
-                  <% } %>
-                </div>
-                
-                <div class="poll-info">
-                  <div class="poll-vote-count">
-                    <i class="fas fa-users"></i>
-                    <span><%= poll.totalVotes || 0 %> votes</span>
+                  <% }) %>
+                <% } else if (pollOptions && pollOptions.length > 0) { %>
+                  <div style="color: #6b7280; font-size: 0.9375rem; text-align: center; padding: 1rem;">
+                    No votes yet - Be the first to vote!
                   </div>
-                  <button type="submit" class="btn btn-primary vote-btn" style="background: #10b981; border: none; padding: 0.5rem 1.5rem; border-radius: 6px; color: white; font-weight: 600; cursor: pointer;">
-                    <i class="fas fa-check"></i> Vote
-                  </button>
-                </div>
-                
-                <!-- Results will be shown here after voting -->
-                <div class="poll-results" style="display: none;"></div>
-              </form>
+                <% } %>
+              </div>
+              
+              <div class="poll-footer">
+                <i class="fas fa-users"></i>
+                <span><%= poll.totalVotes || 0 %> total votes</span>
+                <span style="margin-left: auto; color: #c51d34; font-weight: 600; font-size: 0.875rem;">
+                  View Poll <i class="fas fa-arrow-right"></i>
+                </span>
+              </div>
             </div>
           <% }) %>
+          </div>
         <% } else { %>
           <div class="empty-state">
             <i class="fas fa-poll"></i>
@@ -412,152 +426,7 @@
 
   <%- include('../partials/footer') %>
 
-  <!-- Already Voted Modal -->
-  <div class="already-voted-modal" id="alreadyVotedModal">
-    <div class="already-voted-modal-content">
-      <div class="already-voted-image">
-        <img src="/images/Assets/Why you lying.png" alt="Why you lying?">
-      </div>
-      <h3 class="already-voted-title">Wait a minute...</h3>
-      <p class="already-voted-message">
-        You've already voted on this poll!<br>
-        One vote per person, that's the rule!
-      </p>
-      <button class="already-voted-button" onclick="closeAlreadyVotedModal()">
-        <i class="fas fa-check"></i> Got it!
-      </button>
-    </div>
-  </div>
-
   <script>
-
-    document.querySelectorAll('.poll-form').forEach(form => {
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-
-        if (this.dataset.hasVoted === 'true') {
-          showAlreadyVotedModal();
-          return;
-        }
-        
-        const pollId = this.dataset.pollId;
-        const selectedOption = this.querySelector('input[type="radio"]:checked');
-        const voteBtn = this.querySelector('.vote-btn');
-        const resultsDiv = this.querySelector('.poll-results');
-        const pollCard = this.closest('.poll-card');
-        
-        if (!selectedOption) {
-          alert('Please select an option');
-          return;
-        }
-
-
-        voteBtn.disabled = true;
-        voteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Voting...';
-        
-        try {
-          const response = await fetch(`/polls/${pollId}/vote`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              option_index: selectedOption.value
-            })
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-
-            this.dataset.hasVoted = 'true';
-            pollCard.classList.add('poll-voted');
-            
-
-            voteBtn.style.display = 'none';
-            
-
-            const resultsResponse = await fetch(`/polls/${pollId}/results`);
-            const resultsData = await resultsResponse.json();
-            
-            if (resultsData.success) {
-
-              displayResults(resultsDiv, resultsData.poll, pollCard);
-            }
-            
-
-            const successMsg = document.createElement('div');
-            successMsg.className = 'success-message';
-            successMsg.innerHTML = '<i class="fas fa-check-circle"></i> Your vote has been recorded!';
-            this.insertBefore(successMsg, this.querySelector('.poll-options'));
-          } else {
-
-            if (data.message && (data.message.toLowerCase().includes('already voted') || data.message.toLowerCase().includes('already voted'))) {
-              showAlreadyVotedModal();
-            } else {
-              alert(data.message || 'Error submitting vote');
-            }
-            voteBtn.disabled = false;
-            voteBtn.innerHTML = '<i class="fas fa-check"></i> Vote';
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          alert('An error occurred while submitting your vote. Please try again.');
-          voteBtn.disabled = false;
-          voteBtn.innerHTML = '<i class="fas fa-check"></i> Vote';
-        }
-      });
-    });
-    
-    function displayResults(resultsDiv, poll, pollCard) {
-      resultsDiv.style.display = 'block';
-      
-
-      let pollOptions = [];
-      if (poll.options) {
-        if (Array.isArray(poll.options)) {
-          pollOptions = poll.options;
-        } else if (typeof poll.options === 'string') {
-          try {
-            pollOptions = JSON.parse(poll.options);
-          } catch (e) {
-            pollOptions = [];
-          }
-        } else if (typeof poll.options === 'object') {
-          pollOptions = Object.values(poll.options);
-        }
-      }
-      
-      let html = '<h4 style="margin-bottom: 1rem; color: #111827; font-size: 1.125rem;">Results:</h4>';
-      
-      pollOptions.forEach((option, index) => {
-        const optionText = typeof option === 'string' ? option : (option.text || option.value || String(option));
-        const votes = poll.optionVotes && poll.optionVotes[index] ? poll.optionVotes[index] : 0;
-        const percentage = poll.totalVotes > 0 ? ((votes / poll.totalVotes) * 100).toFixed(1) : 0;
-        
-        html += `
-          <div class="poll-result-item">
-            <div class="poll-result-label">
-              <span>${optionText}</span>
-              <span class="poll-result-percentage">${percentage}% (${votes} votes)</span>
-            </div>
-            <div class="poll-result-bar">
-              <div class="poll-result-fill" style="width: ${percentage}%"></div>
-            </div>
-          </div>
-        `;
-      });
-      
-      resultsDiv.innerHTML = html;
-      
-
-      const voteCountEl = pollCard.querySelector('.poll-vote-count span');
-      if (voteCountEl) {
-        voteCountEl.textContent = `${poll.totalVotes || 0} votes`;
-      }
-    }
-
 
     const observerOptions = {
       threshold: 0.1,
@@ -572,47 +441,12 @@
       });
     }, observerOptions);
 
-
     document.querySelectorAll('section').forEach(section => observer.observe(section));
-
 
     const footer = document.querySelector('footer');
     if (footer) {
       observer.observe(footer);
     }
-
-
-    function showAlreadyVotedModal() {
-      const modal = document.getElementById('alreadyVotedModal');
-      if (modal) {
-        modal.classList.add('show');
-
-        document.body.style.overflow = 'hidden';
-      }
-    }
-
-    function closeAlreadyVotedModal() {
-      const modal = document.getElementById('alreadyVotedModal');
-      if (modal) {
-        modal.classList.remove('show');
-
-        document.body.style.overflow = '';
-      }
-    }
-
-
-    document.getElementById('alreadyVotedModal')?.addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeAlreadyVotedModal();
-      }
-    });
-
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeAlreadyVotedModal();
-      }
-    });
   </script>
 </body>
 </html>

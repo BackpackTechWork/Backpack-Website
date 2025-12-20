@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,10 +13,45 @@
     currentPath: typeof currentPath !== 'undefined' ? currentPath : '/blogs'
   }) %>
   
+  <!-- Mark that JS is enabled -->
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.documentElement.classList.remove('no-js');
+  </script>
+  
   <link rel="stylesheet" href="/css/style.css">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
+    /* Smooth scroll behavior - optimized for animations */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+    
+    /* Ensure smooth scrolling isn't blocked by animations */
+    * {
+      scroll-margin-top: 80px;
+    }
+    
+    /* Optimize scroll performance during animations */
+    html, body {
+      will-change: scroll-position;
+    }
+    
+    /* Ensure content is visible for no-JS users */
+    html.no-js .blog-detail-section,
+    html.no-js .blog-content-wrapper,
+    html.no-js .blog-main-layout,
+    html.no-js .blog-body,
+    html.no-js section,
+    html.no-js footer {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      animation: none !important;
+    }
     .blog-detail-section {
       padding: 4rem 0;
       background: #ffffff;
@@ -56,8 +91,143 @@
       flex: 1;
     }
 
-    .blog-body p {
+    .blog-content p {
       margin-bottom: 1.5rem;
+    }
+
+    .blog-content h1,
+    .blog-content h2,
+    .blog-content h3,
+    .blog-content h4,
+    .blog-content h5,
+    .blog-content h6 {
+      font-weight: 700;
+      color: #111827;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+
+    .blog-content h1 {
+      font-size: 2.5rem;
+    }
+
+    .blog-content h2 {
+      font-size: 2rem;
+    }
+
+    .blog-content h3 {
+      font-size: 1.75rem;
+    }
+
+    .blog-content h4 {
+      font-size: 1.5rem;
+    }
+
+    .blog-content h5 {
+      font-size: 1.25rem;
+    }
+
+    .blog-content h6 {
+      font-size: 1.125rem;
+    }
+
+    .blog-content ul,
+    .blog-content ol {
+      margin: 1.5rem 0;
+      padding-left: 2rem;
+    }
+
+    .blog-content ul li,
+    .blog-content ol li {
+      margin-bottom: 0.75rem;
+    }
+
+    .blog-content strong,
+    .blog-content b {
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .blog-content em,
+    .blog-content i {
+      font-style: italic;
+    }
+
+    .blog-content u {
+      text-decoration: underline;
+    }
+
+    .blog-content a {
+      color: #c51d34;
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .blog-content a:hover {
+      color: #a01628;
+    }
+
+    .blog-content blockquote {
+      border-left: 4px solid #c51d34;
+      padding-left: 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #6b7280;
+    }
+
+    .blog-content code {
+      background: #f3f4f6;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    .blog-content pre {
+      background: #1f2937;
+      color: #f9fafb;
+      padding: 1.5rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+    }
+
+    .blog-content pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    .blog-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+
+    .blog-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+
+    .blog-content table th,
+    .blog-content table td {
+      padding: 0.75rem;
+      border: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    .blog-content table th {
+      background: #f9fafb;
+      font-weight: 600;
+    }
+
+    .blog-content hr {
+      border: none;
+      border-top: 2px solid #e5e7eb;
+      margin: 2rem 0;
     }
 
     .blog-sidebar {
@@ -240,6 +410,23 @@
       }
     }
   </style>
+  
+  <!-- Fallback for no-JS: ensure content is visible -->
+  <noscript>
+    <style>
+      .blog-detail-section,
+      .blog-content-wrapper,
+      .blog-main-layout,
+      .blog-body,
+      section,
+      footer {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        animation: none !important;
+      }
+    </style>
+  </noscript>
 </head>
 <body>
   <%- include('../partials/header') %>
@@ -268,8 +455,8 @@
     </div>
     <div class="container">
       <div class="project-detail-header">
-        <a href="/" class="back-button">
-          <i class="fas fa-arrow-left"></i> Back to Home
+        <a href="/blogs" class="back-button">
+          <i class="fas fa-arrow-left"></i> Back to blogs
         </a>
         <div class="project-detail-center">
           <h1 class="service-detail-title"><%= blog.title %></h1>
@@ -290,11 +477,97 @@
           <img src="<%= blog.cover_image %>" alt="<%= blog.title %>" class="blog-cover-image">
         <% } %>
 
+        <!-- Video Section -->
+        <% if (blog.video_url) { %>
+          <div class="detail-card" style="margin-bottom: 3rem;">
+            <div class="detail-card-header">
+              <i class="fas fa-video"></i>
+              <h3>Blog Video</h3>
+            </div>
+            <div class="detail-card-content">
+              <div id="video-container" style="position: relative; width: 100%; max-width: 100%; background: #000; border-radius: 8px; overflow: hidden;">
+                <!-- Video wrapper that adapts to both 16:9 and 9:16 orientations -->
+                <div id="video-wrapper" style="position: relative; width: 100%; padding-bottom: 56.25%; /* Default 16:9 */">
+                  <iframe id="video-iframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  <div id="video-error" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 2rem;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.7;"></i>
+                    <p style="margin-bottom: 1.5rem; text-align: center;">Unable to embed video from this platform</p>
+                    <a href="<%= blog.video_url %>" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                      <i class="fas fa-external-link-alt"></i>
+                      Watch on Original Platform
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <style>
+                /* Video container that adapts to both orientations */
+                #video-container[data-orientation="portrait"] #video-wrapper {
+                  padding-bottom: 177.78% !important; /* 9:16 portrait */
+                  max-width: 400px;
+                  margin: 0 auto;
+                }
+                
+                #video-container[data-orientation="landscape"] #video-wrapper {
+                  padding-bottom: 56.25% !important; /* 16:9 landscape */
+                  max-width: 100%;
+                }
+                
+                @media (max-width: 768px) {
+                  #video-container[data-orientation="portrait"] #video-wrapper {
+                    max-width: 100%;
+                  }
+                }
+              </style>
+            </div>
+          </div>
+        <% } %>
+
         <div class="blog-main-layout">
           <!-- Main Content -->
           <div class="blog-body">
             <div class="blog-content">
-              <%= blog.content.replace(/\n/g, '<br>') %>
+              <% 
+
+                let contentToDisplay = blog.content || '';
+                if (contentToDisplay) {
+
+                  if (!contentToDisplay.includes('<') || contentToDisplay.match(/^[^<]*$/)) {
+                    contentToDisplay = contentToDisplay.replace(/\n/g, '<br>');
+                  } else {
+
+
+                    contentToDisplay = contentToDisplay.replace(/<a\s+([^>]*?)>/gi, function(match, attributes) {
+
+                      const hrefMatch = attributes.match(/href=["']([^"']+)["']/i);
+                      if (hrefMatch) {
+                        let href = hrefMatch[1];
+                        let newAttributes = attributes;
+                        
+
+                        if (href && !href.match(/^(https?:\/\/|mailto:|tel:|#|\/)/i)) {
+
+                          if (href.includes('.') && !href.includes(' ')) {
+                            href = 'https://' + href;
+
+                            newAttributes = newAttributes.replace(/href=["'][^"']+["']/i, 'href="' + href + '"');
+                          }
+                        }
+                        
+
+                        if (!newAttributes.match(/target=/i)) {
+
+                          if (href && href.match(/^https?:\/\
+                            newAttributes += ' target="_blank" rel="noopener noreferrer"';
+                          }
+                        }
+                        return '<a ' + newAttributes + '>';
+                      }
+                      return match;
+                    });
+                  }
+                }
+              %>
+              <%- contentToDisplay %>
             </div>
 
             <% 
@@ -412,6 +685,73 @@
       });
     }
 
+    <% if (blog.video_url) { %>
+    (function() {
+      const videoUrl = '<%= blog.video_url %>';
+      const videoIframe = document.getElementById('video-iframe');
+      const videoError = document.getElementById('video-error');
+      const videoContainer = document.getElementById('video-container');
+      
+      function convertToEmbedUrl(url) {
+
+        const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+        const youtubeMatch = url.match(youtubeRegex);
+        if (youtubeMatch) {
+          return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+        }
+        
+
+        const vimeoRegex = /(?:vimeo\.com\/)(?:.*\/)?(\d+)/;
+        const vimeoMatch = url.match(vimeoRegex);
+        if (vimeoMatch) {
+          return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+        }
+        
+
+        if (url.includes('youtube.com/embed') || url.includes('youtu.be') || url.includes('vimeo.com/video') || url.includes('player.vimeo.com')) {
+          return url;
+        }
+        
+        return null;
+      }
+      
+      const embedUrl = convertToEmbedUrl(videoUrl);
+      
+      if (embedUrl) {
+        videoIframe.src = embedUrl;
+        
+
+        let orientation = 'landscape'; 
+        const lowerUrl = videoUrl.toLowerCase();
+        
+
+        if (lowerUrl.includes('portrait') || 
+            lowerUrl.includes('vertical') || 
+            lowerUrl.includes('9:16') || 
+            lowerUrl.includes('shorts') || 
+            lowerUrl.includes('reels') || 
+            lowerUrl.includes('tiktok')) {
+          orientation = 'portrait'; 
+        }
+        
+        videoContainer.setAttribute('data-orientation', orientation);
+        
+
+        videoIframe.onload = function() {
+          videoError.style.display = 'none';
+        };
+        
+        videoIframe.onerror = function() {
+          videoIframe.style.display = 'none';
+          videoError.style.display = 'flex';
+        };
+      } else {
+
+        videoIframe.style.display = 'none';
+        videoError.style.display = 'flex';
+      }
+    })();
+    <% } %>
 
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('modalImage');

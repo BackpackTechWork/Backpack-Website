@@ -52,6 +52,8 @@ router.post("/login", async (req, res, next) => {
     }
 
 
+    await db.query("UPDATE users SET last_login = NOW() WHERE id = ?", [user.id])
+
     req.login(user, (err) => {
       if (err) {
         return next(err)

@@ -413,7 +413,7 @@
                   <div class="profile-img-wrapper-large">
                   <div class="profile-pulse"></div>
                   <%
-                  let profileImgSrc = user.avatar ? user.avatar : '/images/default-avatar.png';
+                  let profileImgSrc = user.avatar ? user.avatar : '/images/default-avatar.webp';
                 
                   if (profileImgSrc.includes('googleusercontent.com')) {
 
@@ -433,7 +433,7 @@
                   src="<%= profileImgSrc %>" 
                   alt="<%= user.name %>" 
                   class="profile-img-large" 
-                  onerror="this.onerror=null; this.src='/images/default-avatar.png';"
+                  onerror="this.onerror=null; this.src='/images/default-avatar.webp';"
                 />
                 
                 </div>

@@ -9,6 +9,15 @@ const multer = require("multer")
 
 
 const parseFormDataMiddleware = multer().none()
+
+
+const parseChunkedUploadMiddleware = multer({
+  limits: {
+    fieldSize: 1 * 1024 * 1024, 
+    fields: 10,
+    fieldNameSize: 100
+  }
+}).none()
 const path = require("path")
 const fs = require("fs")
 
@@ -149,7 +158,7 @@ router.get("/team", ensureAdmin, async (req, res) => {
     const { search } = req.query
     
     let query = `
-      SELECT tm.*, u.name, u.email, u.avatar 
+      SELECT tm.*, u.name, u.email, u.avatar, u.last_login, u.last_active
       FROM team_members tm
       JOIN users u ON tm.user_id = u.id
       WHERE 1=1
@@ -235,9 +244,9 @@ router.get("/team/edit/:id", ensureAdmin, async (req, res) => {
 })
 
 
-router.post("/team/add", ensureAdmin, upload, async (req, res) => {
+router.post("/team/add", ensureAdmin, parseFormDataMiddleware, async (req, res) => {
   try {
-    const { name, email, role, position, bio, skills, linkedin, github, twitter, instagram, facebook, display_order, is_active } = req.body
+    const { name, email, role, position, bio, skills, linkedin, github, twitter, instagram, facebook, display_order, is_active, avatarUrl } = req.body
 
 
     let finalDisplayOrder = parseInt(display_order)
@@ -256,7 +265,9 @@ router.post("/team/add", ensureAdmin, upload, async (req, res) => {
 
 
     let avatarPath = null
-    if (req.file) {
+    if (avatarUrl) {
+      avatarPath = avatarUrl
+    } else if (req.file) {
       avatarPath = `/profiles/${req.file.filename}`
     }
 
@@ -304,6 +315,17 @@ router.post("/team/add", ensureAdmin, upload, async (req, res) => {
     console.error(error)
     
 
+    if (req.body.avatarUrl) {
+      const avatarPath = path.join(__dirname, '../public', req.body.avatarUrl)
+      try {
+        if (fs.existsSync(avatarPath)) {
+          fs.unlinkSync(avatarPath)
+        }
+      } catch (unlinkError) {
+        console.error("Error deleting uploaded avatar file:", unlinkError)
+      }
+    }
+
     if (req.file) {
       try {
         fs.unlinkSync(req.file.path)
@@ -343,9 +365,10 @@ router.post("/team/reorder", ensureAdmin, async (req, res) => {
 })
 
 
-router.post("/team/:id", ensureAdmin, upload, async (req, res) => {
+router.post("/team/:id", ensureAdmin, parseFormDataMiddleware, async (req, res) => {
   try {
     const { id } = req.params
+    const { avatarUrl } = req.body
     const { name, email, password, role, position, bio, skills, linkedin, github, twitter, instagram, facebook, display_order, is_active } = req.body
 
 
@@ -413,16 +436,27 @@ router.post("/team/:id", ensureAdmin, upload, async (req, res) => {
     }
 
 
-    if (req.file) {
-      const newAvatarPath = `/profiles/${req.file.filename}`
+    if (avatarUrl) {
 
+      const newAvatarPath = avatarUrl
 
       const [users] = await db.query("SELECT avatar FROM users WHERE id = ?", [userId])
       const oldAvatarPath = users[0]?.avatar
 
-
       await db.query("UPDATE users SET avatar = ? WHERE id = ?", [newAvatarPath, userId])
 
+
+      if (oldAvatarPath && oldAvatarPath !== newAvatarPath) {
+        deleteOldProfilePicture(oldAvatarPath)
+      }
+    } else if (req.file) {
+
+      const newAvatarPath = `/profiles/${req.file.filename}`
+
+      const [users] = await db.query("SELECT avatar FROM users WHERE id = ?", [userId])
+      const oldAvatarPath = users[0]?.avatar
+
+      await db.query("UPDATE users SET avatar = ? WHERE id = ?", [newAvatarPath, userId])
 
       if (oldAvatarPath) {
         deleteOldProfilePicture(oldAvatarPath)
@@ -463,6 +497,17 @@ router.post("/team/:id", ensureAdmin, upload, async (req, res) => {
     console.error(error)
     
 
+    if (req.body.avatarUrl) {
+      const avatarPath = path.join(__dirname, '../public', req.body.avatarUrl)
+      try {
+        if (fs.existsSync(avatarPath)) {
+          fs.unlinkSync(avatarPath)
+        }
+      } catch (unlinkError) {
+        console.error("Error deleting uploaded avatar file:", unlinkError)
+      }
+    }
+
     if (req.file) {
       try {
         fs.unlinkSync(req.file.path)
@@ -472,7 +517,46 @@ router.post("/team/:id", ensureAdmin, upload, async (req, res) => {
     }
     
     const errorMessage = encodeURIComponent(error.message || "Failed to update team member")
-    res.redirect(`/admin/team/edit/${id}?error=true&message=${errorMessage}`)
+    res.redirect(`/admin/team/edit/${req.params.id}?error=true&message=${errorMessage}`)
+  }
+})
+
+
+router.delete("/team/:id", ensureAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+
+
+    const [teamMembers] = await db.query(
+      "SELECT user_id FROM team_members WHERE id = ?",
+      [id]
+    )
+
+    if (teamMembers.length === 0) {
+      return res.status(404).json({ success: false, message: "Team member not found" })
+    }
+
+    const userId = teamMembers[0].user_id
+
+
+    const [users] = await db.query("SELECT avatar FROM users WHERE id = ?", [userId])
+    const avatarPath = users[0]?.avatar
+
+
+    if (avatarPath) {
+      deleteOldProfilePicture(avatarPath)
+    }
+
+
+    await db.query("DELETE FROM team_members WHERE id = ?", [id])
+
+
+    await db.query("DELETE FROM users WHERE id = ?", [userId])
+
+    res.json({ success: true, message: "Team member deleted successfully" })
+  } catch (error) {
+    console.error("Error deleting team member:", error)
+    res.status(500).json({ success: false, message: "Error deleting team member" })
   }
 })
 
@@ -696,21 +780,44 @@ router.post("/profile", ensureAdmin, parseFormDataMiddleware, async (req, res) =
 })
 
 
-router.post("/upload-avatar", ensureAdmin, upload, async (req, res) => {
+router.post("/upload-avatar", ensureAdmin, parseFormDataMiddleware, async (req, res) => {
   try {
+    const { avatarUrl } = req.body
+
+
+    if (avatarUrl) {
+      const newAvatarPath = avatarUrl
+
+
+      const [users] = await db.query("SELECT avatar FROM users WHERE id = ?", [req.user.id])
+      const oldAvatarPath = users[0]?.avatar
+
+
+      await db.query("UPDATE users SET avatar = ? WHERE id = ?", [newAvatarPath, req.user.id])
+
+
+      if (oldAvatarPath && oldAvatarPath !== newAvatarPath) {
+        deleteOldProfilePicture(oldAvatarPath)
+      }
+
+      return res.json({ 
+        success: true, 
+        message: "Profile picture updated successfully",
+        avatar: newAvatarPath
+      })
+    }
+
+
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No file uploaded" })
     }
 
     const newAvatarPath = `/profiles/${req.file.filename}`
 
-
     const [users] = await db.query("SELECT avatar FROM users WHERE id = ?", [req.user.id])
     const oldAvatarPath = users[0]?.avatar
 
-
     await db.query("UPDATE users SET avatar = ? WHERE id = ?", [newAvatarPath, req.user.id])
-
 
     if (oldAvatarPath) {
       deleteOldProfilePicture(oldAvatarPath)
@@ -724,7 +831,6 @@ router.post("/upload-avatar", ensureAdmin, upload, async (req, res) => {
   } catch (error) {
     console.error("Error uploading profile picture:", error)
     
-
     if (req.file) {
       try {
         fs.unlinkSync(req.file.path)
@@ -738,19 +844,49 @@ router.post("/upload-avatar", ensureAdmin, upload, async (req, res) => {
 })
 
 
-router.post("/upload-alter-ego", ensureAdmin, upload, async (req, res) => {
+router.post("/upload-alter-ego", ensureAdmin, parseFormDataMiddleware, async (req, res) => {
   try {
+    const { avatarUrl } = req.body
+
+
+    if (avatarUrl) {
+      const newAlterEgoPath = avatarUrl
+
+
+      const [teamMembers] = await db.query("SELECT id, alter_ego FROM team_members WHERE user_id = ?", [req.user.id])
+      
+      if (teamMembers.length === 0) {
+        await db.query(
+          "INSERT INTO team_members (user_id, alter_ego) VALUES (?, ?)",
+          [req.user.id, newAlterEgoPath]
+        )
+      } else {
+        const oldAlterEgoPath = teamMembers[0]?.alter_ego
+        
+        await db.query("UPDATE team_members SET alter_ego = ? WHERE user_id = ?", [newAlterEgoPath, req.user.id])
+
+        if (oldAlterEgoPath && oldAlterEgoPath !== newAlterEgoPath) {
+          deleteOldProfilePicture(oldAlterEgoPath)
+        }
+      }
+
+      return res.json({ 
+        success: true, 
+        message: "Alter ego picture updated successfully",
+        alter_ego: newAlterEgoPath
+      })
+    }
+
+
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No file uploaded" })
     }
 
     const newAlterEgoPath = `/profiles/${req.file.filename}`
 
-
     const [teamMembers] = await db.query("SELECT id, alter_ego FROM team_members WHERE user_id = ?", [req.user.id])
     
     if (teamMembers.length === 0) {
-
       await db.query(
         "INSERT INTO team_members (user_id, alter_ego) VALUES (?, ?)",
         [req.user.id, newAlterEgoPath]
@@ -758,9 +894,7 @@ router.post("/upload-alter-ego", ensureAdmin, upload, async (req, res) => {
     } else {
       const oldAlterEgoPath = teamMembers[0]?.alter_ego
       
-
       await db.query("UPDATE team_members SET alter_ego = ? WHERE user_id = ?", [newAlterEgoPath, req.user.id])
-
 
       if (oldAlterEgoPath) {
         deleteOldProfilePicture(oldAlterEgoPath)
@@ -775,7 +909,6 @@ router.post("/upload-alter-ego", ensureAdmin, upload, async (req, res) => {
   } catch (error) {
     console.error("Error uploading alter ego picture:", error)
     
-
     if (req.file) {
       try {
         fs.unlinkSync(req.file.path)
@@ -1290,24 +1423,26 @@ router.delete("/clients/:id", ensureAdmin, async (req, res) => {
 
 const serviceIconStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const serviceIconsDir = path.join(__dirname, '../public/images/services')
-    if (!fs.existsSync(serviceIconsDir)) {
-      fs.mkdirSync(serviceIconsDir, { recursive: true })
+
+    const tempDir = path.join(__dirname, '../public/temp')
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true })
     }
-    cb(null, serviceIconsDir)
+    cb(null, tempDir)
   },
   filename: function (req, file, cb) {
     const timestamp = Date.now()
     const random = Math.random().toString(36).substring(2, 8)
+
     const ext = path.extname(file.originalname)
-    const filename = `service_icon_${timestamp}_${random}${ext}`
+    const filename = `service_icon_temp_${timestamp}_${random}${ext}`
     cb(null, filename)
   }
 })
 
 const serviceIconUpload = multer({
   storage: serviceIconStorage,
-  limits: { fileSize: 2 * 1024 * 1024 }, 
+  limits: { fileSize: 1 * 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp|svg/
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase())
@@ -1428,7 +1563,34 @@ router.post("/services/add", ensureAdmin, serviceIconUpload.single('iconImage'),
     let iconValue = icon || ''
     if (req.file) {
 
-      iconValue = `/images/services/${req.file.filename}`
+      const serviceIconsDir = path.join(__dirname, '../public/images/services')
+      if (!fs.existsSync(serviceIconsDir)) {
+        fs.mkdirSync(serviceIconsDir, { recursive: true })
+      }
+
+      const timestamp = Date.now()
+      const random = Math.random().toString(36).substring(2, 8)
+      const webpFilename = `service_icon_${timestamp}_${random}.webp`
+      const webpPath = path.join(serviceIconsDir, webpFilename)
+
+
+      const fileBuffer = fs.readFileSync(req.file.path)
+      await convertBufferToWebP(fileBuffer, webpPath, {
+        quality: 85,
+        maxWidth: 512,
+        maxHeight: 512
+      })
+
+
+      try {
+        if (fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path)
+        }
+      } catch (err) {
+        console.error('Error deleting temp icon file:', err)
+      }
+
+      iconValue = `/images/services/${webpFilename}`
     }
 
 
@@ -1550,7 +1712,34 @@ router.post("/services/:id", ensureAdmin, serviceIconUpload.single('iconImage'),
     let iconValue = icon || existingServices[0].icon
     if (req.file) {
 
-      iconValue = `/images/services/${req.file.filename}`
+      const serviceIconsDir = path.join(__dirname, '../public/images/services')
+      if (!fs.existsSync(serviceIconsDir)) {
+        fs.mkdirSync(serviceIconsDir, { recursive: true })
+      }
+
+      const timestamp = Date.now()
+      const random = Math.random().toString(36).substring(2, 8)
+      const webpFilename = `service_icon_${timestamp}_${random}.webp`
+      const webpPath = path.join(serviceIconsDir, webpFilename)
+
+
+      const fileBuffer = fs.readFileSync(req.file.path)
+      await convertBufferToWebP(fileBuffer, webpPath, {
+        quality: 85,
+        maxWidth: 512,
+        maxHeight: 512
+      })
+
+
+      try {
+        if (fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path)
+        }
+      } catch (err) {
+        console.error('Error deleting temp icon file:', err)
+      }
+
+      iconValue = `/images/services/${webpFilename}`
       
 
       const oldIcon = existingServices[0].icon
@@ -1624,14 +1813,16 @@ router.post("/services/:id", ensureAdmin, serviceIconUpload.single('iconImage'),
 
     if (req.file) {
       try {
-        fs.unlinkSync(req.file.path)
+        if (fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path)
+        }
       } catch (unlinkError) {
-        console.error("Error deleting file:", unlinkError)
+        console.error("Error deleting temp file:", unlinkError)
       }
     }
     
     const errorMessage = encodeURIComponent(error.message || "Failed to update service")
-    res.redirect(`/admin/services/edit/${id}?error=true&message=${errorMessage}`)
+    res.redirect(`/admin/services/edit/${req.params.id}?error=true&message=${errorMessage}`)
   }
 })
 
@@ -1664,6 +1855,13 @@ router.delete("/services/:id", ensureAdmin, async (req, res) => {
     const { id } = req.params
 
 
+    const [services] = await db.query("SELECT icon FROM services WHERE id = ?", [id])
+    
+    if (services.length === 0) {
+      return res.status(404).json({ success: false, message: "Service not found" })
+    }
+
+
     const [projects] = await db.query("SELECT COUNT(*) as count FROM projects WHERE service_id = ?", [id])
     
     if (projects[0].count > 0) {
@@ -1672,6 +1870,20 @@ router.delete("/services/:id", ensureAdmin, async (req, res) => {
         message: `Cannot delete service. It has ${projects[0].count} associated project(s).` 
       })
     }
+
+
+    const icon = services[0].icon
+    if (icon && icon.startsWith('/images/services/')) {
+      const iconPath = path.join(__dirname, '../public', icon)
+      if (fs.existsSync(iconPath)) {
+        try {
+          fs.unlinkSync(iconPath)
+        } catch (unlinkError) {
+          console.error("Error deleting service icon file:", unlinkError)
+        }
+      }
+    }
+
 
     await db.query("DELETE FROM services WHERE id = ?", [id])
     
@@ -1973,7 +2185,7 @@ router.get("/projects", ensureAdmin, async (req, res) => {
 
         const { imagesDir } = getProjectFolders(project.id)
         if (fs.existsSync(imagesDir)) {
-          const images = fs.readdirSync(imagesDir).filter(f => f.startsWith('image_'))
+          const images = fs.readdirSync(imagesDir).filter(f => f.startsWith('image_') || f.startsWith('project_image_'))
           if (images.length > 0) {
             project.image = `/images/Projects/${project.id}/${images[0]}`
           }
@@ -2058,7 +2270,7 @@ router.get("/projects/edit/:id", ensureAdmin, async (req, res) => {
 
     if (fs.existsSync(imagesDir)) {
       projectImages = fs.readdirSync(imagesDir)
-        .filter(f => f.startsWith('image_'))
+        .filter(f => f.startsWith('image_') || f.startsWith('project_image_'))
         .map(filename => ({
           filename,
           path: `/images/Projects/${id}/${filename}`
@@ -2105,12 +2317,10 @@ router.get("/projects/edit/:id", ensureAdmin, async (req, res) => {
 })
 
 
-router.post("/projects/add", ensureAdmin, projectUpload.fields([
-  { name: 'images', maxCount: 20 }
-]), async (req, res) => {
+router.post("/projects/add", ensureAdmin, parseFormDataMiddleware, async (req, res) => {
   let tempFiles = []
   try {
-    const { title, slug, description, client_id, service_id, technologies, project_url, video_url, completed_at, is_featured, cover_image } = req.body
+    const { title, slug, description, client_id, service_id, technologies, project_url, video_url, completed_at, is_featured, cover_image, uploaded_images, existing_images_json } = req.body
 
 
     let technologiesArray = []
@@ -2147,23 +2357,59 @@ router.post("/projects/add", ensureAdmin, projectUpload.fields([
     createProjectFolders(projectId)
     const { imagesDir } = getProjectFolders(projectId)
 
-
     let imageFilenames = []
-
-    const filenameMap = new Map()
     
-    if (req.files && req.files['images']) {
-      req.files['images'].forEach(file => {
-        const tempPath = file.path
-        const filename = file.filename
-        const newPath = path.join(imagesDir, filename)
-        
-        if (fs.existsSync(tempPath)) {
-          fs.renameSync(tempPath, newPath)
-          imageFilenames.push(filename)
 
-          filenameMap.set(file.originalname, filename)
-          tempFiles.push(newPath) 
+    let existingImages = []
+    if (existing_images_json) {
+      try {
+        existingImages = JSON.parse(existing_images_json)
+        if (!Array.isArray(existingImages)) {
+          existingImages = []
+        }
+      } catch (e) {
+        existingImages = []
+      }
+    }
+    
+
+    existingImages = [...new Set(existingImages.map(img => String(img).trim()))]
+    imageFilenames = [...existingImages]
+    
+
+    if (uploaded_images) {
+      let uploadedUrls = []
+      try {
+        uploadedUrls = JSON.parse(uploaded_images)
+        if (!Array.isArray(uploadedUrls)) {
+          uploadedUrls = []
+        }
+      } catch (e) {
+        uploadedUrls = []
+      }
+      
+
+      const projectsBaseDir = path.join(__dirname, '../public/images/Projects')
+      uploadedUrls.forEach(imageUrl => {
+        if (imageUrl && typeof imageUrl === 'string') {
+
+          const filename = imageUrl.split('/').pop()
+          if (filename) {
+            const sourcePath = path.join(projectsBaseDir, filename)
+            const destPath = path.join(imagesDir, filename)
+            
+            if (fs.existsSync(sourcePath)) {
+              try {
+                fs.renameSync(sourcePath, destPath)
+                if (!imageFilenames.includes(filename)) {
+                  imageFilenames.push(filename)
+                }
+                tempFiles.push(destPath)
+              } catch (e) {
+                console.error("Error moving uploaded image:", e)
+              }
+            }
+          }
         }
       })
     }
@@ -2172,21 +2418,16 @@ router.post("/projects/add", ensureAdmin, projectUpload.fields([
     let coverImageFilename = null
     if (cover_image) {
 
-      if (cover_image.startsWith('new_image_index_')) {
-        const indexStr = cover_image.replace('new_image_index_', '')
-        const index = parseInt(indexStr)
-        if (!isNaN(index) && index >= 0 && index < imageFilenames.length) {
-          coverImageFilename = imageFilenames[index]
-        }
-      } else {
+      if (cover_image.startsWith('/images/Projects/')) {
+        coverImageFilename = cover_image.split('/').pop()
+      } else if (cover_image.includes('project_image_')) {
 
-        const uploadedFilename = filenameMap.get(cover_image)
-        if (uploadedFilename) {
-          coverImageFilename = uploadedFilename
-        } else if (imageFilenames.includes(cover_image)) {
+        coverImageFilename = cover_image
+      }
+      
 
-          coverImageFilename = cover_image
-        }
+      if (coverImageFilename && !imageFilenames.includes(coverImageFilename)) {
+        coverImageFilename = null
       }
     }
     
@@ -2194,6 +2435,7 @@ router.post("/projects/add", ensureAdmin, projectUpload.fields([
     if (!coverImageFilename && imageFilenames.length > 0) {
       coverImageFilename = imageFilenames[0]
     }
+
 
 
     await db.query(
@@ -2207,21 +2449,6 @@ router.post("/projects/add", ensureAdmin, projectUpload.fields([
     res.redirect("/admin/projects/add?success=true")
   } catch (error) {
     console.error("Error creating project:", error)
-    
-
-    if (req.files) {
-      Object.keys(req.files).forEach(fieldname => {
-        req.files[fieldname].forEach(file => {
-          try {
-            if (fs.existsSync(file.path)) {
-              fs.unlinkSync(file.path)
-            }
-          } catch (unlinkError) {
-            console.error("Error deleting file:", unlinkError)
-          }
-        })
-      })
-    }
     
 
     tempFiles.forEach(filePath => {
@@ -2240,42 +2467,44 @@ router.post("/projects/add", ensureAdmin, projectUpload.fields([
 })
 
 
-router.post("/projects/:id", ensureAdmin, projectUpload.fields([
-  { name: 'images', maxCount: 20 }
-]), async (req, res) => {
+router.post("/projects/:id", ensureAdmin, parseFormDataMiddleware, async (req, res) => {
   try {
     const { id } = req.params
-    const { title, slug, description, client_id, service_id, technologies, project_url, video_url, completed_at, is_featured, delete_images, cover_image } = req.body
-
+    const { title, slug, description, client_id, service_id, technologies, project_url, video_url, completed_at, is_featured, delete_images, cover_image, uploaded_images, existing_images_json } = req.body
 
     const [existingProjects] = await db.query("SELECT cover_image FROM projects WHERE id = ?", [id])
     if (existingProjects.length === 0) {
-
-      if (req.files) {
-        Object.keys(req.files).forEach(fieldname => {
-          req.files[fieldname].forEach(file => {
-            try {
-              fs.unlinkSync(file.path)
-            } catch (unlinkError) {
-              console.error("Error deleting file:", unlinkError)
-            }
-          })
-        })
-      }
       const errorMessage = encodeURIComponent("Project not found")
       return res.redirect(`/admin/projects/edit/${id}?error=true&message=${errorMessage}`)
     }
 
-
+    const existingProject = existingProjects[0]
     createProjectFolders(id)
     const { imagesDir } = getProjectFolders(id)
 
 
-    let existingImageFilenames = []
-    if (fs.existsSync(imagesDir)) {
-      existingImageFilenames = fs.readdirSync(imagesDir).filter(f => f.startsWith('image_'))
+    let existingImages = []
+    if (existing_images_json) {
+      try {
+        existingImages = JSON.parse(existing_images_json)
+        if (!Array.isArray(existingImages)) {
+          existingImages = []
+        }
+      } catch (e) {
+        existingImages = []
+      }
     }
+    
 
+    if (existingImages.length === 0 && fs.existsSync(imagesDir)) {
+      existingImages = fs.readdirSync(imagesDir)
+        .filter(f => f.startsWith('image_') || f.startsWith('project_image_'))
+        .map(filename => filename)
+    }
+    
+
+    existingImages = [...new Set(existingImages.map(img => String(img).trim()))]
+    
 
     if (delete_images) {
       const imagesToDelete = Array.isArray(delete_images) ? delete_images : [delete_images]
@@ -2284,27 +2513,75 @@ router.post("/projects/:id", ensureAdmin, projectUpload.fields([
         if (fs.existsSync(imagePath)) {
           try {
             fs.unlinkSync(imagePath)
-            existingImageFilenames = existingImageFilenames.filter(f => f !== filename)
           } catch (e) {
             console.error("Error deleting image:", e)
+          }
+        }
+
+        existingImages = existingImages.filter(img => {
+          const imgFilename = typeof img === 'string' ? img.split('/').pop() : img
+          return imgFilename !== filename
+        })
+      })
+    }
+
+
+    if (uploaded_images) {
+      let uploadedUrls = []
+      try {
+        uploadedUrls = JSON.parse(uploaded_images)
+        if (!Array.isArray(uploadedUrls)) {
+          uploadedUrls = []
+        }
+      } catch (e) {
+        uploadedUrls = []
+      }
+      
+
+      const projectsBaseDir = path.join(__dirname, '../public/images/Projects')
+      uploadedUrls.forEach(imageUrl => {
+        if (imageUrl && typeof imageUrl === 'string') {
+          const filename = imageUrl.split('/').pop()
+          if (filename) {
+            const sourcePath = path.join(projectsBaseDir, filename)
+            const destPath = path.join(imagesDir, filename)
+            
+            if (fs.existsSync(sourcePath)) {
+              try {
+                fs.renameSync(sourcePath, destPath)
+
+                if (!existingImages.includes(filename)) {
+                  existingImages.push(filename)
+                }
+              } catch (e) {
+                console.error("Error moving uploaded image:", e)
+              }
+            }
           }
         }
       })
     }
 
 
-    if (req.files && req.files['images']) {
-      req.files['images'].forEach(file => {
-
-        existingImageFilenames.push(file.filename)
-      })
-    }
-
-
     let coverImageFilename = cover_image || null
-    if (!coverImageFilename && existingImageFilenames.length > 0) {
+    if (cover_image) {
 
-      coverImageFilename = existingProjects[0].cover_image || existingImageFilenames[0]
+      if (cover_image.startsWith('/images/Projects/')) {
+        coverImageFilename = cover_image.split('/').pop()
+      } else if (cover_image.includes('project_image_')) {
+
+        coverImageFilename = cover_image
+      }
+      
+
+      if (coverImageFilename && !existingImages.includes(coverImageFilename)) {
+        coverImageFilename = null
+      }
+    }
+    
+
+    if (!coverImageFilename && existingImages.length > 0) {
+      coverImageFilename = existingProject.cover_image || existingImages[0]
     }
 
 
@@ -2335,6 +2612,9 @@ router.post("/projects/:id", ensureAdmin, projectUpload.fields([
         id
       ]
     )
+    
+
+
 
 
     await saveMilestones(id, req.body.milestones)
@@ -2342,22 +2622,9 @@ router.post("/projects/:id", ensureAdmin, projectUpload.fields([
     res.redirect(`/admin/projects/edit/${id}?success=true`)
   } catch (error) {
     console.error("Error updating project:", error)
-    
-
-    if (req.files) {
-      Object.keys(req.files).forEach(fieldname => {
-        req.files[fieldname].forEach(file => {
-          try {
-            fs.unlinkSync(file.path)
-          } catch (unlinkError) {
-            console.error("Error deleting file:", unlinkError)
-          }
-        })
-      })
-    }
-    
     const errorMessage = encodeURIComponent(error.message || "Failed to update project")
-    res.redirect(`/admin/projects/edit/${id}?error=true&message=${errorMessage}`)
+    const projectId = req.params.id || 'unknown'
+    res.redirect(`/admin/projects/edit/${projectId}?error=true&message=${errorMessage}`)
   }
 })
 
@@ -2494,24 +2761,26 @@ router.get("/api/unassigned-inquiries", ensureAdmin, async (req, res) => {
 
 const brandLogoStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const logosDir = path.join(__dirname, '../public/logos')
-    if (!fs.existsSync(logosDir)) {
-      fs.mkdirSync(logosDir, { recursive: true })
+
+    const tempDir = path.join(__dirname, '../public/temp')
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true })
     }
-    cb(null, logosDir)
+    cb(null, tempDir)
   },
   filename: function (req, file, cb) {
     const timestamp = Date.now()
     const random = Math.random().toString(36).substring(2, 8)
+
     const ext = path.extname(file.originalname)
-    const filename = `brand_logo_${timestamp}_${random}${ext}`
+    const filename = `brand_logo_temp_${timestamp}_${random}${ext}`
     cb(null, filename)
   }
 })
 
 const brandLogoUpload = multer({
   storage: brandLogoStorage,
-  limits: { fileSize: 5 * 1024 * 1024 }, 
+  limits: { fileSize: 1 * 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp|svg|ico/
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase())
@@ -2619,7 +2888,35 @@ router.post("/brands/add", ensureAdmin, brandLogoUpload.single('logo'), async (r
 
     let logoPath = null
     if (req.file) {
-      logoPath = `/logos/${req.file.filename}`
+
+      const logosDir = path.join(__dirname, '../public/logos')
+      if (!fs.existsSync(logosDir)) {
+        fs.mkdirSync(logosDir, { recursive: true })
+      }
+
+      const timestamp = Date.now()
+      const random = Math.random().toString(36).substring(2, 8)
+      const webpFilename = `brand_logo_${timestamp}_${random}.webp`
+      const webpPath = path.join(logosDir, webpFilename)
+
+
+      const fileBuffer = fs.readFileSync(req.file.path)
+      await convertBufferToWebP(fileBuffer, webpPath, {
+        quality: 85,
+        maxWidth: 512,
+        maxHeight: 512
+      })
+
+
+      try {
+        if (fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path)
+        }
+      } catch (err) {
+        console.error('Error deleting temp logo file:', err)
+      }
+
+      logoPath = `/logos/${webpFilename}`
     }
 
     await db.query(
@@ -2632,11 +2929,14 @@ router.post("/brands/add", ensureAdmin, brandLogoUpload.single('logo'), async (r
     console.error("Error creating brand:", error)
     
 
+
     if (req.file) {
       try {
-        fs.unlinkSync(req.file.path)
+        if (fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path)
+        }
       } catch (unlinkError) {
-        console.error("Error deleting file:", unlinkError)
+        console.error("Error deleting temp file:", unlinkError)
       }
     }
     
@@ -2674,7 +2974,35 @@ router.post("/brands/:id", ensureAdmin, brandLogoUpload.single('logo'), async (r
 
     let logoPath = existingBrands[0].logo
     if (req.file) {
-      logoPath = `/logos/${req.file.filename}`
+
+      const logosDir = path.join(__dirname, '../public/logos')
+      if (!fs.existsSync(logosDir)) {
+        fs.mkdirSync(logosDir, { recursive: true })
+      }
+
+      const timestamp = Date.now()
+      const random = Math.random().toString(36).substring(2, 8)
+      const webpFilename = `brand_logo_${timestamp}_${random}.webp`
+      const webpPath = path.join(logosDir, webpFilename)
+
+
+      const fileBuffer = fs.readFileSync(req.file.path)
+      await convertBufferToWebP(fileBuffer, webpPath, {
+        quality: 85,
+        maxWidth: 512,
+        maxHeight: 512
+      })
+
+
+      try {
+        if (fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path)
+        }
+      } catch (err) {
+        console.error('Error deleting temp logo file:', err)
+      }
+
+      logoPath = `/logos/${webpFilename}`
       
 
       const oldLogo = existingBrands[0].logo
@@ -2700,16 +3028,19 @@ router.post("/brands/:id", ensureAdmin, brandLogoUpload.single('logo'), async (r
     console.error("Error updating brand:", error)
     
 
+
     if (req.file) {
       try {
-        fs.unlinkSync(req.file.path)
+        if (fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path)
+        }
       } catch (unlinkError) {
-        console.error("Error deleting file:", unlinkError)
+        console.error("Error deleting temp file:", unlinkError)
       }
     }
     
     const errorMessage = encodeURIComponent(error.message || "Failed to update brand")
-    res.redirect(`/admin/brands/edit/${id}?error=true&message=${errorMessage}`)
+    res.redirect(`/admin/brands/edit/${req.params.id}?error=true&message=${errorMessage}`)
   }
 })
 
@@ -2730,10 +3061,12 @@ router.delete("/brands/:id", ensureAdmin, async (req, res) => {
 
 
     const [brands] = await db.query("SELECT logo FROM brands WHERE id = ?", [id])
-    const logoPath = brands[0]?.logo
+    
+    if (brands.length === 0) {
+      return res.status(404).json({ success: false, message: "Brand not found" })
+    }
 
-
-    await db.query("DELETE FROM brands WHERE id = ?", [id])
+    const logoPath = brands[0].logo
 
 
     if (logoPath && logoPath.startsWith('/logos/')) {
@@ -2742,10 +3075,13 @@ router.delete("/brands/:id", ensureAdmin, async (req, res) => {
         try {
           fs.unlinkSync(logoFilePath)
         } catch (unlinkError) {
-          console.error("Error deleting logo file:", unlinkError)
+          console.error("Error deleting brand logo file:", unlinkError)
         }
       }
     }
+
+
+    await db.query("DELETE FROM brands WHERE id = ?", [id])
 
     res.json({ success: true, message: "Brand deleted successfully" })
   } catch (error) {
@@ -2756,6 +3092,192 @@ router.delete("/brands/:id", ensureAdmin, async (req, res) => {
 
 
 
+
+const { saveChunk, reassembleChunks, cleanupUpload, generateUploadId } = require("../utils/chunkedUpload")
+const { convertBufferToWebP } = require("../utils/imageConverter")
+
+
+const CHUNK_SIZE = 1024 * 1024 
+const MAX_FILE_SIZE = 5 * 1024 * 1024 
+
+
+const tempChunksDir = path.join(__dirname, '../temp/chunks')
+if (!fs.existsSync(tempChunksDir)) {
+  fs.mkdirSync(tempChunksDir, { recursive: true })
+}
+
+
+router.post("/api/chunked-upload/chunk", ensureAdmin, (req, res, next) => {
+  parseChunkedUploadMiddleware(req, res, (err) => {
+    if (err) {
+      console.error("Multer error in chunk upload:", err)
+      return res.status(400).json({ success: false, message: err.message || "Error parsing form data" })
+    }
+    next()
+  })
+}, async (req, res) => {
+  try {
+    const { uploadId, chunkIndex, totalChunks, fileName, fileSize, chunkData: chunkDataBase64 } = req.body
+
+    if (!uploadId || chunkIndex === undefined || !totalChunks || !fileName) {
+      return res.status(400).json({ success: false, message: "Missing required fields" })
+    }
+
+
+    const totalSize = parseInt(fileSize)
+    if (isNaN(totalSize) || totalSize > MAX_FILE_SIZE) {
+      return res.status(400).json({ success: false, message: `File size exceeds ${MAX_FILE_SIZE / 1024 / 1024}MB limit` })
+    }
+
+
+    if (!chunkDataBase64) {
+      return res.status(400).json({ success: false, message: "Chunk data is required" })
+    }
+
+
+    let chunkData
+    try {
+      chunkData = Buffer.from(chunkDataBase64, 'base64')
+    } catch (decodeError) {
+      return res.status(400).json({ success: false, message: "Invalid chunk data format" })
+    }
+
+
+    const result = await saveChunk(
+      uploadId,
+      parseInt(chunkIndex),
+      parseInt(totalChunks),
+      chunkData,
+      tempChunksDir
+    )
+
+    res.json({ success: true, ...result })
+  } catch (error) {
+    console.error("Error handling chunk:", error)
+    res.status(500).json({ success: false, message: error.message || "Error processing chunk" })
+  }
+})
+
+
+const completedUploads = new Map()
+
+
+router.post("/api/chunked-upload/complete", ensureAdmin, (req, res, next) => {
+  parseChunkedUploadMiddleware(req, res, (err) => {
+    if (err) {
+      console.error("Multer error in complete upload:", err)
+      return res.status(400).json({ success: false, message: err.message || "Error parsing form data" })
+    }
+    next()
+  })
+}, async (req, res) => {
+  try {
+    const { uploadId, fileName } = req.body
+
+
+    if (completedUploads.has(uploadId)) {
+      const existingResult = completedUploads.get(uploadId)
+      return res.json(existingResult)
+    }
+
+    if (!uploadId || !fileName) {
+      return res.status(400).json({ success: false, message: "Missing uploadId or fileName" })
+    }
+
+
+    const allowedTypes = /jpeg|jpg|png|gif|webp/i
+    const ext = path.extname(fileName).toLowerCase().replace('.', '')
+    if (!allowedTypes.test(ext)) {
+      cleanupUpload(uploadId)
+      return res.status(400).json({ success: false, message: "Invalid file type. Only images are allowed." })
+    }
+
+
+    const tempFilePath = path.join(tempChunksDir, `${uploadId}_complete`)
+    await reassembleChunks(uploadId, tempFilePath)
+
+
+    const uploadType = req.body.type || 'blog'
+    let targetDir, filenamePrefix, urlPrefix, quality, maxWidth, maxHeight
+    
+    if (uploadType === 'project') {
+      targetDir = path.join(__dirname, '../public/images/Projects')
+      filenamePrefix = 'project_image_'
+      urlPrefix = '/images/Projects/'
+      quality = 85
+      maxWidth = 2000
+      maxHeight = 2000
+    } else if (uploadType === 'avatar') {
+      targetDir = path.join(__dirname, '../public/profiles')
+      filenamePrefix = 'profile_'
+      urlPrefix = '/profiles/'
+      quality = 90
+      maxWidth = 800
+      maxHeight = 800
+    } else {
+      targetDir = path.join(__dirname, '../public/images/Blogs')
+      filenamePrefix = 'blog_image_'
+      urlPrefix = '/images/Blogs/'
+      quality = 85
+      maxWidth = 2000
+      maxHeight = 2000
+    }
+    
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true })
+    }
+
+    const timestamp = Date.now()
+    const random = Math.random().toString(36).substring(2, 8)
+    const webpFilename = `${filenamePrefix}${timestamp}_${random}.webp`
+    const webpPath = path.join(targetDir, webpFilename)
+
+
+    const fileBuffer = fs.readFileSync(tempFilePath)
+    await convertBufferToWebP(fileBuffer, webpPath, {
+      quality: quality,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight
+    })
+
+
+    try {
+      if (fs.existsSync(tempFilePath)) {
+        fs.unlinkSync(tempFilePath)
+      }
+    } catch (err) {
+      console.error('Error deleting temp file:', err)
+    }
+
+    const webpUrl = `${urlPrefix}${webpFilename}`
+
+    const result = {
+      success: true,
+      url: webpUrl,
+      filename: webpFilename
+    }
+
+
+    completedUploads.set(uploadId, result)
+    
+
+    setTimeout(() => {
+      completedUploads.delete(uploadId)
+    }, 5 * 60 * 1000)
+
+    res.json(result)
+  } catch (error) {
+    console.error("Error completing upload:", error)
+    cleanupUpload(req.body.uploadId)
+    res.status(500).json({ success: false, message: error.message || "Error completing upload" })
+  }
+})
+
+
+router.get("/api/chunked-upload/upload-id", ensureAdmin, (req, res) => {
+  const uploadId = generateUploadId()
+  res.json({ success: true, uploadId })
+})
 
 const blogImagesStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -2776,7 +3298,7 @@ const blogImagesStorage = multer.diskStorage({
 
 const blogImagesUpload = multer({
   storage: blogImagesStorage,
-  limits: { fileSize: 5 * 1024 * 1024 }, 
+  limits: { fileSize: 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase())
@@ -3099,17 +3621,23 @@ const handleMulterError = (multerMiddleware) => {
   }
 }
 
-router.post("/activities/blogs/add", ensureAdmin, handleMulterError(blogImagesUpload.fields([
-  { name: 'images', maxCount: 10 },
-  { name: 'coverImage', maxCount: 1 }
-])), async (req, res) => {
+router.post("/activities/blogs/add", ensureAdmin, parseFormDataMiddleware, async (req, res) => {
   try {
-    const { title, slug, content, is_published } = req.body
+    const { title, slug, content, video_url, is_published, uploaded_images } = req.body
 
 
     let imagePaths = []
-    if (req.files && req.files['images']) {
-      imagePaths = req.files['images'].map(file => `/images/Blogs/${file.filename}`)
+    if (uploaded_images) {
+
+      if (typeof uploaded_images === 'string') {
+        try {
+          imagePaths = JSON.parse(uploaded_images)
+        } catch (e) {
+          imagePaths = uploaded_images.split(',').filter(url => url.trim())
+        }
+      } else if (Array.isArray(uploaded_images)) {
+        imagePaths = uploaded_images
+      }
     }
 
 
@@ -3121,8 +3649,8 @@ router.post("/activities/blogs/add", ensureAdmin, handleMulterError(blogImagesUp
 
         const indexStr = coverImage.replace('new_image_index_', '')
         const index = parseInt(indexStr)
-        if (req.files && req.files['images'] && !isNaN(index) && index >= 0 && index < req.files['images'].length) {
-          coverImagePath = `/images/Blogs/${req.files['images'][index].filename}`
+        if (!isNaN(index) && index >= 0 && index < imagePaths.length) {
+          coverImagePath = imagePaths[index]
         }
       } else if (coverImage.startsWith('/images/Blogs/')) {
 
@@ -3152,8 +3680,8 @@ router.post("/activities/blogs/add", ensureAdmin, handleMulterError(blogImagesUp
     }
 
     await db.query(
-      `INSERT INTO blogs (title, slug, content, cover_image, images, links, author_id, is_published) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO blogs (title, slug, content, cover_image, images, links, video_url, author_id, is_published) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         title,
         finalSlug,
@@ -3161,6 +3689,7 @@ router.post("/activities/blogs/add", ensureAdmin, handleMulterError(blogImagesUp
         coverImagePath,
         JSON.stringify(imagePaths),
         JSON.stringify(linksArray),
+        video_url || null,
         req.user.id,
         is_published === 'true' || is_published === true || is_published === 'on'
       ]
@@ -3191,13 +3720,10 @@ router.post("/activities/blogs/add", ensureAdmin, handleMulterError(blogImagesUp
 })
 
 
-router.post("/activities/blogs/:id", ensureAdmin, handleMulterError(blogImagesUpload.fields([
-  { name: 'images', maxCount: 10 },
-  { name: 'coverImage', maxCount: 1 }
-])), async (req, res) => {
+router.post("/activities/blogs/:id", ensureAdmin, parseFormDataMiddleware, async (req, res) => {
   try {
     const { id } = req.params
-    const { title, slug, content, links, delete_images, is_published } = req.body
+    const { title, slug, content, video_url, links, delete_images, is_published, uploaded_images, existing_images, existing_images_json } = req.body
 
 
     const [existingBlogs] = await db.query("SELECT * FROM blogs WHERE id = ?", [id])
@@ -3221,17 +3747,50 @@ router.post("/activities/blogs/:id", ensureAdmin, handleMulterError(blogImagesUp
     const existingBlog = existingBlogs[0]
 
 
+
     let existingImages = []
-    if (existingBlog.images) {
+    
+
+    if (existing_images_json) {
+      if (typeof existing_images_json === 'string') {
+        try {
+          const parsed = JSON.parse(existing_images_json)
+          if (Array.isArray(parsed)) {
+            existingImages = parsed.filter(img => img && typeof img === 'string' && img.trim())
+          }
+        } catch (e) {
+          console.error('Error parsing existing_images_json:', e)
+        }
+      }
+    }
+    
+
+
+    if (existingImages.length === 0 && existing_images) {
+      if (typeof existing_images === 'string') {
+        try {
+          const parsed = JSON.parse(existing_images)
+          if (Array.isArray(parsed)) {
+            existingImages = parsed.filter(img => img && typeof img === 'string' && img.trim())
+          }
+        } catch (e) {
+
+          existingImages = existing_images.split(',').filter(url => url && url.trim())
+        }
+      } else if (Array.isArray(existing_images)) {
+
+        existingImages = existing_images.filter(img => img && (typeof img === 'string' ? img.trim() : true))
+      }
+    }
+    
+
+    if (existingImages.length === 0 && existingBlog.images) {
       try {
-
         if (typeof existingBlog.images === 'string') {
-
           try {
             const parsed = JSON.parse(existingBlog.images)
             existingImages = Array.isArray(parsed) ? parsed : [parsed]
           } catch (parseError) {
-
             existingImages = [existingBlog.images]
           }
         } else if (Array.isArray(existingBlog.images)) {
@@ -3239,6 +3798,28 @@ router.post("/activities/blogs/:id", ensureAdmin, handleMulterError(blogImagesUp
         }
       } catch (e) {
         existingImages = []
+      }
+    }
+    
+
+    existingImages = [...new Set(existingImages.map(img => String(img).trim()))]
+
+
+    let originalImagesFromDB = []
+    if (existingBlog.images) {
+      try {
+        if (typeof existingBlog.images === 'string') {
+          try {
+            const parsed = JSON.parse(existingBlog.images)
+            originalImagesFromDB = Array.isArray(parsed) ? parsed : [parsed]
+          } catch (parseError) {
+            originalImagesFromDB = [existingBlog.images]
+          }
+        } else if (Array.isArray(existingBlog.images)) {
+          originalImagesFromDB = existingBlog.images
+        }
+      } catch (e) {
+        originalImagesFromDB = []
       }
     }
 
@@ -3254,27 +3835,61 @@ router.post("/activities/blogs/:id", ensureAdmin, handleMulterError(blogImagesUp
             console.error("Error deleting image:", e)
           }
         }
+
         existingImages = existingImages.filter(img => img !== imagePath)
       })
     }
 
 
-    if (req.files && req.files['images']) {
-      const newImages = req.files['images'].map(file => `/images/Blogs/${file.filename}`)
-      existingImages = [...existingImages, ...newImages]
+    if (uploaded_images) {
+
+      let newImages = []
+      if (typeof uploaded_images === 'string') {
+        try {
+          newImages = JSON.parse(uploaded_images)
+        } catch (e) {
+          newImages = uploaded_images.split(',').filter(url => url && url.trim())
+        }
+      } else if (Array.isArray(uploaded_images)) {
+        newImages = uploaded_images.filter(url => url && url.trim())
+      }
+      
+
+      const existingImageSet = new Set(existingImages)
+      newImages.forEach(newImg => {
+        if (!existingImageSet.has(newImg)) {
+          existingImages.push(newImg)
+        }
+      })
     }
+
+
+    const finalImageSet = new Set(existingImages)
+    const removedImages = originalImagesFromDB.filter(img => !finalImageSet.has(img))
+    
+    removedImages.forEach(imagePath => {
+      const fullPath = path.join(__dirname, '../public', imagePath)
+      if (fs.existsSync(fullPath)) {
+        try {
+          fs.unlinkSync(fullPath)
+        } catch (e) {
+          console.error("Error deleting removed image:", e)
+        }
+      }
+    })
 
 
     let coverImagePath = existingBlog.cover_image
     const coverImage = req.body.cover_image
+    const oldCoverImage = existingBlog.cover_image
     
     if (coverImage) {
       if (coverImage.startsWith('new_image_index_')) {
 
         const indexStr = coverImage.replace('new_image_index_', '')
         const index = parseInt(indexStr)
-        if (req.files && req.files['images'] && !isNaN(index) && index >= 0 && index < req.files['images'].length) {
-          coverImagePath = `/images/Blogs/${req.files['images'][index].filename}`
+        if (!isNaN(index) && index >= 0 && index < existingImages.length) {
+          coverImagePath = existingImages[index]
         }
       } else if (coverImage.startsWith('/images/Blogs/')) {
 
@@ -3285,8 +3900,21 @@ router.post("/activities/blogs/:id", ensureAdmin, handleMulterError(blogImagesUp
 
     if (!coverImagePath && existingImages.length > 0) {
       coverImagePath = existingImages[0]
-    } else if (!coverImagePath && req.files && req.files['images'] && req.files['images'].length > 0) {
-      coverImagePath = `/images/Blogs/${req.files['images'][0].filename}`
+    }
+
+
+    if (oldCoverImage && oldCoverImage !== coverImagePath) {
+
+      if (!existingImages.includes(oldCoverImage)) {
+        const oldCoverPath = path.join(__dirname, '../public', oldCoverImage)
+        if (fs.existsSync(oldCoverPath)) {
+          try {
+            fs.unlinkSync(oldCoverPath)
+          } catch (e) {
+            console.error("Error deleting old cover image:", e)
+          }
+        }
+      }
     }
 
 
@@ -3308,7 +3936,7 @@ router.post("/activities/blogs/:id", ensureAdmin, handleMulterError(blogImagesUp
     }
 
     await db.query(
-      `UPDATE blogs SET title = ?, slug = ?, content = ?, cover_image = ?, images = ?, links = ?, is_published = ? WHERE id = ?`,
+      `UPDATE blogs SET title = ?, slug = ?, content = ?, cover_image = ?, images = ?, links = ?, video_url = ?, is_published = ? WHERE id = ?`,
       [
         title,
         finalSlug,
@@ -3316,6 +3944,7 @@ router.post("/activities/blogs/:id", ensureAdmin, handleMulterError(blogImagesUp
         coverImagePath,
         JSON.stringify(existingImages),
         JSON.stringify(linksArray),
+        video_url || null,
         is_published === 'true' || is_published === true || is_published === 'on',
         id
       ]
@@ -3395,21 +4024,19 @@ router.delete("/activities/blogs/:id", ensureAdmin, async (req, res) => {
         let images = []
 
         if (typeof blog.images === 'string') {
-
           try {
             images = JSON.parse(blog.images)
-
             if (!Array.isArray(images)) {
               images = [images]
             }
           } catch (parseError) {
-
             images = [blog.images]
           }
         } else if (Array.isArray(blog.images)) {
           images = blog.images
         }
         
+
         images.forEach(imagePath => {
           const fullPath = path.join(__dirname, '../public', imagePath)
           if (fs.existsSync(fullPath)) {
@@ -3428,7 +4055,7 @@ router.delete("/activities/blogs/:id", ensureAdmin, async (req, res) => {
 
     await db.query("DELETE FROM blogs WHERE id = ?", [id])
 
-    res.json({ success: true, message: "Blog deleted successfully" })
+    res.json({ success: true, message: "Blog and all associated images deleted successfully" })
   } catch (error) {
     console.error("Error deleting blog:", error)
     res.status(500).json({ success: false, message: "Error deleting blog" })
@@ -3518,6 +4145,99 @@ router.get("/activities/polls/add", ensureAdmin, async (req, res) => {
   }
 })
 
+
+router.get("/activities/polls/results/:id", ensureAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    const [polls] = await db.query(
+      "SELECT * FROM polls WHERE id = ?",
+      [id]
+    )
+
+    if (polls.length === 0) {
+      req.flash("error_msg", "Poll not found")
+      return res.redirect("/admin/activities/polls")
+    }
+
+    const poll = polls[0]
+
+
+    let pollOptions = []
+    if (poll.options) {
+      if (typeof poll.options === 'string') {
+        try {
+          pollOptions = JSON.parse(poll.options)
+        } catch (e) {
+          pollOptions = []
+        }
+      } else if (Array.isArray(poll.options)) {
+        pollOptions = poll.options
+      } else if (typeof poll.options === 'object') {
+        pollOptions = Object.values(poll.options)
+      }
+    }
+
+
+    const [votes] = await db.query(`
+      SELECT option_index, COUNT(*) as count
+      FROM poll_votes
+      WHERE poll_id = ?
+      GROUP BY option_index
+      ORDER BY option_index
+    `, [id])
+    
+
+    const [totalVotes] = await db.query(`
+      SELECT COUNT(*) as count
+      FROM poll_votes
+      WHERE poll_id = ?
+    `, [id])
+    
+
+    const [recentVotes] = await db.query(`
+      SELECT pv.*, u.name as user_name, u.email as user_email
+      FROM poll_votes pv
+      LEFT JOIN users u ON pv.user_id = u.id
+      WHERE pv.poll_id = ?
+      ORDER BY pv.created_at DESC
+      LIMIT 10
+    `, [id])
+
+
+    const [votesByDate] = await db.query(`
+      SELECT DATE(created_at) as vote_date, COUNT(*) as count
+      FROM poll_votes
+      WHERE poll_id = ?
+      GROUP BY DATE(created_at)
+      ORDER BY vote_date ASC
+    `, [id])
+
+
+    const optionVotes = []
+    const total = totalVotes[0]?.count || 0
+    for (let i = 0; i < pollOptions.length; i++) {
+      const voteData = votes.find(v => v.option_index === i)
+      optionVotes[i] = voteData ? voteData.count : 0
+    }
+
+    res.render("admin/poll-results", {
+      title: `Poll Results - ${poll.question} - Backpack Tech Works`,
+      poll: {
+        ...poll,
+        options: pollOptions
+      },
+      optionVotes,
+      totalVotes: total,
+      recentVotes,
+      votesByDate,
+      user: req.user
+    })
+  } catch (error) {
+    console.error(error)
+    req.flash("error_msg", "Failed to load poll results")
+    res.redirect("/admin/activities/polls")
+  }
+})
 
 router.get("/activities/polls/edit/:id", ensureAdmin, async (req, res) => {
   try {

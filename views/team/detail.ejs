@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,13 +13,49 @@
     currentPath: typeof currentPath !== 'undefined' ? currentPath : '/team'
   }) %>
   
+  <!-- Mark that JS is enabled -->
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.documentElement.classList.remove('no-js');
+  </script>
+  
   <link rel="stylesheet" href="/css/style.css">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/theme/eclipse.css">
   <style>
+    /* Smooth scroll behavior - optimized for animations */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+    
+    /* Ensure smooth scrolling isn't blocked by animations */
+    * {
+      scroll-margin-top: 80px;
+    }
+    
+    /* Optimize scroll performance during animations */
+    html, body {
+      will-change: scroll-position;
+    }
+    
+    /* Ensure content is visible for no-JS users */
+    html.no-js .team-detail-container,
+    html.no-js .team-detail-header,
+    html.no-js .team-detail-grid,
+    html.no-js .team-card,
+    html.no-js section,
+    html.no-js footer,
+    html.no-js .animate-on-scroll {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      animation: none !important;
+    }
     :root {
       --accent: #c51d34;
       --accent-dark: #9e1528;
@@ -676,6 +712,24 @@
       }
     }
   </style>
+  
+  <!-- Fallback for no-JS: ensure content is visible -->
+  <noscript>
+    <style>
+      .team-detail-container,
+      .team-detail-header,
+      .team-detail-grid,
+      .team-card,
+      section,
+      footer,
+      .animate-on-scroll {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        animation: none !important;
+      }
+    </style>
+  </noscript>
 </head>
 <body>
   <%- include('../partials/header') %>
@@ -692,7 +746,7 @@
             <div class="profile-picture-section">
               <div class="profile-img-wrapper-large member-image-wrapper">
                 <%
-                  let profileImgSrc = member.avatar || '/images/default-avatar.png';
+                  let profileImgSrc = member.avatar || '/images/default-avatar.webp';
                   if (profileImgSrc && profileImgSrc.includes('googleusercontent.com')) {
                     profileImgSrc = profileImgSrc.replace(/=s\d+-c$/, '');
                     profileImgSrc += '=s256-c';

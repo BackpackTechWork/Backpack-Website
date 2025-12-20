@@ -98,7 +98,7 @@ router.get("/:slug", async (req, res) => {
     
     const serviceUrl = `${process.env.SITE_URL || 'https://backpacktechworks.com'}/services/${service.slug}`;
     
-    // Build structured data for service
+
     const structuredData = {
       "@type": "Service",
       "@id": `${serviceUrl}#service`,

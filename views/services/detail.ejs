@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,11 +13,54 @@
     currentPath: typeof currentPath !== 'undefined' ? currentPath : '/services'
   }) %>
   
+  <!-- Mark that JS is enabled -->
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.documentElement.classList.remove('no-js');
+  </script>
+  
   <link rel="stylesheet" href="/css/style.css">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
   <style>
+    /* Smooth scroll behavior - optimized for animations */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+    
+    /* Ensure smooth scrolling isn't blocked by animations */
+    * {
+      scroll-margin-top: 80px;
+    }
+    
+    /* Optimize scroll performance during animations */
+    html, body {
+      will-change: scroll-position;
+    }
+    
+    /* Ensure content is visible for no-JS users */
+    html.no-js .service-detail-hero,
+    html.no-js .service-detail-content,
+    html.no-js .service-details-grid,
+    html.no-js .detail-card,
+    html.no-js .service-process-section,
+    html.no-js .process-steps,
+    html.no-js .process-step,
+    html.no-js .related-projects-section,
+    html.no-js .projects-grid,
+    html.no-js .project-card,
+    html.no-js .service-cta,
+    html.no-js section,
+    html.no-js footer,
+    html.no-js .animate-on-scroll {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      animation: none !important;
+    }
     .related-projects-section {
       margin-top: 5rem;
     }
@@ -176,6 +219,31 @@
       }
     }
   </style>
+  
+  <!-- Fallback for no-JS: ensure content is visible -->
+  <noscript>
+    <style>
+      .service-detail-hero,
+      .service-detail-content,
+      .service-details-grid,
+      .detail-card,
+      .service-process-section,
+      .process-steps,
+      .process-step,
+      .related-projects-section,
+      .projects-grid,
+      .project-card,
+      .service-cta,
+      section,
+      footer,
+      .animate-on-scroll {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        animation: none !important;
+      }
+    </style>
+  </noscript>
 </head>
 <body>
   <%- include('../partials/header') %>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,15 +11,52 @@
   <!-- SEO Meta Tags -->
   <%- include('partials/seo-meta', { 
     currentPath: typeof currentPath !== 'undefined' ? currentPath : '/privacy',
-    noindex: true
+    noindex: false
   }) %>
   
+  <!-- Mark that JS is enabled -->
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.documentElement.classList.remove('no-js');
+  </script>
+  
   <link rel="stylesheet" href="/css/style.css">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
+    /* Smooth scroll behavior - optimized for animations */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+    
+    /* Ensure smooth scrolling isn't blocked by animations */
+    * {
+      scroll-margin-top: 80px;
+    }
+    
+    /* Optimize scroll performance during animations */
+    html, body {
+      will-change: scroll-position;
+    }
+    
+    /* Ensure content is visible for no-JS users */
+    html.no-js .legal-header,
+    html.no-js .legal-content,
+    html.no-js .legal-header-icon,
+    html.no-js .legal-section,
+    html.no-js .legal-highlight-box,
+    html.no-js .legal-contact-info,
+    html.no-js section,
+    html.no-js footer {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      animation: none !important;
+    }
     .legal-page {
       padding: clamp(80px, 10vh, 120px) 0 clamp(60px, 8vh, 100px);
       background: transparent;
@@ -456,6 +493,25 @@
       }
     }
   </style>
+  
+  <!-- Fallback for no-JS: ensure content is visible -->
+  <noscript>
+    <style>
+      .legal-header,
+      .legal-content,
+      .legal-header-icon,
+      .legal-section,
+      .legal-highlight-box,
+      .legal-contact-info,
+      section,
+      footer {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        animation: none !important;
+      }
+    </style>
+  </noscript>
 </head>
 <body>
   <%- include('partials/header') %>

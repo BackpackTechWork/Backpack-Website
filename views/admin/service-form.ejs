@@ -1019,7 +1019,7 @@
                           <input type="file" id="iconImage" name="iconImage" class="icon-upload-input" accept="image/*">
                         </div>
                       </div>
-                      <small class="form-help">Upload a custom icon image (PNG, JPG, SVG - max 2MB)</small>
+                          <small class="form-help">Upload a custom icon image (PNG, JPG, SVG - max 1MB, will be converted to WebP)</small>
                     </div>
                   </div>
                 </div>
@@ -1236,7 +1236,6 @@
               </div>
             </div>
 
-            <!-- Display Order is auto-set, hidden field -->
             <input type="hidden" id="display_order" name="display_order" value="<%= isEdit && service ? (service.display_order || 0) : 0 %>">
 
             <!-- Short Description -->
@@ -1571,11 +1570,11 @@
       if (!file) return;
 
 
-      if (file.size > 2 * 1024 * 1024) {
+      if (file.size > 1 * 1024 * 1024) {
         showModal('errorModal');
         const errorMessageEl = document.getElementById('errorMessage');
         if (errorMessageEl) {
-          errorMessageEl.textContent = 'File size must be less than 2MB';
+          errorMessageEl.textContent = 'File size must be less than 1MB';
         }
         setTimeout(() => closeModal('errorModal'), 3000);
         if (iconImageInput) {

@@ -15,6 +15,9 @@
   <!-- CodeMirror CSS for markdown editor -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/lib/codemirror.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.15/theme/eclipse.css">
+  <!-- Flatpickr for beautiful date pickers -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <style>
     :root {
       --accent: #c51d34;
@@ -44,6 +47,7 @@
     }
 
     .profile-page-header {
+      margin-top: 2rem;
       margin-bottom: 2rem;
     }
 
@@ -505,6 +509,362 @@
     textarea.form-control {
       min-height: 120px;
       resize: vertical;
+    }
+
+    /* Custom Flatpickr Date Picker Styles */
+    .flatpickr-input {
+      cursor: pointer !important;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E") no-repeat calc(100% - 12px) center !important;
+      padding-right: 40px !important;
+    }
+
+    .flatpickr-input:hover {
+      border-color: var(--gray-300) !important;
+    }
+
+    .flatpickr-input:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.15) !important;
+    }
+
+    /* Flatpickr Calendar Container - CRITICAL: High z-index to prevent appearing behind elements */
+    .flatpickr-calendar {
+      z-index: 999999 !important;
+      background: #ffffff !important;
+      border-radius: 12px !important;
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+      border: none !important;
+      padding: 8px !important;
+      font-family: 'Inter', sans-serif !important;
+      width: auto !important;
+      animation: flatpickrFadeIn 0.2s ease-out !important;
+    }
+
+    .flatpickr-innerContainer {
+      display: block !important;
+    }
+
+    @keyframes flatpickrFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .flatpickr-calendar.arrowTop:before,
+    .flatpickr-calendar.arrowTop:after,
+    .flatpickr-calendar.arrowBottom:before,
+    .flatpickr-calendar.arrowBottom:after {
+      display: none !important;
+    }
+
+    /* Month/Year Navigation */
+    .flatpickr-months {
+      padding: 4px 4px 8px !important;
+      align-items: center !important;
+    }
+
+    .flatpickr-months .flatpickr-month {
+      background: transparent !important;
+      height: 32px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .flatpickr-current-month {
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+      color: #0f172a !important;
+      padding: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 2px !important;
+      height: auto !important;
+      width: auto !important;
+      left: 0 !important;
+      position: relative !important;
+    }
+
+    /* Month as text only (no dropdown) */
+    .flatpickr-current-month .flatpickr-monthDropdown-months {
+      font-weight: 600 !important;
+      font-size: 0.85rem !important;
+      background: transparent !important;
+      border: none !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      pointer-events: none !important;
+      padding: 0 2px 0 0 !important;
+      margin: 0 !important;
+      width: auto !important;
+    }
+
+    /* Year input - editable */
+    .flatpickr-current-month input.cur-year {
+      font-weight: 600 !important;
+      font-size: 0.85rem !important;
+      padding: 2px 4px !important;
+      margin: 0 !important;
+      width: 52px !important;
+      border: 1px solid transparent !important;
+      border-radius: 6px !important;
+      background: transparent !important;
+      cursor: text !important;
+      transition: all 0.15s ease !important;
+    }
+
+    .flatpickr-current-month input.cur-year:hover {
+      background: var(--gray-100) !important;
+    }
+
+    .flatpickr-current-month input.cur-year:focus {
+      background: #fff !important;
+      border-color: var(--accent) !important;
+      outline: none !important;
+      box-shadow: 0 0 0 2px rgba(197, 29, 52, 0.15) !important;
+    }
+
+    /* Year arrows */
+    .flatpickr-current-month .numInputWrapper {
+      width: auto !important;
+    }
+
+    .flatpickr-current-month .numInputWrapper span {
+      display: block !important;
+      border: none !important;
+      opacity: 0 !important;
+      transition: opacity 0.15s ease !important;
+    }
+
+    .flatpickr-current-month .numInputWrapper:hover span {
+      opacity: 0.5 !important;
+    }
+
+    .flatpickr-months .flatpickr-prev-month,
+    .flatpickr-months .flatpickr-next-month {
+      padding: 6px !important;
+      border-radius: 8px !important;
+      transition: all 0.15s ease !important;
+      fill: var(--gray-500) !important;
+      position: static !important;
+      height: 28px !important;
+      width: 28px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .flatpickr-months .flatpickr-prev-month:hover,
+    .flatpickr-months .flatpickr-next-month:hover {
+      background: var(--gray-100) !important;
+      fill: var(--accent) !important;
+    }
+
+    .flatpickr-months .flatpickr-prev-month svg,
+    .flatpickr-months .flatpickr-next-month svg {
+      width: 12px !important;
+      height: 12px !important;
+    }
+
+    /* Weekday Headers */
+    .flatpickr-weekdays {
+      background: transparent !important;
+      padding: 0 !important;
+      height: 28px !important;
+      margin-bottom: 4px !important;
+    }
+
+    .flatpickr-weekdaycontainer {
+      display: flex !important;
+      justify-content: space-between !important;
+    }
+
+    .flatpickr-weekday {
+      color: var(--gray-500) !important;
+      font-size: 0.7rem !important;
+      font-weight: 600 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.02em !important;
+      flex: 1 !important;
+      max-width: none !important;
+      text-align: center !important;
+    }
+
+    /* Day Cells */
+    .flatpickr-days {
+      padding: 0 !important;
+      width: 252px !important;
+    }
+
+    .dayContainer {
+      width: 252px !important;
+      min-width: 252px !important;
+      max-width: 252px !important;
+      display: flex !important;
+      flex-wrap: wrap !important;
+      justify-content: flex-start !important;
+      padding: 0 !important;
+    }
+
+    .flatpickr-day {
+      border-radius: 6px !important;
+      font-weight: 500 !important;
+      font-size: 0.8rem !important;
+      color: #0f172a !important;
+      transition: all 0.15s ease !important;
+      border: none !important;
+      width: 36px !important;
+      max-width: 36px !important;
+      height: 32px !important;
+      line-height: 32px !important;
+      margin: 0 !important;
+      flex-basis: 36px !important;
+    }
+
+    /* Today and Clear buttons */
+    .flatpickr-footer {
+      display: flex !important;
+      justify-content: space-between !important;
+      padding: 8px 4px 4px !important;
+      border-top: 1px solid var(--gray-200) !important;
+      margin-top: 8px !important;
+      gap: 8px !important;
+    }
+
+    .flatpickr-footer button {
+      flex: 1 !important;
+      padding: 6px 12px !important;
+      font-size: 0.75rem !important;
+      font-weight: 600 !important;
+      border-radius: 6px !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+      font-family: 'Inter', sans-serif !important;
+      border: none !important;
+    }
+
+    .flatpickr-footer .flatpickr-today-btn {
+      background: var(--accent) !important;
+      color: #fff !important;
+    }
+
+    .flatpickr-footer .flatpickr-today-btn:hover {
+      background: var(--accent-dark) !important;
+    }
+
+    .flatpickr-footer .flatpickr-clear-btn {
+      background: var(--gray-100) !important;
+      color: var(--gray-700) !important;
+    }
+
+    .flatpickr-footer .flatpickr-clear-btn:hover {
+      background: var(--gray-200) !important;
+    }
+
+    .flatpickr-day:hover {
+      background: rgba(197, 29, 52, 0.1) !important;
+      color: var(--accent) !important;
+      border: none !important;
+    }
+
+    .flatpickr-day.today {
+      background: var(--gray-100) !important;
+      border: 2px solid var(--accent) !important;
+      font-weight: 700 !important;
+    }
+
+    .flatpickr-day.today:hover {
+      background: rgba(197, 29, 52, 0.15) !important;
+    }
+
+    .flatpickr-day.selected,
+    .flatpickr-day.selected:hover {
+      background: var(--accent) !important;
+      color: #ffffff !important;
+      border: none !important;
+      font-weight: 600 !important;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.35) !important;
+    }
+
+    .flatpickr-day.prevMonthDay,
+    .flatpickr-day.nextMonthDay {
+      color: var(--gray-300) !important;
+    }
+
+    .flatpickr-day.prevMonthDay:hover,
+    .flatpickr-day.nextMonthDay:hover {
+      background: rgba(197, 29, 52, 0.05) !important;
+      color: rgba(197, 29, 52, 0.5) !important;
+    }
+
+    .flatpickr-day.disabled,
+    .flatpickr-day.disabled:hover {
+      color: var(--gray-300) !important;
+      background: transparent !important;
+      cursor: not-allowed !important;
+    }
+
+    /* Year/Month selector */
+    .numInputWrapper {
+      width: auto !important;
+      background: transparent !important;
+    }
+
+    .numInputWrapper:hover {
+      background: transparent !important;
+    }
+
+    /* Description textareas in repeatable cards - better styling and hide scrollbar */
+    .repeatable-card textarea[name*="[description]"],
+    .repeatable-card textarea.form-control[name*="[description]"] {
+      font-family: 'Inter', sans-serif !important;
+      font-size: 0.95rem !important;
+      line-height: 1.6 !important;
+      padding: 0.85rem 1rem !important;
+      color: #0f172a !important;
+      background: #fff !important;
+      border: 2px solid var(--gray-200) !important;
+      border-radius: 10px !important;
+      transition: border 0.2s ease, box-shadow 0.2s ease !important;
+      resize: vertical !important;
+      overflow-y: hidden !important;
+      overflow-x: hidden !important;
+      min-height: 80px !important;
+      /* Don't set height: auto here, let JavaScript control it */
+    }
+
+    /* Ensure resize handle is visible */
+    .repeatable-card textarea[name*="[description]"]::-webkit-resizer,
+    .repeatable-card textarea.form-control[name*="[description]"]::-webkit-resizer {
+      display: block !important;
+      background-color: var(--gray-300) !important;
+      border-radius: 0 0 10px 0 !important;
+    }
+
+    /* Hide scrollbar for Webkit browsers (Chrome, Safari, etc.) */
+    .repeatable-card textarea[name*="[description]"]::-webkit-scrollbar,
+    .repeatable-card textarea.form-control[name*="[description]"]::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    .repeatable-card textarea[name*="[description]"]:focus,
+    .repeatable-card textarea.form-control[name*="[description]"]:focus {
+      outline: none !important;
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1) !important;
+    }
+
+    .repeatable-card textarea[name*="[description]"]::placeholder,
+    .repeatable-card textarea.form-control[name*="[description]"]::placeholder {
+      color: var(--gray-500) !important;
+      opacity: 0.7 !important;
     }
 
     .profile-form-actions {
@@ -1680,7 +2040,7 @@
                 <div class="profile-picture-section">
                   <div class="profile-img-wrapper-large member-image-wrapper">
                     <%
-                      let profileImgSrc = user.avatar || '/images/default-avatar.png';
+                      let profileImgSrc = user.avatar || '/images/default-avatar.webp';
 
                       if (profileImgSrc && profileImgSrc.includes('googleusercontent.com')) {
 
@@ -1707,7 +2067,7 @@
                 </div>
               </div>
 
-              <!-- Bio Section (Always Visible) -->
+              <!-- Bio Section -->
               <div class="profile-section-card" style="margin-top: 1.5rem;">
                 <h3>Bio</h3>
                 <p class="section-hint">Write a brief professional bio about yourself</p>
@@ -1716,7 +2076,7 @@
                 </div>
               </div>
 
-              <!-- Social Links Section (Always Visible) -->
+              <!-- Social Links Section -->
               <div class="profile-section-card" style="margin-top: 1.5rem;">
                 <h3>Social Links</h3>
                 <p class="section-hint">Add your professional social media profiles (optional)</p>
@@ -1867,34 +2227,34 @@
                 </div>
               </div>
 
-              <!-- Profile Content Tab -->
+              
               <div class="profile-tab-content" id="contentTab">
                 <div class="profile-edit-grid">
-                <!-- Profile Mode Selection -->
-            <div class="profile-section-card" id="profileTypeCard">
-              <h3>Profile Type</h3>
-              <p class="section-hint">Choose how you want to build your profile</p>
-              <div class="profile-mode-selector">
-                <label class="mode-option">
-                  <input type="radio" name="profileType" value="markdown" <%= teamMember?.profile_type === 'markdown' ? 'checked' : '' %>>
-                  <div class="mode-card">
-                    <i class="fas fa-code"></i>
-                    <h4>Markdown Editor</h4>
-                    <p>Full control with Markdown formatting</p>
+                
+                <div class="profile-section-card" id="profileTypeCard">
+                  <h3>Profile Type</h3>
+                  <p class="section-hint">Choose how you want to build your profile</p>
+                  <div class="profile-mode-selector">
+                    <label class="mode-option">
+                      <input type="radio" name="profileType" value="markdown" <%= teamMember?.profile_type === 'markdown' ? 'checked' : '' %>>
+                      <div class="mode-card">
+                        <i class="fas fa-code"></i>
+                        <h4>Markdown Editor</h4>
+                        <p>Full control with Markdown formatting</p>
+                      </div>
+                    </label>
+                    <label class="mode-option">
+                      <input type="radio" name="profileType" value="builder" <%= (!teamMember?.profile_type || teamMember?.profile_type === 'builder') ? 'checked' : '' %>>
+                      <div class="mode-card">
+                        <i class="fas fa-wrench"></i>
+                        <h4>Profile Builder</h4>
+                        <p>Guided experience with structured sections</p>
+                      </div>
+                    </label>
                   </div>
-                </label>
-                <label class="mode-option">
-                  <input type="radio" name="profileType" value="builder" <%= (!teamMember?.profile_type || teamMember?.profile_type === 'builder') ? 'checked' : '' %>>
-                  <div class="mode-card">
-                    <i class="fas fa-wrench"></i>
-                    <h4>Profile Builder</h4>
-                    <p>Guided experience with structured sections</p>
-                  </div>
-                </label>
-              </div>
-            </div>
+                </div>
 
-            <!-- Markdown Editor Mode -->
+            
             <div class="profile-section-card profile-mode-content full-width" id="markdownMode"<% if (teamMember?.profile_type !== 'markdown') { %> style="display: none !important;"<% } %>>
               <h3>README.md</h3>
               <p class="section-hint">Write your professional bio using Markdown. You can use formatting like **bold**, *italic*, and more.</p>
@@ -1910,7 +2270,7 @@
               </div>
             </div>
 
-            <!-- Skills Section (Only in Profile Builder) -->
+            <!-- Skills Section -->
             <div class="profile-section-card profile-mode-content" id="builderSkills"<% if (teamMember?.profile_type === 'markdown') { %> style="display: none !important;"<% } %>>
                 <h3>Skills</h3>
                 <p class="section-hint">Select your technical skills and expertise</p>
@@ -1994,11 +2354,11 @@
                     <div class="date-fields-group">
                       <div class="form-group">
                         <label>Start Date</label>
-                        <input type="date" name="experiences[<%= index %>][start_date]" value="<%= exp.start_date ? new Date(exp.start_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                        <input type="text" name="experiences[<%= index %>][start_date]" value="<%= exp.start_date ? (d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)(new Date(exp.start_date)) : '' %>" class="form-control datepicker" placeholder="Select date">
                       </div>
                       <div class="form-group">
                         <label>End Date</label>
-                        <input type="date" name="experiences[<%= index %>][end_date]" value="<%= exp.end_date ? new Date(exp.end_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                        <input type="text" name="experiences[<%= index %>][end_date]" value="<%= exp.end_date ? (d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)(new Date(exp.end_date)) : '' %>" class="form-control datepicker" placeholder="Select date">
                       </div>
                     </div>
                   </div>
@@ -2052,11 +2412,11 @@
                     <div class="date-fields-group">
                       <div class="form-group">
                         <label>Start Date</label>
-                        <input type="date" name="education[<%= index %>][start_date]" value="<%= edu.start_date ? new Date(edu.start_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                        <input type="text" name="education[<%= index %>][start_date]" value="<%= edu.start_date ? (d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)(new Date(edu.start_date)) : '' %>" class="form-control datepicker" placeholder="Select date">
                       </div>
                       <div class="form-group">
                         <label>End Date</label>
-                        <input type="date" name="education[<%= index %>][end_date]" value="<%= edu.end_date ? new Date(edu.end_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                        <input type="text" name="education[<%= index %>][end_date]" value="<%= edu.end_date ? (d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)(new Date(edu.end_date)) : '' %>" class="form-control datepicker" placeholder="Select date">
                       </div>
                     </div>
                   </div>
@@ -2157,11 +2517,11 @@
                     <div class="date-fields-group">
                       <div class="form-group">
                         <label>Issue Date</label>
-                        <input type="date" name="licenses[<%= index %>][issue_date]" value="<%= license.issue_date ? new Date(license.issue_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                        <input type="text" name="licenses[<%= index %>][issue_date]" value="<%= license.issue_date ? (d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)(new Date(license.issue_date)) : '' %>" class="form-control datepicker" placeholder="Select date">
                       </div>
                       <div class="form-group">
                         <label>Expiry Date</label>
-                        <input type="date" name="licenses[<%= index %>][expiry_date]" value="<%= license.expiry_date ? new Date(license.expiry_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                        <input type="text" name="licenses[<%= index %>][expiry_date]" value="<%= license.expiry_date ? (d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)(new Date(license.expiry_date)) : '' %>" class="form-control datepicker" placeholder="Select date">
                       </div>
                     </div>
                     <div class="form-group">
@@ -2215,11 +2575,11 @@
                     <div class="date-fields-group">
                       <div class="form-group">
                         <label>Start Date</label>
-                        <input type="date" name="projects[<%= index %>][start_date]" value="<%= project.start_date ? new Date(project.start_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                        <input type="text" name="projects[<%= index %>][start_date]" value="<%= project.start_date ? (d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)(new Date(project.start_date)) : '' %>" class="form-control datepicker" placeholder="Select date">
                       </div>
                       <div class="form-group">
                         <label>End Date</label>
-                        <input type="date" name="projects[<%= index %>][end_date]" value="<%= project.end_date ? new Date(project.end_date).toISOString().split('T')[0] : '' %>" class="form-control">
+                        <input type="text" name="projects[<%= index %>][end_date]" value="<%= project.end_date ? (d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`)(new Date(project.end_date)) : '' %>" class="form-control datepicker" placeholder="Select date">
                       </div>
                     </div>
                   </div>
@@ -2377,7 +2737,93 @@
     let markdownWritePane = null
     let markdownTabs = null
 
+
+    function autoResizeTextarea(textarea) {
+      if (!textarea) return
+      
+
+      if (!textarea.value || textarea.value.trim().length === 0) {
+        textarea.style.height = '80px'
+        return
+      }
+      
+
+      const scrollTop = textarea.scrollTop
+      
+
+      textarea.style.height = 'auto'
+      textarea.style.overflowY = 'hidden'
+      textarea.style.overflowX = 'hidden'
+      
+
+      void textarea.offsetHeight
+      
+
+      const scrollHeight = textarea.scrollHeight
+      
+
+      const minHeight = 80 
+      const padding = 4 
+      const newHeight = Math.max(minHeight, scrollHeight + padding)
+      
+
+      textarea.style.height = newHeight + 'px'
+      
+
+      textarea.scrollTop = scrollTop
+    }
+
+
+    function initAutoResizeTextareas() {
+      const descriptionTextareas = document.querySelectorAll('.repeatable-card textarea[name*="[description]"]')
+      
+      descriptionTextareas.forEach(textarea => {
+
+        textarea.style.height = ''
+        
+
+
+        setTimeout(() => {
+          autoResizeTextarea(textarea)
+        }, 50)
+        
+
+        setTimeout(() => {
+          autoResizeTextarea(textarea)
+        }, 300)
+        
+
+        setTimeout(() => {
+          autoResizeTextarea(textarea)
+        }, 600)
+        
+
+        if (!textarea.hasAttribute('data-auto-resize-initialized')) {
+          textarea.setAttribute('data-auto-resize-initialized', 'true')
+          textarea.addEventListener('input', function() {
+            autoResizeTextarea(this)
+          })
+          
+
+          textarea.addEventListener('paste', function() {
+            setTimeout(() => {
+              autoResizeTextarea(this)
+            }, 10)
+          })
+        }
+      })
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+
+      initAutoResizeTextareas()
+      
+
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          initAutoResizeTextareas()
+        }, 100)
+      })
 
       const markdownTextarea = document.getElementById('bioMarkdown')
       markdownPreviewPane = document.getElementById('markdownPreviewPane')
@@ -2834,60 +3280,185 @@
       }
 
 
+
+      const CHUNK_SIZE = 750 * 1024; 
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; 
+
+      /**
+       * Upload avatar/alter-ego using chunked upload
+       */
+      async function uploadFileChunked(file) {
+        return new Promise(async (resolve, reject) => {
+          try {
+
+            if (file.size > MAX_FILE_SIZE) {
+              reject(new Error(`File "${file.name}" exceeds 5MB limit`));
+              return;
+            }
+
+
+            const uploadIdResponse = await fetch('/admin/api/chunked-upload/upload-id');
+            
+            if (!uploadIdResponse.ok) {
+              const errorText = await uploadIdResponse.text();
+              reject(new Error(`Failed to get upload ID: ${uploadIdResponse.status} ${uploadIdResponse.statusText}. ${errorText.substring(0, 100)}`));
+              return;
+            }
+
+            const contentType = uploadIdResponse.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+              const errorText = await uploadIdResponse.text();
+              reject(new Error(`Invalid response format. Expected JSON but got: ${contentType}. ${errorText.substring(0, 100)}`));
+              return;
+            }
+
+            const uploadIdData = await uploadIdResponse.json();
+            
+            if (!uploadIdData.success) {
+              reject(new Error(uploadIdData.message || 'Failed to get upload ID'));
+              return;
+            }
+
+            const uploadId = uploadIdData.uploadId;
+            const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+
+            for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+              const start = chunkIndex * CHUNK_SIZE;
+              const end = Math.min(start + CHUNK_SIZE, file.size);
+              const chunk = file.slice(start, end);
+
+
+              const chunkProgress = ((chunkIndex + 1) / totalChunks) * 100;
+              progressFill.style.width = chunkProgress + '%';
+
+
+              const chunkBase64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                  const base64 = reader.result.split(',')[1];
+                  resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(chunk);
+              });
+
+
+              const formData = new FormData();
+              formData.append('uploadId', uploadId);
+              formData.append('chunkIndex', chunkIndex);
+              formData.append('totalChunks', totalChunks);
+              formData.append('fileName', file.name);
+              formData.append('fileSize', file.size);
+              formData.append('chunkData', chunkBase64);
+
+              const chunkResponse = await fetch('/admin/api/chunked-upload/chunk', {
+                method: 'POST',
+                body: formData
+              });
+
+              if (!chunkResponse.ok) {
+                const errorText = await chunkResponse.text();
+                reject(new Error(`Upload failed: ${chunkResponse.status} ${chunkResponse.statusText}. ${errorText.substring(0, 100)}`));
+                return;
+              }
+
+              const contentType = chunkResponse.headers.get('content-type');
+              if (!contentType || !contentType.includes('application/json')) {
+                const errorText = await chunkResponse.text();
+                reject(new Error(`Invalid response format. Expected JSON but got: ${contentType}. ${errorText.substring(0, 100)}`));
+                return;
+              }
+
+              const chunkResult = await chunkResponse.json();
+              
+              if (!chunkResult.success) {
+                reject(new Error(chunkResult.message || 'Failed to upload chunk'));
+                return;
+              }
+            }
+
+
+            const completeFormData = new FormData();
+            completeFormData.append('uploadId', uploadId);
+            completeFormData.append('fileName', file.name);
+            completeFormData.append('type', 'avatar');
+
+            const completeResponse = await fetch('/admin/api/chunked-upload/complete', {
+              method: 'POST',
+              body: completeFormData
+            });
+
+            if (!completeResponse.ok) {
+              const errorText = await completeResponse.text();
+              reject(new Error(`Complete upload failed: ${completeResponse.status} ${completeResponse.statusText}. ${errorText.substring(0, 100)}`));
+              return;
+            }
+
+            const completeContentType = completeResponse.headers.get('content-type');
+            if (!completeContentType || !completeContentType.includes('application/json')) {
+              const errorText = await completeResponse.text();
+              reject(new Error(`Invalid response format. Expected JSON but got: ${completeContentType}. ${errorText.substring(0, 100)}`));
+              return;
+            }
+
+            const completeResult = await completeResponse.json();
+            
+            if (!completeResult.success) {
+              reject(new Error(completeResult.message || 'Failed to complete upload'));
+              return;
+            }
+
+            resolve(completeResult.url);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+
       uploadForm.addEventListener('submit', async function(e) {
         e.preventDefault()
 
-        const formData = new FormData()
-        formData.append('profilePicture', fileInput.files[0])
+        if (!fileInput.files || fileInput.files.length === 0) {
+          showNotification('No File Selected', 'Please select an image file to upload', 'error')
+          return
+        }
 
+        const file = fileInput.files[0]
         uploadProgress.style.display = 'block'
         progressFill.style.width = '0%'
 
         try {
-          const xhr = new XMLHttpRequest()
 
-          xhr.upload.addEventListener('progress', function(e) {
-            if (e.lengthComputable) {
-              const percentComplete = (e.loaded / e.total) * 100
-              progressFill.style.width = percentComplete + '%'
-            }
-          })
+          const uploadedUrl = await uploadFileChunked(file)
 
-          xhr.addEventListener('load', function() {
-              if (xhr.status === 200) {
-              const response = JSON.parse(xhr.responseText)
-              if (response.success) {
-                if (isAlterEgoUpload) {
 
-                  showNotification('Success!', 'Alter ego picture updated successfully!', 'success')
-                } else {
-
-                  showNotification('Success!', 'Profile picture updated successfully!', 'success')
-                }
-                closeModalFunc()
-                setTimeout(() => window.location.reload(), 1500)
-              } else {
-                showNotification('Upload Failed', response.message || 'Failed to upload image', 'error')
-                uploadProgress.style.display = 'none'
-              }
-            } else {
-              const response = JSON.parse(xhr.responseText)
-              showNotification('Upload Failed', response.message || 'Failed to upload image', 'error')
-              uploadProgress.style.display = 'none'
-            }
-          })
-
-          xhr.addEventListener('error', function() {
-            showNotification('Upload Error', 'Error uploading file. Please try again.', 'error')
-            uploadProgress.style.display = 'none'
-          })
+          const formData = new FormData()
+          formData.append('avatarUrl', uploadedUrl)
 
           const uploadUrl = isAlterEgoUpload ? '/admin/upload-alter-ego' : '/admin/upload-avatar'
-          xhr.open('POST', uploadUrl)
-          xhr.send(formData)
+          const response = await fetch(uploadUrl, {
+            method: 'POST',
+            body: formData
+          })
+
+          const result = await response.json()
+
+          if (result.success) {
+            if (isAlterEgoUpload) {
+              showNotification('Success!', 'Alter ego picture updated successfully!', 'success')
+            } else {
+              showNotification('Success!', 'Profile picture updated successfully!', 'success')
+            }
+            closeModalFunc()
+            setTimeout(() => window.location.reload(), 1500)
+          } else {
+            showNotification('Upload Failed', result.message || 'Failed to upload image', 'error')
+            uploadProgress.style.display = 'none'
+          }
         } catch (error) {
           console.error('Upload error:', error)
-          showNotification('Upload Error', 'Error uploading file. Please try again.', 'error')
+          showNotification('Upload Error', error.message || 'Error uploading file. Please try again.', 'error')
           uploadProgress.style.display = 'none'
         }
       })
@@ -2913,6 +3484,13 @@
         setTimeout(() => {
           this.classList.add('active')
           targetTab.classList.add('active')
+          
+
+          if (tabId === 'content') {
+            setTimeout(() => {
+              initAutoResizeTextareas()
+            }, 100)
+          }
         }, 50)
       })
     })
@@ -3014,6 +3592,62 @@
 
 
 
+
+    function saveScrollPosition() {
+      sessionStorage.setItem('profileScrollPosition', window.scrollY.toString());
+
+      const activeTab = document.querySelector('.profile-tab-button.active');
+      if (activeTab) {
+        sessionStorage.setItem('profileActiveTab', activeTab.getAttribute('data-tab'));
+      }
+    }
+
+    function restorePageState() {
+      const savedTab = sessionStorage.getItem('profileActiveTab');
+      const savedPosition = sessionStorage.getItem('profileScrollPosition');
+      
+      if (!savedTab && !savedPosition) return;
+
+
+      if (savedTab) {
+        const tabButton = document.querySelector(`.profile-tab-button[data-tab="${savedTab}"]`);
+        const targetTab = document.getElementById(savedTab + 'Tab');
+        
+        if (tabButton && targetTab) {
+
+          document.querySelectorAll('.profile-tab-button').forEach(btn => btn.classList.remove('active'));
+          document.querySelectorAll('.profile-tab-content').forEach(content => content.classList.remove('active'));
+          
+
+          tabButton.classList.add('active');
+          targetTab.classList.add('active');
+          
+
+          if (savedTab === 'content') {
+            setTimeout(() => {
+              if (typeof initAutoResizeTextareas === 'function') {
+                initAutoResizeTextareas();
+              }
+            }, 50);
+          }
+        }
+        sessionStorage.removeItem('profileActiveTab');
+      }
+
+
+      if (savedPosition) {
+        window.scrollTo(0, parseInt(savedPosition));
+        sessionStorage.removeItem('profileScrollPosition');
+      }
+    }
+
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', restorePageState);
+    } else {
+      restorePageState();
+    }
+
     document.getElementById('saveBioSocialBtn')?.addEventListener('click', async function(e) {
       e.preventDefault()
 
@@ -3109,6 +3743,7 @@
 
         if (result.success) {
           showNotification('Success!', 'Profile content updated successfully!', 'success')
+          saveScrollPosition();
           setTimeout(() => window.location.reload(), 1500)
         } else {
           showNotification('Update Failed', result.message || 'Failed to update profile content', 'error')
@@ -3155,7 +3790,8 @@
       document.querySelectorAll('.experience-item, .education-item, .language-item, .license-item, .project-item').forEach((item, index) => {
         const inputs = item.querySelectorAll('input, select, textarea')
         inputs.forEach(input => {
-          if (input.value) {
+
+          if (input.name && input.value) {
             formData.append(input.name, input.value)
           }
         })
@@ -3171,6 +3807,7 @@
 
         if (result.success) {
           showNotification('Success!', 'Profile updated successfully!', 'success')
+          saveScrollPosition();
           setTimeout(() => window.location.reload(), 1500)
         } else {
           showNotification('Update Failed', result.message || 'Failed to update profile', 'error')
@@ -3206,11 +3843,11 @@
             <div class="date-fields-group">
               <div class="form-group">
                 <label>Start Date</label>
-                <input type="date" name="experiences[${index}][start_date]" class="form-control">
+                <input type="text" name="experiences[${index}][start_date]" class="form-control datepicker" placeholder="Select date">
               </div>
               <div class="form-group">
                 <label>End Date</label>
-                <input type="date" name="experiences[${index}][end_date]" class="form-control">
+                <input type="text" name="experiences[${index}][end_date]" class="form-control datepicker" placeholder="Select date">
               </div>
             </div>
           </div>
@@ -3232,6 +3869,22 @@
         newExperience.style.setProperty('display', 'block', 'important')
         newExperience.style.setProperty('opacity', '1', 'important')
         newExperience.style.setProperty('visibility', 'visible', 'important')
+        
+
+        const newTextarea = newExperience.querySelector('textarea[name*="[description]"]')
+        if (newTextarea) {
+          setTimeout(() => {
+            autoResizeTextarea(newTextarea)
+            newTextarea.addEventListener('input', function() {
+              autoResizeTextarea(this)
+            })
+            newTextarea.addEventListener('paste', function() {
+              setTimeout(() => {
+                autoResizeTextarea(this)
+              }, 10)
+            })
+          }, 150)
+        }
       }
       document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'none')
     }
@@ -3260,11 +3913,11 @@
             <div class="date-fields-group">
               <div class="form-group">
                 <label>Start Date</label>
-                <input type="date" name="education[${index}][start_date]" class="form-control">
+                <input type="text" name="education[${index}][start_date]" class="form-control datepicker" placeholder="Select date">
               </div>
               <div class="form-group">
                 <label>End Date</label>
-                <input type="date" name="education[${index}][end_date]" class="form-control">
+                <input type="text" name="education[${index}][end_date]" class="form-control datepicker" placeholder="Select date">
               </div>
             </div>
           </div>
@@ -3286,6 +3939,22 @@
         newEducation.style.setProperty('display', 'block', 'important')
         newEducation.style.setProperty('opacity', '1', 'important')
         newEducation.style.setProperty('visibility', 'visible', 'important')
+        
+
+        const newTextarea = newEducation.querySelector('textarea[name*="[description]"]')
+        if (newTextarea) {
+          setTimeout(() => {
+            autoResizeTextarea(newTextarea)
+            newTextarea.addEventListener('input', function() {
+              autoResizeTextarea(this)
+            })
+            newTextarea.addEventListener('paste', function() {
+              setTimeout(() => {
+                autoResizeTextarea(this)
+              }, 10)
+            })
+          }, 150)
+        }
       }
       document.querySelectorAll('.add-entry-btn').forEach(btn => btn.style.display = 'none')
     }
@@ -3378,11 +4047,11 @@
             <div class="date-fields-group">
               <div class="form-group">
                 <label>Issue Date</label>
-                <input type="date" name="licenses[${index}][issue_date]" class="form-control">
+                <input type="text" name="licenses[${index}][issue_date]" class="form-control datepicker" placeholder="Select date">
               </div>
               <div class="form-group">
                 <label>Expiry Date</label>
-                <input type="date" name="licenses[${index}][expiry_date]" class="form-control">
+                <input type="text" name="licenses[${index}][expiry_date]" class="form-control datepicker" placeholder="Select date">
               </div>
             </div>
             <div class="form-group">
@@ -3431,11 +4100,11 @@
             <div class="date-fields-group">
               <div class="form-group">
                 <label>Start Date</label>
-                <input type="date" name="projects[${index}][start_date]" class="form-control">
+                <input type="text" name="projects[${index}][start_date]" class="form-control datepicker" placeholder="Select date">
               </div>
               <div class="form-group">
                 <label>End Date</label>
-                <input type="date" name="projects[${index}][end_date]" class="form-control">
+                <input type="text" name="projects[${index}][end_date]" class="form-control datepicker" placeholder="Select date">
               </div>
             </div>
           </div>
@@ -3503,6 +4172,21 @@
         newProject.style.setProperty('opacity', '1', 'important')
         newProject.style.setProperty('visibility', 'visible', 'important')
         
+
+        const newTextarea = newProject.querySelector('textarea[name*="[description]"]')
+        if (newTextarea) {
+          setTimeout(() => {
+            autoResizeTextarea(newTextarea)
+            newTextarea.addEventListener('input', function() {
+              autoResizeTextarea(this)
+            })
+            newTextarea.addEventListener('paste', function() {
+              setTimeout(() => {
+                autoResizeTextarea(this)
+              }, 10)
+            })
+          }, 150)
+        }
 
         const techSelect = newProject.querySelector('.project-technologies-select')
         if (techSelect && typeof $ !== 'undefined' && $.fn.select2) {
@@ -3641,6 +4325,107 @@
         notification.classList.remove('show')
         setTimeout(() => notification.remove(), 500)
       }, 4000)
+    }
+
+
+    function initializeDatePickers(container = document) {
+      const datepickers = container.querySelectorAll('.datepicker:not(.flatpickr-input)');
+      datepickers.forEach(input => {
+        flatpickr(input, {
+          dateFormat: 'Y-m-d',
+          altInput: true,
+          altFormat: 'F j, Y',
+          allowInput: true,
+          animate: true,
+          disableMobile: true,
+          static: false,
+          appendTo: document.body,
+
+          formatDate: function(date, format) {
+            if (format === 'Y-m-d') {
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, '0');
+              const day = String(date.getDate()).padStart(2, '0');
+              return `${year}-${month}-${day}`;
+            }
+
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+            return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+          },
+          onReady: function(selectedDates, dateStr, instance) {
+
+            const footer = document.createElement('div');
+            footer.className = 'flatpickr-footer';
+            
+            const todayBtn = document.createElement('button');
+            todayBtn.type = 'button';
+            todayBtn.className = 'flatpickr-today-btn';
+            todayBtn.textContent = 'Today';
+            todayBtn.addEventListener('click', function() {
+              instance.setDate(new Date(), true);
+            });
+            
+            const clearBtn = document.createElement('button');
+            clearBtn.type = 'button';
+            clearBtn.className = 'flatpickr-clear-btn';
+            clearBtn.textContent = 'Clear';
+            clearBtn.addEventListener('click', function() {
+              instance.clear();
+            });
+            
+            footer.appendChild(todayBtn);
+            footer.appendChild(clearBtn);
+            instance.calendarContainer.appendChild(footer);
+          },
+          onOpen: function(selectedDates, dateStr, instance) {
+
+            instance.calendarContainer.style.zIndex = '999999';
+          }
+        });
+      });
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeDatePickers();
+    });
+
+
+    const originalAddExperience = typeof addExperience !== 'undefined' ? addExperience : null;
+    const originalAddEducation = typeof addEducation !== 'undefined' ? addEducation : null;
+    const originalAddLicense = typeof addLicense !== 'undefined' ? addLicense : null;
+    const originalAddProject = typeof addProject !== 'undefined' ? addProject : null;
+
+
+    if (typeof window !== 'undefined') {
+      const initAfterAdd = (containerId) => {
+        setTimeout(() => {
+          const container = document.getElementById(containerId);
+          if (container) {
+            const lastCard = container.querySelector('.repeatable-card:last-child');
+            if (lastCard) {
+              initializeDatePickers(lastCard);
+            }
+          }
+        }, 100);
+      };
+
+
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) {
+              const datepickers = node.querySelectorAll ? node.querySelectorAll('.datepicker:not(.flatpickr-input)') : [];
+              if (datepickers.length > 0) {
+                initializeDatePickers(node);
+              }
+            }
+          });
+        });
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
     }
   </script>
 </body>

@@ -61,16 +61,39 @@ async function verifyUserExists(req, res, next) {
 }
 
 
+async function updateLastActive(req, res, next) {
+  if (req.isAuthenticated() && req.user && req.user.id) {
+    try {
+      const db = require("../config/database")
+
+
+      await db.query(
+        "UPDATE users SET last_active = NOW() WHERE id = ? AND (last_active IS NULL OR TIMESTAMPDIFF(HOUR, last_active, NOW()) >= 1)",
+        [req.user.id]
+      )
+    } catch (error) {
+
+      console.error("Error updating last_active:", error)
+    }
+  }
+  next()
+}
+
 function ensureAdmin(req, res, next) {
   if (req.isAuthenticated() && req.user.role === "admin") {
     return next()
   }
   
 
-  if (req.headers['content-type']?.includes('application/json') || 
+
+  const isApiRequest = req.headers['content-type']?.includes('application/json') || 
       req.headers['accept']?.includes('application/json') ||
       req.path.includes('/api/') ||
-      req.method === 'POST' && req.path.includes('/reorder')) {
+      req.originalUrl.includes('/api/') ||
+      req.url.includes('/api/') ||
+      (req.method === 'POST' && req.path.includes('/reorder'))
+  
+  if (isApiRequest) {
     return res.status(401).json({ 
       success: false, 
       message: "Admin access required. Please log in." 
@@ -96,4 +119,5 @@ module.exports = {
   ensureAdmin,
   ensureTeamOrAdmin,
   verifyUserExists,
+  updateLastActive,
 }

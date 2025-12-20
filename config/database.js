@@ -74,6 +74,8 @@ async function createTablesIfNotExist() {
   await addColumnIfMissing("team_members", "profile_type", "VARCHAR(50) DEFAULT 'markdown'")
   await addColumnIfMissing("team_members", "alter_ego", "VARCHAR(500) NULL")
   await addColumnIfMissing("users", "phone", "VARCHAR(20) NULL")
+  await addColumnIfMissing("users", "last_login", "TIMESTAMP NULL")
+  await addColumnIfMissing("users", "last_active", "TIMESTAMP NULL")
 
   await promisePool.query(`CREATE TABLE IF NOT EXISTS team_experiences (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -229,6 +231,8 @@ async function createTablesIfNotExist() {
     INDEX idx_published (is_published)
   );`)
   console.log("    ✅ Table 'blogs' ready")
+
+  await addColumnIfMissing("blogs", "video_url", "VARCHAR(500) NULL")
 
   await promisePool.query(`CREATE TABLE IF NOT EXISTS polls (
     id INT AUTO_INCREMENT PRIMARY KEY,

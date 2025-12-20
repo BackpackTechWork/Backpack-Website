@@ -42,7 +42,7 @@
       <div class="thunder-background"></div>
       <div class="easter-egg-content">
         <div class="thiccgob-name">300 YEAR OLD GAMER</div>
-        <img src="/images/Assets/Kak Annez Kyi.png" alt="300 year old gamer" class="thiccgob-image">
+        <img src="/images/Assets/Kak Annez Kyi.webp" alt="300 year old gamer" class="thiccgob-image">
         <div class="game-message-box">
           <p class="game-message-text typing-text" data-text="Come have a break with me!"></p>
           <p class="game-message-text typing-text" data-text="Let's slack off work for a minute..."></p>
@@ -57,7 +57,7 @@
         <div class="profile-img-wrapper">
           <div class="profile-pulse"></div>
           <% 
-            let sidebarImgSrc = user.avatar || user.profilePicture || '/images/default-avatar.png';
+            let sidebarImgSrc = user.avatar || user.profilePicture || '/images/default-avatar.webp';
 
             if (sidebarImgSrc && sidebarImgSrc.includes('googleusercontent.com')) {
 
@@ -70,7 +70,7 @@
               sidebarImgSrc = '/avatar-proxy?url=' + encodeURIComponent(sidebarImgSrc) + '&t=' + cacheBuster;
             }
           %>
-          <img src="<%= sidebarImgSrc %>" alt="<%= user.name %>" class="sidebar-profile-img" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+          <img src="<%= sidebarImgSrc %>" alt="<%= user.name %>" class="sidebar-profile-img" onerror="this.onerror=null; this.src='/images/default-avatar.webp';">
         </div>
         <div class="sidebar-profile-info">
           <p class="sidebar-profile-name"><%= user.name %></p>

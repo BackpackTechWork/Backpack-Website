@@ -476,6 +476,13 @@
             <small class="form-help">Enter the poll question that visitors will see</small>
           </div>
 
+          <!-- Poll Video URL -->
+          <div class="form-group">
+            <label for="video_url">Poll Video URL</label>
+            <input type="url" id="video_url" name="video_url" class="form-control" placeholder="https://www.youtube.com/watch?v=..." value="<%= isEdit && poll ? (poll.video_url || '') : '' %>">
+            <small class="form-help">Paste a video link (YouTube, Vimeo, or any video URL)</small>
+          </div>
+
           <!-- Options -->
           <div class="form-group">
             <label>Options <span class="required">*</span></label>

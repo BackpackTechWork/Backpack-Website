@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Quill Editor CSS -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
   <style>
     /* Animations */
     @keyframes fadeInUp {
@@ -96,7 +98,7 @@
     }
 
     .form-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       animation: fadeInUp 0.5s ease-out both;
     }
 
@@ -107,6 +109,12 @@
 
     .form-group.full-width {
       grid-column: 1 / -1;
+    }
+
+    .form-group.full-width.section-separator {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 2px solid #e5e7eb;
     }
 
     .form-container .form-group label {
@@ -143,6 +151,98 @@
     .form-container textarea.form-control {
       min-height: 200px;
       resize: vertical;
+    }
+
+    /* Ensure hidden textarea is never visible */
+    #content[style*="display: none"],
+    textarea#content {
+      display: none !important;
+      visibility: hidden !important;
+      position: absolute !important;
+      width: 0 !important;
+      height: 0 !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+    }
+
+    /* Quill Editor Styles */
+    #editor-container {
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      background: #ffffff;
+      margin-top: 0.5rem;
+      overflow: visible;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    #editor-container .ql-editor {
+      min-height: 400px;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      color: #111827;
+      line-height: 1.6;
+      padding: 1.25rem;
+      overflow: visible;
+    }
+
+    #editor-container .ql-toolbar {
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      border-bottom: 2px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 0.75rem;
+    }
+
+    #editor-container .ql-container {
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      font-family: inherit;
+      border: none;
+      position: relative;
+      overflow: visible;
+    }
+
+    #editor-container .ql-editor.ql-blank::before {
+      color: #9ca3af;
+      font-style: normal;
+      left: 1.25rem;
+    }
+
+    #editor-container .ql-editor:focus {
+      outline: none;
+    }
+
+    #editor-container:focus-within {
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    /* Fix Quill tooltip positioning */
+    .ql-tooltip {
+      position: absolute !important;
+      z-index: 1000;
+      white-space: nowrap;
+    }
+
+    .ql-tooltip.ql-editing {
+      left: 0 !important;
+      margin-top: 8px;
+    }
+
+    /* Ensure tooltip stays within editor bounds */
+    #editor-container .ql-tooltip {
+      max-width: calc(100% - 2rem);
+      left: 1rem !important;
+      transform: none !important;
+    }
+
+    /* Disable image handler in Quill */
+    #editor-container .ql-toolbar .ql-image,
+    #editor-container .ql-toolbar .ql-video {
+      display: none !important;
     }
 
     .form-container .form-control:focus,
@@ -281,12 +381,32 @@
       overflow: hidden;
       border: 2px solid #e5e7eb;
       background: #f9fafb;
+      transition: all 0.2s;
+    }
+
+    .image-item.selected {
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.2);
     }
 
     .image-item img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    .image-checkbox {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      accent-color: #c51d34;
+      z-index: 10;
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .image-actions {
@@ -344,6 +464,49 @@
     .remove-image-btn:hover {
       background: rgba(220, 38, 38, 1);
       transform: scale(1.1);
+    }
+
+    .bulk-delete-container {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #fef2f2;
+      border: 2px solid #fee2e2;
+      border-radius: 8px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .bulk-delete-container.show {
+      display: flex;
+    }
+
+    .bulk-delete-info {
+      font-size: 0.875rem;
+      color: #111827;
+      font-weight: 500;
+    }
+
+    .bulk-delete-btn {
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .bulk-delete-btn:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
 
     .image-upload-input {
@@ -535,8 +698,9 @@
       transform: translateY(-1px);
     }
 
-    /* Success Modal */
-    .success-modal {
+    /* Success/Error/Confirmation Modal Styles */
+    .success-modal,
+    .confirmation-modal {
       position: fixed;
       top: 0;
       left: 0;
@@ -553,7 +717,8 @@
       transition: all 0.3s ease;
     }
 
-    .success-modal.show {
+    .success-modal.show,
+    .confirmation-modal.show {
       opacity: 1;
       visibility: visible;
     }
@@ -570,7 +735,8 @@
       text-align: center;
     }
 
-    .success-modal.show .modal-content-wrapper {
+    .success-modal.show .modal-content-wrapper,
+    .confirmation-modal.show .modal-content-wrapper {
       transform: scale(1);
     }
 
@@ -588,6 +754,10 @@
 
     .modal-icon.error {
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .modal-icon.warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     }
 
     .modal-icon i {
@@ -714,13 +884,15 @@
             <!-- Content -->
             <div class="form-group full-width">
               <label for="content">Content <span class="required">*</span></label>
-              <textarea id="content" name="content" class="form-control" required placeholder="Write your blog content here..."><%= isEdit && blog ? (blog.content || '') : '' %></textarea>
-              <small class="form-help">Main content of your blog post</small>
+              <div id="editor-container" style="min-height: 400px; margin-bottom: 0.5rem;"></div>
+              <textarea id="content" name="content" class="form-control" required placeholder="Write your blog content here..." style="display: none !important; visibility: hidden !important; position: absolute !important; width: 0 !important; height: 0 !important; opacity: 0 !important; pointer-events: none !important;" aria-hidden="true" tabindex="-1"><%= isEdit && blog ? (blog.content || '') : '' %></textarea>
+              <small class="form-help">Main content of your blog post with rich text formatting (text, headings, lists, links, etc.)</small>
             </div>
 
             <!-- Blog Images (Multiple) -->
-            <div class="form-group full-width">
+            <div class="form-group full-width" style="margin-top: 4rem; padding-top: 3rem; border-top: 1px solid #e5e7eb;">
               <label>Blog Images</label>
+              <small class="form-help">Recommended image size: <strong>1200px × 800px</strong> for optimal display quality</small>
               <div class="image-upload-container">
                 <!-- Existing Images -->
                 <div id="existingImagesContainer" class="existing-images-container">
@@ -751,6 +923,7 @@
                     <div class="images-grid" id="existingImagesGrid">
                       <% existingImages.forEach((img, index) => { %>
                         <div class="image-item" data-image-filename="<%= img.filename %>" data-image-path="<%= img.path %>">
+                          <input type="checkbox" class="image-checkbox" data-image-path="<%= img.path %>" onchange="toggleImageSelection(this)">
                           <img src="<%= img.path %>" alt="Blog Image" onerror="this.parentElement.remove();">
                           <div class="image-actions">
                             <% 
@@ -768,6 +941,12 @@
                           <input type="hidden" name="existing_images[]" value="<%= img.path %>">
                         </div>
                       <% }) %>
+                    </div>
+                    <div class="bulk-delete-container" id="bulkDeleteContainer">
+                      <span class="bulk-delete-info" id="bulkDeleteInfo">0 images selected</span>
+                      <button type="button" class="bulk-delete-btn" onclick="deleteSelectedImages()">
+                        <i class="fas fa-trash"></i> Delete Selected
+                      </button>
                     </div>
                   <% } %>
                 </div>
@@ -787,17 +966,31 @@
                       </label>
                       <input type="file" id="images" name="images" class="image-upload-input" accept="image/*" multiple>
                       <p class="dropzone-hint" style="margin-top: 0.5rem;">PNG, JPG, WEBP - max 5MB each, up to 10 images</p>
+                      <p class="dropzone-hint" style="margin-top: 0.25rem; font-weight: 600; color: #c51d34;">Recommended size: 1200px × 800px</p>
                     </div>
                   </div>
                   
                   <!-- Preview for new images -->
                   <div id="newImagesPreview" class="images-grid" style="margin-top: 1rem; display: none;"></div>
+                  <div class="bulk-delete-container" id="bulkDeleteNewContainer" style="margin-top: 1rem;">
+                    <span class="bulk-delete-info" id="bulkDeleteNewInfo">0 images selected</span>
+                    <button type="button" class="bulk-delete-btn" onclick="deleteSelectedNewImages()">
+                      <i class="fas fa-trash"></i> Delete Selected
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
+            <!-- Blog Video URL -->
+            <div class="form-group full-width" style="margin-bottom: 1rem;">
+              <label for="video_url">Blog Video URL</label>
+              <input type="url" id="video_url" name="video_url" class="form-control" placeholder="https://www.youtube.com/watch?v=..." value="<%= isEdit && blog ? (blog.video_url || '') : '' %>">
+              <small class="form-help">Paste a video link (YouTube, Vimeo, or any video URL)</small>
+            </div>
+
             <!-- Links -->
-            <div class="form-group full-width">
+            <div class="form-group full-width" style="margin-top: 0;">
               <label>Links</label>
               <div class="links-container" id="linksContainer">
                 <% 
@@ -889,7 +1082,122 @@
     </div>
   </div>
 
+  <!-- Confirmation Modal -->
+  <div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon warning">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 class="modal-title">Confirm Action</h3>
+      <p class="modal-message" id="confirmationMessage">Are you sure you want to proceed?</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('confirmationModal')" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirmBtn" class="modal-btn modal-btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quill Editor JS -->
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
   <script>
+
+    let quill;
+    document.addEventListener('DOMContentLoaded', function() {
+      const editorContainer = document.getElementById('editor-container');
+      const contentTextarea = document.getElementById('content');
+      
+      if (editorContainer && contentTextarea) {
+        quill = new Quill('#editor-container', {
+          theme: 'snow',
+          modules: {
+            toolbar: [
+              [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+              [{ 'script': 'sub'}, { 'script': 'super' }],
+              [{ 'indent': '-1'}, { 'indent': '+1' }],
+              [{ 'direction': 'rtl' }],
+              [{ 'size': ['small', false, 'large', 'huge'] }],
+              [{ 'color': [] }, { 'background': [] }],
+              [{ 'font': [] }],
+              [{ 'align': [] }],
+              ['clean'],
+              ['link']
+            ]
+          },
+          placeholder: 'Write your blog content here...'
+        });
+
+
+        if (contentTextarea) {
+          contentTextarea.style.display = 'none';
+          contentTextarea.style.visibility = 'hidden';
+          contentTextarea.style.position = 'absolute';
+          contentTextarea.style.width = '0';
+          contentTextarea.style.height = '0';
+          contentTextarea.style.opacity = '0';
+          contentTextarea.style.pointerEvents = 'none';
+          contentTextarea.setAttribute('aria-hidden', 'true');
+          contentTextarea.setAttribute('tabindex', '-1');
+        }
+
+
+        const initialContent = contentTextarea ? contentTextarea.value : '';
+        if (initialContent) {
+          try {
+
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = initialContent;
+
+            if (tempDiv.innerHTML !== initialContent || initialContent.includes('<')) {
+              quill.root.innerHTML = initialContent;
+            } else {
+
+              const htmlContent = initialContent.replace(/\n/g, '<br>');
+              quill.root.innerHTML = htmlContent;
+            }
+          } catch (e) {
+            quill.root.innerHTML = initialContent.replace(/\n/g, '<br>');
+          }
+        }
+
+
+        quill.on('text-change', function() {
+          contentTextarea.value = quill.root.innerHTML;
+        });
+
+
+        quill.on('selection-change', function() {
+          contentTextarea.value = quill.root.innerHTML;
+        });
+
+
+        quill.clipboard.addMatcher(Node.ELEMENT_NODE, function(node, delta) {
+          if (node.tagName === 'IMG') {
+
+            const Delta = Quill.import('delta');
+            return new Delta().retain(delta.length());
+          }
+          return delta;
+        });
+
+
+        quill.root.addEventListener('paste', function(e) {
+          const items = e.clipboardData.items;
+          for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+              e.preventDefault();
+              const errorMessageEl = document.getElementById('errorMessage');
+              if (errorMessageEl) {
+                errorMessageEl.textContent = 'Please use the Blog Images section below to upload images. Images cannot be inserted directly in the content editor.';
+              }
+              showModal('errorModal');
+              return false;
+            }
+          }
+        });
+      }
+    });
 
     function showModal(modalId) {
       const modal = document.getElementById(modalId);
@@ -902,6 +1210,26 @@
       const modal = document.getElementById(modalId);
       if (modal) {
         modal.classList.remove('show');
+      }
+    }
+
+    function showConfirmation(message, onConfirm) {
+      const modal = document.getElementById('confirmationModal');
+      const messageEl = document.getElementById('confirmationMessage');
+      const confirmBtn = document.getElementById('confirmBtn');
+      
+      if (modal && messageEl) {
+        messageEl.textContent = message;
+        modal.classList.add('show');
+        
+
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        newConfirmBtn.onclick = function() {
+          closeModal('confirmationModal');
+          if (onConfirm) onConfirm();
+        };
       }
     }
 
@@ -954,7 +1282,7 @@
 
 
     document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('success-modal')) {
+      if (e.target.classList.contains('success-modal') || e.target.classList.contains('confirmation-modal')) {
         closeModal(e.target.id);
       }
     });
@@ -992,7 +1320,11 @@
       const currentTotal = existingCount + newPreviewCount;
       
       if (filesArray.length + currentTotal > 10) {
-        alert(`Maximum 10 images allowed. You currently have ${currentTotal} image(s). Please select fewer images.`);
+        const errorMessageEl = document.getElementById('errorMessage');
+        if (errorMessageEl) {
+          errorMessageEl.textContent = `Maximum 10 images allowed. You currently have ${currentTotal} image(s). Please select fewer images.`;
+        }
+        showModal('errorModal');
         return;
       }
 
@@ -1004,13 +1336,21 @@
       filesArray.forEach((file, relativeIndex) => {
 
         if (file.size > 5 * 1024 * 1024) {
-          alert(`Image "${file.name}" is too large. Maximum size is 5MB.`);
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = `Image "${file.name}" is too large. Maximum size is 5MB. Please select a smaller image.`;
+          }
+          showModal('errorModal');
           return;
         }
 
 
         if (!file.type.startsWith('image/')) {
-          alert(`"${file.name}" is not an image file.`);
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = `"${file.name}" is not an image file. Please select an image file.`;
+          }
+          showModal('errorModal');
           return;
         }
 
@@ -1018,7 +1358,11 @@
         const currentCount = existingImagesGrid ? existingImagesGrid.children.length : 0;
         const previewCount = newImagesPreview ? newImagesPreview.children.length : 0;
         if (currentCount + previewCount >= 10) {
-          alert('Maximum 10 images allowed. Please remove some images first.');
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = 'Maximum 10 images allowed. Please remove some images first.';
+          }
+          showModal('errorModal');
           return;
         }
 
@@ -1035,6 +1379,7 @@
           const previewId = `preview_${Date.now()}_${index}`;
           
           imageItem.innerHTML = `
+            <input type="checkbox" class="image-checkbox" data-file-index="${index}" onchange="toggleImageSelection(this)">
             <img src="${e.target.result}" alt="Preview">
             <div class="image-actions">
               <button type="button" class="cover-image-btn" 
@@ -1066,16 +1411,29 @@
 
       if (imagesInput && validFiles.length > 0) {
         const dataTransfer = new DataTransfer();
+        const seenFiles = new Map(); 
+
 
         if (imagesInput.files) {
           for (let i = 0; i < imagesInput.files.length; i++) {
-            dataTransfer.items.add(imagesInput.files[i]);
+            const file = imagesInput.files[i];
+            const fileKey = `${file.name}_${file.size}_${file.lastModified}`;
+            if (!seenFiles.has(fileKey)) {
+              seenFiles.set(fileKey, true);
+              dataTransfer.items.add(file);
+            }
           }
         }
 
+
         validFiles.forEach(file => {
-          dataTransfer.items.add(file);
+          const fileKey = `${file.name}_${file.size}_${file.lastModified}`;
+          if (!seenFiles.has(fileKey)) {
+            seenFiles.set(fileKey, true);
+            dataTransfer.items.add(file);
+          }
         });
+        
         imagesInput.files = dataTransfer.files;
       }
     }
@@ -1182,34 +1540,156 @@
     }
 
 
-    function removeExistingImage(filename, button) {
-      if (!confirm('Are you sure you want to remove this image?')) {
+    function toggleImageSelection(checkbox) {
+      const imageItem = checkbox.closest('.image-item');
+      if (checkbox.checked) {
+        imageItem.classList.add('selected');
+      } else {
+        imageItem.classList.remove('selected');
+      }
+      updateBulkDeleteUI();
+    }
+
+    function updateBulkDeleteUI() {
+
+      const existingCheckboxes = document.querySelectorAll('#existingImagesGrid .image-checkbox:checked');
+      const bulkDeleteContainer = document.getElementById('bulkDeleteContainer');
+      const bulkDeleteInfo = document.getElementById('bulkDeleteInfo');
+      
+      if (bulkDeleteContainer && bulkDeleteInfo) {
+        if (existingCheckboxes.length > 0) {
+          bulkDeleteContainer.classList.add('show');
+          bulkDeleteInfo.textContent = `${existingCheckboxes.length} image${existingCheckboxes.length > 1 ? 's' : ''} selected`;
+        } else {
+          bulkDeleteContainer.classList.remove('show');
+        }
+      }
+
+
+      const newCheckboxes = document.querySelectorAll('#newImagesPreview .image-checkbox:checked');
+      const bulkDeleteNewContainer = document.getElementById('bulkDeleteNewContainer');
+      const bulkDeleteNewInfo = document.getElementById('bulkDeleteNewInfo');
+      
+      if (bulkDeleteNewContainer && bulkDeleteNewInfo) {
+        if (newCheckboxes.length > 0) {
+          bulkDeleteNewContainer.classList.add('show');
+          bulkDeleteNewInfo.textContent = `${newCheckboxes.length} image${newCheckboxes.length > 1 ? 's' : ''} selected`;
+        } else {
+          bulkDeleteNewContainer.classList.remove('show');
+        }
+      }
+    }
+
+    function deleteSelectedImages() {
+      const selectedCheckboxes = document.querySelectorAll('#existingImagesGrid .image-checkbox:checked');
+      if (selectedCheckboxes.length === 0) {
         return;
       }
 
+      showConfirmation(`Are you sure you want to delete ${selectedCheckboxes.length} selected image${selectedCheckboxes.length > 1 ? 's' : ''}?`, function() {
+        const coverImageInput = document.getElementById('coverImageInput');
+        const blogForm = document.getElementById('blogForm');
+        
+        selectedCheckboxes.forEach(checkbox => {
+          const imageItem = checkbox.closest('.image-item');
+          const imagePath = imageItem ? imageItem.dataset.imagePath : checkbox.dataset.imagePath;
+          
+          if (coverImageInput && coverImageInput.value === imagePath) {
+            coverImageInput.value = '';
+          }
 
-      const coverImageInput = document.getElementById('coverImageInput');
-      const imageItem = button.closest('.image-item');
-      const imagePath = imageItem ? imageItem.dataset.imagePath : null;
-      
-      if (coverImageInput && coverImageInput.value === imagePath) {
-        coverImageInput.value = '';
+          const deleteInput = document.createElement('input');
+          deleteInput.type = 'hidden';
+          deleteInput.name = 'delete_images[]';
+          deleteInput.value = imagePath;
+          blogForm.appendChild(deleteInput);
+
+          imageItem.remove();
+        });
+
+        if (existingImagesGrid && existingImagesGrid.children.length === 0) {
+          existingImagesGrid.parentElement.style.display = 'none';
+        }
+
+        updateBulkDeleteUI();
+      });
+    }
+
+    function deleteSelectedNewImages() {
+      const selectedCheckboxes = document.querySelectorAll('#newImagesPreview .image-checkbox:checked');
+      if (selectedCheckboxes.length === 0) {
+        return;
       }
 
+      showConfirmation(`Are you sure you want to delete ${selectedCheckboxes.length} selected image${selectedCheckboxes.length > 1 ? 's' : ''}?`, function() {
+        const coverImageInput = document.getElementById('coverImageInput');
+        
+        selectedCheckboxes.forEach(checkbox => {
+          const imageItem = checkbox.closest('.image-item');
+          const fileIndex = parseInt(checkbox.dataset.fileIndex);
+          
+          if (!isNaN(fileIndex)) {
+            removedFileIndices.add(fileIndex);
+          }
 
-      const deleteInput = document.createElement('input');
-      deleteInput.type = 'hidden';
-      deleteInput.name = 'delete_images[]';
-      deleteInput.value = imagePath || filename;
-      document.getElementById('blogForm').appendChild(deleteInput);
+          if (coverImageInput && imageItem) {
+            const currentCoverValue = coverImageInput.value;
+            if (currentCoverValue && currentCoverValue.startsWith('new_image_index_')) {
+              const coverIndex = parseInt(currentCoverValue.replace('new_image_index_', ''));
+              if (coverIndex === fileIndex) {
+                coverImageInput.value = '';
+              }
+            }
+          }
+
+          imageItem.remove();
+        });
 
 
-      button.closest('.image-item').remove();
+        const remainingImages = newImagesPreview.querySelectorAll('.image-item');
+        if (remainingImages.length > 0 && coverImageInput && !coverImageInput.value) {
+          const firstRemaining = remainingImages[0];
+          const firstIndex = parseInt(firstRemaining.dataset.fileIndex);
+          if (!isNaN(firstIndex) && !removedFileIndices.has(firstIndex)) {
+            const firstCoverBtn = firstRemaining.querySelector('.cover-image-btn');
+            if (firstCoverBtn) {
+              setCoverImageFromPreview(firstIndex, firstCoverBtn);
+            }
+          }
+        }
 
+        if (newImagesPreview && newImagesPreview.children.length === 0) {
+          newImagesPreview.style.display = 'none';
+        }
 
-      if (existingImagesGrid && existingImagesGrid.children.length === 0) {
-        existingImagesGrid.parentElement.style.display = 'none';
-      }
+        updateBulkDeleteUI();
+      });
+    }
+
+    function removeExistingImage(filename, button) {
+      showConfirmation('Are you sure you want to remove this image?', function() {
+        const coverImageInput = document.getElementById('coverImageInput');
+        const imageItem = button.closest('.image-item');
+        const imagePath = imageItem ? imageItem.dataset.imagePath : null;
+        
+        if (coverImageInput && coverImageInput.value === imagePath) {
+          coverImageInput.value = '';
+        }
+
+        const deleteInput = document.createElement('input');
+        deleteInput.type = 'hidden';
+        deleteInput.name = 'delete_images[]';
+        deleteInput.value = imagePath || filename;
+        document.getElementById('blogForm').appendChild(deleteInput);
+
+        button.closest('.image-item').remove();
+
+        if (existingImagesGrid && existingImagesGrid.children.length === 0) {
+          existingImagesGrid.parentElement.style.display = 'none';
+        }
+        
+        updateBulkDeleteUI();
+      });
     }
 
 
@@ -1254,6 +1734,8 @@
       if (newImagesPreview && newImagesPreview.children.length === 0) {
         newImagesPreview.style.display = 'none';
       }
+      
+      updateBulkDeleteUI();
     }
 
 
@@ -1304,19 +1786,220 @@
     }
 
 
+
+
+    const CHUNK_SIZE = 750 * 1024; 
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; 
+
+
+    const uploadedImageUrls = new Map(); 
+
+    /**
+     * Upload a file using chunked upload
+     */
+    async function uploadFileChunked(file, fileIndex) {
+      return new Promise(async (resolve, reject) => {
+        try {
+
+          if (file.size > MAX_FILE_SIZE) {
+            reject(new Error(`File "${file.name}" exceeds 5MB limit`));
+            return;
+          }
+
+
+          const uploadIdResponse = await fetch('/admin/api/chunked-upload/upload-id');
+          
+          if (!uploadIdResponse.ok) {
+            const errorText = await uploadIdResponse.text();
+            reject(new Error(`Failed to get upload ID: ${uploadIdResponse.status} ${uploadIdResponse.statusText}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+          const contentType = uploadIdResponse.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            const errorText = await uploadIdResponse.text();
+            reject(new Error(`Invalid response format. Expected JSON but got: ${contentType}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+          const uploadIdData = await uploadIdResponse.json();
+          
+          if (!uploadIdData.success) {
+            reject(new Error(uploadIdData.message || 'Failed to get upload ID'));
+            return;
+          }
+
+          const uploadId = uploadIdData.uploadId;
+          const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+
+          for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+            const start = chunkIndex * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, file.size);
+            const chunk = file.slice(start, end);
+
+
+            const chunkBase64 = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                const base64 = reader.result.split(',')[1];
+                resolve(base64);
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(chunk);
+            });
+
+
+            const formData = new FormData();
+            formData.append('uploadId', uploadId);
+            formData.append('chunkIndex', chunkIndex);
+            formData.append('totalChunks', totalChunks);
+            formData.append('fileName', file.name);
+            formData.append('fileSize', file.size);
+            formData.append('chunkData', chunkBase64);
+
+            const chunkResponse = await fetch('/admin/api/chunked-upload/chunk', {
+              method: 'POST',
+              body: formData
+            });
+
+
+            if (!chunkResponse.ok) {
+              const errorText = await chunkResponse.text();
+              reject(new Error(`Upload failed: ${chunkResponse.status} ${chunkResponse.statusText}. ${errorText.substring(0, 100)}`));
+              return;
+            }
+
+
+            const contentType = chunkResponse.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+              const errorText = await chunkResponse.text();
+              reject(new Error(`Invalid response format. Expected JSON but got: ${contentType}. ${errorText.substring(0, 100)}`));
+              return;
+            }
+
+            const chunkResult = await chunkResponse.json();
+            
+            if (!chunkResult.success) {
+              reject(new Error(chunkResult.message || 'Failed to upload chunk'));
+              return;
+            }
+
+          }
+
+
+          const completeFormData = new FormData();
+          completeFormData.append('uploadId', uploadId);
+          completeFormData.append('fileName', file.name);
+
+          const completeResponse = await fetch('/admin/api/chunked-upload/complete', {
+            method: 'POST',
+            body: completeFormData
+          });
+
+
+          if (!completeResponse.ok) {
+            const errorText = await completeResponse.text();
+            reject(new Error(`Complete upload failed: ${completeResponse.status} ${completeResponse.statusText}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+
+          const completeContentType = completeResponse.headers.get('content-type');
+          if (!completeContentType || !completeContentType.includes('application/json')) {
+            const errorText = await completeResponse.text();
+            reject(new Error(`Invalid response format. Expected JSON but got: ${completeContentType}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+          const completeResult = await completeResponse.json();
+          
+          if (!completeResult.success) {
+            reject(new Error(completeResult.message || 'Failed to complete upload'));
+            return;
+          }
+
+          resolve(completeResult.url);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+
+    /**
+     * Upload all new images using chunked upload
+     */
+    async function uploadAllImages() {
+      if (!imagesInput || !imagesInput.files) {
+        return [];
+      }
+
+      const filesToUpload = [];
+      const fileIndices = [];
+      const seenFiles = new Map(); 
+
+
+      for (let i = 0; i < imagesInput.files.length; i++) {
+        if (!removedFileIndices.has(i)) {
+          const file = imagesInput.files[i];
+
+          const fileKey = `${file.name}_${file.size}_${file.lastModified}`;
+          
+
+          if (!seenFiles.has(fileKey)) {
+            seenFiles.set(fileKey, i);
+            filesToUpload.push(file);
+            fileIndices.push(i);
+          }
+        }
+      }
+
+      if (filesToUpload.length === 0) {
+        return [];
+      }
+
+      const uploadedUrls = [];
+      
+
+      for (let i = 0; i < filesToUpload.length; i++) {
+        const file = filesToUpload[i];
+        const originalIndex = fileIndices[i];
+        
+        try {
+          const url = await uploadFileChunked(file, originalIndex);
+          uploadedUrls.push(url);
+          uploadedImageUrls.set(originalIndex, url);
+        } catch (error) {
+          console.error(`Error uploading ${file.name}:`, error);
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = `Failed to upload ${file.name}: ${error.message}`;
+          }
+          showModal('errorModal');
+          throw error;
+        }
+      }
+
+      return uploadedUrls;
+    }
+
     const blogForm = document.getElementById('blogForm');
     const submitBtn = document.getElementById('submitBtn');
+    const contentTextarea = document.getElementById('content');
 
     if (blogForm) {
-      blogForm.addEventListener('submit', function(e) {
+      blogForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        
 
+        if (quill && contentTextarea) {
+          contentTextarea.value = quill.root.innerHTML;
+        }
 
         if (submitBtn) {
           submitBtn.disabled = true;
-          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading Images...';
         }
-
 
 
         const linkItems = document.querySelectorAll('.link-item');
@@ -1353,126 +2036,187 @@
           return;
         }
 
-        const formData = new FormData();
-        
+        try {
+          const uploadedUrls = await uploadAllImages();
 
-        const validLinks = [];
-        linkItems.forEach((item, index) => {
-          const textInput = item.querySelector('.link-text-input');
-          const urlInput = item.querySelector('.link-url-input');
-          
-          if (textInput && urlInput) {
-            const text = textInput.value.trim();
-            const url = urlInput.value.trim();
+          if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving Blog...';
+          }
+
+
+          const formData = new FormData();
+
+
+          if (uploadedUrls.length > 0) {
+            formData.append('uploaded_images', JSON.stringify(uploadedUrls));
+          }
+
+
+          const validLinks = [];
+          linkItems.forEach((item, index) => {
+            const textInput = item.querySelector('.link-text-input');
+            const urlInput = item.querySelector('.link-url-input');
             
-
-            if (text && url) {
-              formData.append(`links[${validLinks.length}][text]`, text);
-              formData.append(`links[${validLinks.length}][url]`, url);
-              validLinks.push({ text, url });
+            if (textInput && urlInput) {
+              const text = textInput.value.trim();
+              const url = urlInput.value.trim();
+              
+              if (text && url) {
+                formData.append(`links[${validLinks.length}][text]`, text);
+                formData.append(`links[${validLinks.length}][url]`, url);
+                validLinks.push({ text, url });
+              }
             }
-          }
-        });
+          });
 
-        const formElements = blogForm.elements;
-        for (let element of formElements) {
-          if (element.name && element.name !== 'images' && element.type !== 'file' && !element.name.startsWith('links[')) {
-            if (element.type === 'checkbox') {
-              if (element.checked) {
+
+
+          const existingImageInputs = blogForm.querySelectorAll('input[name="existing_images[]"]');
+          const existingImagePaths = [];
+          existingImageInputs.forEach(input => {
+
+            if (input.value && input.value.trim() && input.offsetParent !== null) {
+              existingImagePaths.push(input.value.trim());
+            }
+          });
+          
+
+
+          if (existingImagePaths.length > 0) {
+            formData.append('existing_images_json', JSON.stringify(existingImagePaths));
+          }
+
+
+          const formElements = blogForm.elements;
+          for (let element of formElements) {
+            if (element.name && 
+                element.name !== 'images' && 
+                element.type !== 'file' && 
+                element.name !== 'existing_images[]' &&
+                !element.name.startsWith('links[')) {
+              if (element.type === 'checkbox') {
+                if (element.checked) {
+                  formData.append(element.name, element.value);
+                }
+              } else if (element.type === 'radio') {
+                if (element.checked) {
+                  formData.append(element.name, element.value);
+                }
+              } else {
                 formData.append(element.name, element.value);
               }
-            } else if (element.type === 'radio') {
-              if (element.checked) {
-                formData.append(element.name, element.value);
-              }
-            } else {
-              formData.append(element.name, element.value);
             }
           }
-        }
-        
-
-        const indexMapping = new Map();
-        let newIndex = 0;
-        
-        if (imagesInput && imagesInput.files) {
-          for (let i = 0; i < imagesInput.files.length; i++) {
-            if (!removedFileIndices.has(i)) {
-              formData.append('images', imagesInput.files[i]);
-              indexMapping.set(i, newIndex);
-              newIndex++;
-            }
-          }
-        }
-        
-
-        const coverImageInput = document.getElementById('coverImageInput');
-        let coverImageValue = coverImageInput ? coverImageInput.value : '';
-        
-        if (coverImageValue && coverImageValue.startsWith('new_image_index_')) {
-          const originalIndex = parseInt(coverImageValue.replace('new_image_index_', ''));
-          if (!isNaN(originalIndex) && indexMapping.has(originalIndex)) {
-            const newCoverIndex = indexMapping.get(originalIndex);
-            coverImageValue = `new_image_index_${newCoverIndex}`;
-          } else if (removedFileIndices.has(originalIndex)) {
-            coverImageValue = '';
-          }
-        }
-        
-        if (coverImageInput && coverImageInput.name) {
-          formData.set('cover_image', coverImageValue);
-        }
 
 
-        const xhr = new XMLHttpRequest();
+          const coverImageInput = document.getElementById('coverImageInput');
+          let coverImageValue = coverImageInput ? coverImageInput.value : '';
+          
+          if (coverImageValue && coverImageValue.startsWith('new_image_index_')) {
+            const originalIndex = parseInt(coverImageValue.replace('new_image_index_', ''));
+            if (!isNaN(originalIndex) && uploadedUrls.length > 0) {
 
-        xhr.addEventListener('load', function() {
-          if (xhr.status >= 200 && xhr.status < 400) {
-            const finalUrl = xhr.responseURL;
-            if (finalUrl) {
-              try {
-                const url = new URL(finalUrl);
-                window.location.href = url.pathname + url.search;
-              } catch (e) {
-                const match = finalUrl.match(/https?:\/\/[^\/]+(\/.*)/);
-                if (match) {
-                  window.location.href = match[1];
-                } else {
-                  window.location.href = finalUrl;
+
+              let uploadedIndex = 0;
+              let currentFileIndex = 0;
+              
+              for (let i = 0; i < imagesInput.files.length; i++) {
+                if (!removedFileIndices.has(i)) {
+                  if (i === originalIndex) {
+                    break;
+                  }
+                  uploadedIndex++;
                 }
               }
+              
+              if (uploadedIndex < uploadedUrls.length) {
+                coverImageValue = uploadedUrls[uploadedIndex];
+              } else {
+                coverImageValue = uploadedUrls[0] || '';
+              }
             } else {
-              window.location.reload();
+              coverImageValue = uploadedUrls[0] || '';
             }
-          } else {
-            alert('Error uploading blog. Please try again.');
+          }
+          
+          if (coverImageInput && coverImageInput.name) {
+            formData.set('cover_image', coverImageValue);
+          }
+
+
+          const xhr = new XMLHttpRequest();
+
+          xhr.addEventListener('load', function() {
+            if (xhr.status >= 200 && xhr.status < 400) {
+              const finalUrl = xhr.responseURL;
+              if (finalUrl) {
+                try {
+                  const url = new URL(finalUrl);
+                  window.location.href = url.pathname + url.search;
+                } catch (e) {
+                  const match = finalUrl.match(/https?:\/\/[^\/]+(\/.*)/);
+                  if (match) {
+                    window.location.href = match[1];
+                  } else {
+                    window.location.href = finalUrl;
+                  }
+                }
+              } else {
+                window.location.reload();
+              }
+            } else {
+              const errorMessageEl = document.getElementById('errorMessage');
+              if (errorMessageEl) {
+                errorMessageEl.textContent = 'Error uploading blog. Please try again.';
+              }
+              showModal('errorModal');
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Create" %> Blog';
+              }
+            }
+          });
+
+          xhr.addEventListener('error', function() {
+            const errorMessageEl = document.getElementById('errorMessage');
+            if (errorMessageEl) {
+              errorMessageEl.textContent = 'Network error. Please check your connection and try again.';
+            }
+            showModal('errorModal');
             if (submitBtn) {
               submitBtn.disabled = false;
               submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Create" %> Blog';
             }
-          }
-        });
+          });
 
-        xhr.addEventListener('error', function() {
-          alert('Network error. Please check your connection and try again.');
+          xhr.open('POST', blogForm.action);
+          xhr.timeout = 300000;
+          
+          xhr.addEventListener('timeout', function() {
+            const errorMessageEl = document.getElementById('errorMessage');
+            if (errorMessageEl) {
+              errorMessageEl.textContent = 'Upload timeout. The file may be too large or your connection is slow.';
+            }
+            showModal('errorModal');
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Create" %> Blog';
+            }
+          });
+          
+          xhr.send(formData);
+        } catch (error) {
+          console.error('Error during upload:', error);
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = `Upload failed: ${error.message}`;
+          }
+          showModal('errorModal');
           if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Create" %> Blog';
           }
-        });
-
-        xhr.open('POST', blogForm.action);
-        xhr.timeout = 300000;
-        
-        xhr.addEventListener('timeout', function() {
-          alert('Upload timeout. The file may be too large or your connection is slow.');
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Create" %> Blog';
-          }
-        });
-        
-        xhr.send(formData);
+        }
       });
     }
   </script>

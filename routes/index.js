@@ -101,7 +101,7 @@ router.get("/", async (req, res) => {
       {
         name: "Maung Shwe Hla",
         company: "NMS",
-        avatar: "Maung Shwe Hla.jpg",
+        avatar: "Maung Shwe Hla.webp",
         avatarFolder: "avatars",
         rating: 4,
         text: "Backpack transformed our mobile app development process. Their team delivered a flawless product on time and within budget. The attention to detail and user experience was exceptional.",
@@ -110,7 +110,7 @@ router.get("/", async (req, res) => {
       {
         name: "Mr. Romjan",
         company: "Nuzeta",
-        avatar: "Mr. Romjan.jpg",
+        avatar: "Mr. Romjan.webp",
         avatarFolder: "avatars",
         rating: 4.5,
         text: "The custom software solution they built for us streamlined our operations significantly. Professional team, great communication.",
@@ -119,7 +119,7 @@ router.get("/", async (req, res) => {
       {
         name: "Mr. Tamjin",
         company: "PMS",
-        avatar: "Mr. Tamjin.jpg",
+        avatar: "Mr. Tamjin.webp",
         avatarFolder: "avatars",
         rating: 4.5,
         text: "Outstanding web development work. They took our vision and created something even better than we imagined. The UI/UX design is top-notch.",
@@ -128,7 +128,7 @@ router.get("/", async (req, res) => {
       {
         name: "Khim",
         company: "MIR",
-        avatar: "Khim.jpg",
+        avatar: "Khim.webp",
         avatarFolder: "avatars",
         rating: 5,
         text: "Solid team with great technical expertise. They helped us modernize our legacy systems with minimal downtime.",
@@ -137,7 +137,7 @@ router.get("/", async (req, res) => {
       {
         name: "Seng",
         company: "MIR",
-        avatar: "Seng.png",
+        avatar: "Seng.webp",
         avatarFolder: "avatars",
         rating: 4.5,
         text: "Their automation solutions saved us countless hours of manual work. The ROI was evident within the first month of deployment.",
@@ -146,7 +146,7 @@ router.get("/", async (req, res) => {
       {
         name: "Khaleed Naji",
         company: "Tuwaiq Academy",
-        avatar: "Khaleed Naji.jpg",
+        avatar: "Khaleed Naji.webp",
         avatarFolder: "avatars",
         rating: 4.8,
         text: "Exceptional service from start to finish. The enterprise solution they developed has become critical to our daily operations. Highly recommended!",
@@ -155,7 +155,7 @@ router.get("/", async (req, res) => {
       {
         name: "Dr. Abdelrahman Elamin",
         company: "Al-Osmani Pharmacy",
-        avatar: "Dr.Abdelrahman Elamin.png",
+        avatar: "Dr.Abdelrahman Elamin.webp",
         avatarFolder: "avatars",
         rating: 4.5,
         text: "Working with Backpack was a game changer for our organization. They understood our vision and delivered a scalable solution that grew with us.",
@@ -224,7 +224,7 @@ router.get("/projects", async (req, res) => {
 
         const imagesDir = path.join(__dirname, "../public/images/Projects", project.id.toString())
         if (fs.existsSync(imagesDir)) {
-          const images = fs.readdirSync(imagesDir).filter(f => f.startsWith('image_'))
+          const images = fs.readdirSync(imagesDir).filter(f => f.startsWith('image_') || f.startsWith('project_image_'))
           if (images.length > 0) {
             project.thumbnail = `/images/Projects/${project.id}/${images[0]}`
           }
@@ -236,7 +236,7 @@ router.get("/projects", async (req, res) => {
       let imageGallery = []
       if (fs.existsSync(imagesDir)) {
         imageGallery = fs.readdirSync(imagesDir)
-          .filter(filename => filename.startsWith("image_"))
+          .filter(filename => filename.startsWith("image_") || filename.startsWith("project_image_"))
           .map(filename => `/images/Projects/${project.id}/${filename}`)
       }
       project.images = imageGallery
@@ -325,7 +325,7 @@ router.get("/projects/:slug", async (req, res) => {
 
     if (fs.existsSync(imagesDir)) {
       imageGallery = fs.readdirSync(imagesDir)
-        .filter(filename => filename.startsWith("image_"))
+        .filter(filename => filename.startsWith("image_") || filename.startsWith("project_image_"))
         .map(filename => `/images/Projects/${project.id}/${filename}`)
     }
 
@@ -375,7 +375,7 @@ router.get("/projects/:slug", async (req, res) => {
     const projectImage = coverImagePath || "/Backpack.webp";
     const projectUrl = `${process.env.SITE_URL || 'https://backpacktechworks.com'}/projects/${project.slug}`;
     
-    // Build structured data for project
+
     const structuredData = {
       "@type": "CreativeWork",
       "@id": `${projectUrl}#project`,
@@ -427,7 +427,7 @@ router.get("/terms", (req, res) => {
     seoKeywords: "terms of service, terms and conditions, Backpack Tech Works terms",
     seoImage: "/Backpack.webp",
     seoType: "website",
-    noindex: true
+    noindex: false
   })
 })
 
@@ -439,7 +439,7 @@ router.get("/privacy", (req, res) => {
     seoKeywords: "privacy policy, data protection, Backpack Tech Works privacy",
     seoImage: "/Backpack.webp",
     seoType: "website",
-    noindex: true
+    noindex: false
   })
 })
 
@@ -452,7 +452,7 @@ router.get("/contact", (req, res) => {
   res.render("contact", {
     seoDescription: "Get in touch with Backpack Tech Works. Contact us for expert software development services, web development, mobile apps, and digital solutions for your business.",
     seoKeywords: "contact Backpack Tech Works, software development contact, web development services, tech consulting, get quote",
-    seoImage: "/images/Assets/Contact Guy.png",
+    seoImage: "/images/Assets/Contact Guy.webp",
     seoType: "website", 
     title: "Contact Us - Backpack Tech Works",
     user: req.user || null,
@@ -631,7 +631,7 @@ router.get("/blogs/:slug", async (req, res) => {
       blog.links = [blog.links]
     }
 
-    // Extract blog description from content
+
     const blogDescription = blog.excerpt || (blog.content 
       ? blog.content.replace(/<[^>]*>/g, '').substring(0, 160) + '...'
       : `Read ${blog.title} on Backpack Tech Works blog. Expert insights on software development and technology.`);
@@ -642,7 +642,7 @@ router.get("/blogs/:slug", async (req, res) => {
     
     const blogUrl = `${process.env.SITE_URL || 'https://backpacktechworks.com'}/blogs/${blog.slug}`;
     
-    // Build structured data for blog post
+
     const structuredData = {
       "@type": "BlogPosting",
       "@id": `${blogUrl}#blogpost`,
@@ -803,6 +803,69 @@ router.get("/polls", async (req, res) => {
 })
 
 
+router.get("/polls/:id", async (req, res) => {
+  try {
+    const { id } = req.params
+    
+    const [polls] = await db.query(
+      "SELECT * FROM polls WHERE id = ? AND is_active = true",
+      [id]
+    )
+    
+    if (polls.length === 0) {
+      return res.status(404).render("404", { title: "Poll Not Found" })
+    }
+    
+    const poll = polls[0]
+    let pollOptions = []
+    if (poll.options) {
+      if (typeof poll.options === 'string') {
+        try {
+          pollOptions = JSON.parse(poll.options)
+        } catch (e) {
+          pollOptions = []
+        }
+      } else if (Array.isArray(poll.options)) {
+        pollOptions = poll.options
+      } else if (typeof poll.options === 'object') {
+        pollOptions = Object.values(poll.options)
+      }
+    }
+    
+    const [votes] = await db.query(`
+      SELECT option_index, COUNT(*) as count
+      FROM poll_votes
+      WHERE poll_id = ?
+      GROUP BY option_index
+    `, [id])
+    
+    const [totalVotes] = await db.query(`
+      SELECT COUNT(*) as count
+      FROM poll_votes
+      WHERE poll_id = ?
+    `, [id])
+    
+    poll.optionVotes = []
+    poll.totalVotes = totalVotes[0]?.count || 0
+    for (let i = 0; i < pollOptions.length; i++) {
+      const voteData = votes.find(v => v.option_index === i)
+      poll.optionVotes[i] = voteData ? voteData.count : 0
+    }
+    
+    res.render("polls/detail", {
+      title: `${poll.question} - Polls - Backpack Tech Works`,
+      poll,
+      pollOptions
+    })
+  } catch (error) {
+    console.error("Error loading poll detail:", error)
+    res.status(500).render("error", {
+      title: "Error",
+      message: "Unable to load poll",
+    })
+  }
+})
+
 router.post("/polls/:id/vote", async (req, res) => {
   try {
     const { id } = req.params
@@ -943,13 +1006,13 @@ router.get("/polls/:id/results", async (req, res) => {
   }
 })
 
-// Sitemap generator
+
 router.get("/sitemap.xml", async (req, res) => {
   try {
     const siteUrl = process.env.SITE_URL || 'https://backpacktechworks.com'
     const currentDate = new Date().toISOString().split('T')[0]
     
-    // Get all public pages
+
     const urls = [
       { loc: `${siteUrl}/`, changefreq: 'daily', priority: '1.0', lastmod: currentDate },
       { loc: `${siteUrl}/services`, changefreq: 'weekly', priority: '0.9', lastmod: currentDate },
@@ -959,7 +1022,7 @@ router.get("/sitemap.xml", async (req, res) => {
       { loc: `${siteUrl}/contact`, changefreq: 'monthly', priority: '0.7', lastmod: currentDate },
     ]
     
-    // Get all active services
+
     try {
       const [services] = await db.query("SELECT slug, updated_at FROM services WHERE is_active = true")
       services.forEach(service => {
@@ -975,7 +1038,7 @@ router.get("/sitemap.xml", async (req, res) => {
       console.error("Error fetching services for sitemap:", error)
     }
     
-    // Get all featured projects
+
     try {
       const [projects] = await db.query("SELECT slug, updated_at FROM projects WHERE is_featured = true")
       projects.forEach(project => {
@@ -991,7 +1054,7 @@ router.get("/sitemap.xml", async (req, res) => {
       console.error("Error fetching projects for sitemap:", error)
     }
     
-    // Get all published blogs
+
     try {
       const [blogs] = await db.query("SELECT slug, updated_at FROM blogs WHERE is_published = true")
       blogs.forEach(blog => {
@@ -1007,7 +1070,7 @@ router.get("/sitemap.xml", async (req, res) => {
       console.error("Error fetching blogs for sitemap:", error)
     }
     
-    // Get all active team members
+
     try {
       const [teamMembers] = await db.query("SELECT id FROM team_members WHERE is_active = true")
       teamMembers.forEach(member => {
@@ -1022,7 +1085,7 @@ router.get("/sitemap.xml", async (req, res) => {
       console.error("Error fetching team members for sitemap:", error)
     }
     
-    // Generate XML
+
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n'
     xml += '        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"\n'
@@ -1050,7 +1113,7 @@ router.get("/sitemap.xml", async (req, res) => {
   }
 })
 
-// Robots.txt
+
 router.get("/robots.txt", (req, res) => {
   const siteUrl = process.env.SITE_URL || 'https://backpacktechworks.com'
   const robotsTxt = `User-agent: *

@@ -4,11 +4,199 @@ const db = require("../config/database")
 const { upload, deleteOldProfilePicture } = require("../utils/upload")
 const { getTeamProfileData, saveTeamProfileData, saveBioAndSocialLinks } = require("../services/teamProfileService")
 const path = require("path")
+const fs = require("fs")
 const { ensureAuthenticated } = require("../middleware/auth")
 const multer = require("multer")
 
 
 const parseFormDataMiddleware = multer().none()
+
+
+const parseChunkedUploadMiddleware = multer({
+  limits: {
+    fieldSize: 1 * 1024 * 1024, 
+    fields: 10,
+    fieldNameSize: 100
+  }
+}).none()
+
+const { saveChunk, reassembleChunks, cleanupUpload, generateUploadId } = require("../utils/chunkedUpload")
+const { convertBufferToWebP } = require("../utils/imageConverter")
+
+
+const CHUNK_SIZE = 1024 * 1024 
+const MAX_FILE_SIZE = 5 * 1024 * 1024 
+
+
+const tempChunksDir = path.join(__dirname, '../temp/chunks')
+if (!fs.existsSync(tempChunksDir)) {
+  fs.mkdirSync(tempChunksDir, { recursive: true })
+}
+
+
+const completedUploads = new Map()
+
+
+router.post("/api/chunked-upload/chunk", ensureAuthenticated, (req, res, next) => {
+  parseChunkedUploadMiddleware(req, res, (err) => {
+    if (err) {
+      console.error("Multer error in chunk upload:", err)
+      return res.status(400).json({ success: false, message: err.message || "Error parsing form data" })
+    }
+    next()
+  })
+}, async (req, res) => {
+  try {
+    const { uploadId, chunkIndex, totalChunks, fileName, fileSize, chunkData: chunkDataBase64 } = req.body
+
+    if (!uploadId || chunkIndex === undefined || !totalChunks || !fileName) {
+      return res.status(400).json({ success: false, message: "Missing required fields" })
+    }
+
+
+    const totalSize = parseInt(fileSize)
+    if (isNaN(totalSize) || totalSize > MAX_FILE_SIZE) {
+      return res.status(400).json({ success: false, message: `File size exceeds ${MAX_FILE_SIZE / 1024 / 1024}MB limit` })
+    }
+
+
+    if (!chunkDataBase64) {
+      return res.status(400).json({ success: false, message: "Chunk data is required" })
+    }
+
+
+    let chunkData
+    try {
+      chunkData = Buffer.from(chunkDataBase64, 'base64')
+    } catch (decodeError) {
+      return res.status(400).json({ success: false, message: "Invalid chunk data format" })
+    }
+
+
+    const result = await saveChunk(
+      uploadId,
+      parseInt(chunkIndex),
+      parseInt(totalChunks),
+      chunkData,
+      tempChunksDir
+    )
+
+    res.json({ success: true, ...result })
+  } catch (error) {
+    console.error("Error handling chunk:", error)
+    res.status(500).json({ success: false, message: error.message || "Error processing chunk" })
+  }
+})
+
+
+router.post("/api/chunked-upload/complete", ensureAuthenticated, (req, res, next) => {
+  parseChunkedUploadMiddleware(req, res, (err) => {
+    if (err) {
+      console.error("Multer error in complete upload:", err)
+      return res.status(400).json({ success: false, message: err.message || "Error parsing form data" })
+    }
+    next()
+  })
+}, async (req, res) => {
+  try {
+    const { uploadId, fileName } = req.body
+
+
+    if (completedUploads.has(uploadId)) {
+      const existingResult = completedUploads.get(uploadId)
+      return res.json(existingResult)
+    }
+
+    if (!uploadId || !fileName) {
+      return res.status(400).json({ success: false, message: "Missing uploadId or fileName" })
+    }
+
+
+    const allowedTypes = /jpeg|jpg|png|gif|webp/i
+    const ext = path.extname(fileName).toLowerCase().replace('.', '')
+    if (!allowedTypes.test(ext)) {
+      cleanupUpload(uploadId)
+      return res.status(400).json({ success: false, message: "Invalid file type. Only images are allowed." })
+    }
+
+
+    const tempFilePath = path.join(tempChunksDir, `${uploadId}_complete`)
+    await reassembleChunks(uploadId, tempFilePath)
+
+
+    const uploadType = req.body.type || 'avatar'
+    let targetDir, filenamePrefix, urlPrefix, quality, maxWidth, maxHeight
+    
+    if (uploadType === 'avatar') {
+      targetDir = path.join(__dirname, '../public/profiles')
+      filenamePrefix = 'profile_'
+      urlPrefix = '/profiles/'
+      quality = 90
+      maxWidth = 800
+      maxHeight = 800
+    } else {
+      targetDir = path.join(__dirname, '../public/profiles')
+      filenamePrefix = 'profile_'
+      urlPrefix = '/profiles/'
+      quality = 90
+      maxWidth = 800
+      maxHeight = 800
+    }
+    
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true })
+    }
+
+    const timestamp = Date.now()
+    const random = Math.random().toString(36).substring(2, 8)
+    const webpFilename = `${filenamePrefix}${timestamp}_${random}.webp`
+    const webpPath = path.join(targetDir, webpFilename)
+
+
+    const fileBuffer = fs.readFileSync(tempFilePath)
+    await convertBufferToWebP(fileBuffer, webpPath, {
+      quality: quality,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight
+    })
+
+
+    try {
+      if (fs.existsSync(tempFilePath)) {
+        fs.unlinkSync(tempFilePath)
+      }
+    } catch (err) {
+      console.error('Error deleting temp file:', err)
+    }
+
+    const webpUrl = `${urlPrefix}${webpFilename}`
+
+    const result = {
+      success: true,
+      url: webpUrl,
+      filename: webpFilename
+    }
+
+
+    completedUploads.set(uploadId, result)
+    
+
+    setTimeout(() => {
+      completedUploads.delete(uploadId)
+    }, 5 * 60 * 1000)
+
+    res.json(result)
+  } catch (error) {
+    console.error("Error completing upload:", error)
+    res.status(500).json({ success: false, message: error.message || "Error completing upload" })
+  }
+})
+
+
+router.get("/api/chunked-upload/upload-id", ensureAuthenticated, (req, res) => {
+  const uploadId = generateUploadId()
+  res.json({ success: true, uploadId })
+})
 
 
 async function getTeamMemberPublicData(teamMemberId) {
@@ -227,7 +415,7 @@ router.get("/:id", async (req, res) => {
     
     const memberUrl = `${process.env.SITE_URL || 'https://backpacktechworks.com'}/team/${member.id}`;
     
-    // Build structured data for team member
+
     const structuredData = {
       "@type": "Person",
       "@id": `${memberUrl}#person`,
@@ -468,29 +656,48 @@ router.post("/change-password", ensureAuthenticated, async (req, res) => {
 })
 
 
-router.post("/upload-avatar", ensureAuthenticated, upload, async (req, res) => {
+router.post("/upload-avatar", ensureAuthenticated, parseFormDataMiddleware, async (req, res) => {
   try {
+    const { avatarUrl } = req.body
+
+    if (!req.user || (req.user.role !== 'team_member' && req.user.role !== 'admin')) {
+      return res.status(403).json({ success: false, message: "Unauthorized" })
+    }
+
+
+    if (avatarUrl) {
+      const newAvatarPath = avatarUrl
+
+
+      const [users] = await db.query("SELECT avatar FROM users WHERE id = ?", [req.user.id])
+      const oldAvatarPath = users[0]?.avatar
+
+
+      await db.query("UPDATE users SET avatar = ? WHERE id = ?", [newAvatarPath, req.user.id])
+
+
+      if (oldAvatarPath && oldAvatarPath !== newAvatarPath) {
+        deleteOldProfilePicture(oldAvatarPath)
+      }
+
+      return res.json({ 
+        success: true, 
+        message: "Profile picture updated successfully",
+        avatar: newAvatarPath
+      })
+    }
+
+
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No file uploaded" })
     }
 
-
-    if (!req.user || (req.user.role !== 'team_member' && req.user.role !== 'admin')) {
-
-      const fs = require('fs')
-      fs.unlinkSync(req.file.path)
-      return res.status(403).json({ success: false, message: "Unauthorized" })
-    }
-
     const newAvatarPath = `/profiles/${req.file.filename}`
-
 
     const [users] = await db.query("SELECT avatar FROM users WHERE id = ?", [req.user.id])
     const oldAvatarPath = users[0]?.avatar
 
-
     await db.query("UPDATE users SET avatar = ? WHERE id = ?", [newAvatarPath, req.user.id])
-
 
     if (oldAvatarPath) {
       deleteOldProfilePicture(oldAvatarPath)
@@ -504,9 +711,7 @@ router.post("/upload-avatar", ensureAuthenticated, upload, async (req, res) => {
   } catch (error) {
     console.error("Error uploading profile picture:", error)
     
-
     if (req.file) {
-      const fs = require('fs')
       try {
         fs.unlinkSync(req.file.path)
       } catch (unlinkError) {
@@ -519,27 +724,53 @@ router.post("/upload-avatar", ensureAuthenticated, upload, async (req, res) => {
 })
 
 
-router.post("/upload-alter-ego", ensureAuthenticated, upload, async (req, res) => {
+router.post("/upload-alter-ego", ensureAuthenticated, parseFormDataMiddleware, async (req, res) => {
   try {
+    const { avatarUrl } = req.body
+
+    if (!req.user || (req.user.role !== 'team_member' && req.user.role !== 'admin')) {
+      return res.status(403).json({ success: false, message: "Unauthorized" })
+    }
+
+
+    if (avatarUrl) {
+      const newAlterEgoPath = avatarUrl
+
+
+      const [teamMembers] = await db.query("SELECT id, alter_ego FROM team_members WHERE user_id = ?", [req.user.id])
+      
+      if (teamMembers.length === 0) {
+        await db.query(
+          "INSERT INTO team_members (user_id, alter_ego) VALUES (?, ?)",
+          [req.user.id, newAlterEgoPath]
+        )
+      } else {
+        const oldAlterEgoPath = teamMembers[0]?.alter_ego
+        
+        await db.query("UPDATE team_members SET alter_ego = ? WHERE user_id = ?", [newAlterEgoPath, req.user.id])
+
+        if (oldAlterEgoPath && oldAlterEgoPath !== newAlterEgoPath) {
+          deleteOldProfilePicture(oldAlterEgoPath)
+        }
+      }
+
+      return res.json({ 
+        success: true, 
+        message: "Alter ego picture updated successfully",
+        alter_ego: newAlterEgoPath
+      })
+    }
+
+
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No file uploaded" })
     }
 
-
-    if (!req.user || (req.user.role !== 'team_member' && req.user.role !== 'admin')) {
-
-      const fs = require('fs')
-      fs.unlinkSync(req.file.path)
-      return res.status(403).json({ success: false, message: "Unauthorized" })
-    }
-
     const newAlterEgoPath = `/profiles/${req.file.filename}`
-
 
     const [teamMembers] = await db.query("SELECT id, alter_ego FROM team_members WHERE user_id = ?", [req.user.id])
     
     if (teamMembers.length === 0) {
-
       await db.query(
         "INSERT INTO team_members (user_id, alter_ego) VALUES (?, ?)",
         [req.user.id, newAlterEgoPath]
@@ -547,9 +778,7 @@ router.post("/upload-alter-ego", ensureAuthenticated, upload, async (req, res) =
     } else {
       const oldAlterEgoPath = teamMembers[0]?.alter_ego
       
-
       await db.query("UPDATE team_members SET alter_ego = ? WHERE user_id = ?", [newAlterEgoPath, req.user.id])
-
 
       if (oldAlterEgoPath) {
         deleteOldProfilePicture(oldAlterEgoPath)
@@ -564,9 +793,7 @@ router.post("/upload-alter-ego", ensureAuthenticated, upload, async (req, res) =
   } catch (error) {
     console.error("Error uploading alter ego picture:", error)
     
-
     if (req.file) {
-      const fs = require('fs')
       try {
         fs.unlinkSync(req.file.path)
       } catch (unlinkError) {

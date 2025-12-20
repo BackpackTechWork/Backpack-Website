@@ -1,12 +1,12 @@
 <% 
-  // Default SEO values
+
   const siteName = 'Backpack Tech Works';
   const siteUrl = process.env.SITE_URL || 'https://backpack2u.com';
   const defaultImage = `${siteUrl}/Backpack.webp`;
   const defaultDescription = 'Backpack Tech Works - Expert software development solutions. We create smart, practical solutions that turn ideas into reality.';
   const defaultKeywords = 'software development, web development, mobile apps, digital solutions, tech consulting, Backpack Tech Works';
   
-  // Extract SEO data from locals or use defaults
+
   const seo = {
     title: typeof title !== 'undefined' ? title : siteName,
     description: typeof seoDescription !== 'undefined' ? seoDescription : defaultDescription,
@@ -25,17 +25,17 @@
     nofollow: typeof nofollow !== 'undefined' ? nofollow : false
   };
   
-  // Ensure image URL is absolute
+
   if (seo.image && !seo.image.startsWith('http')) {
     seo.image = seo.image.startsWith('/') ? siteUrl + seo.image : siteUrl + '/' + seo.image;
   }
   
-  // Ensure URL is absolute
+
   if (seo.url && !seo.url.startsWith('http')) {
     seo.url = seo.url.startsWith('/') ? siteUrl + seo.url : siteUrl + '/' + seo.url;
   }
   
-  // Build robots meta
+
   if (seo.noindex || seo.nofollow) {
     const robotsParts = [];
     if (seo.noindex) robotsParts.push('noindex');
@@ -108,6 +108,7 @@
 <meta name="target" content="all">
 <meta name="HandheldFriendly" content="true">
 <meta name="MobileOptimized" content="320">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 

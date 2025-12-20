@@ -29,6 +29,8 @@
       padding: 2rem 2.5rem;
       margin-left: 280px;
       background: var(--bg-secondary);
+      width: calc(100% - 280px);
+      min-width: 0;
     }
 
     .page-header {
@@ -36,6 +38,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     .page-header h1 {
@@ -43,16 +47,19 @@
       font-weight: 700;
       color: var(--text-primary);
       margin-bottom: 0.5rem;
+      line-height: 1.2;
     }
 
     .page-header p {
       color: var(--text-secondary);
       font-size: 0.9375rem;
+      margin: 0;
     }
 
     .header-actions {
       display: flex;
       gap: 1rem;
+      flex-wrap: wrap;
     }
 
     .filters-section {
@@ -61,6 +68,7 @@
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
       padding: 1.5rem;
       margin-bottom: 1.5rem;
+      overflow: hidden;
     }
 
     .filters-grid {
@@ -89,6 +97,8 @@
       font-size: 0.875rem;
       background: white;
       transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .filter-input:focus {
@@ -107,6 +117,9 @@
       transition: all 0.2s;
       background: var(--accent-red);
       color: white;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
     }
 
     .btn-filter:hover {
@@ -125,6 +138,8 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .btn-sm {
@@ -152,7 +167,10 @@
       cursor: pointer;
       transition: all 0.2s;
       text-decoration: none;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
     }
 
     .btn-primary:hover {
@@ -200,11 +218,19 @@
       border-radius: 12px;
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
       overflow: hidden;
+      width: 100%;
+      max-width: 100%;
     }
 
     .table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: auto;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .table thead {
@@ -245,6 +271,12 @@
       max-width: 80px;
     }
 
+    .action-buttons .btn {
+      min-width: 36px;
+      min-height: 36px;
+      touch-action: manipulation;
+    }
+
     .empty-state {
       text-align: center;
       padding: 3rem;
@@ -255,6 +287,612 @@
       font-size: 3rem;
       margin-bottom: 1rem;
       opacity: 0.3;
+    }
+
+    /* Mobile Card Layout */
+    .mobile-card-view {
+      display: none;
+      padding: 0.5rem;
+    }
+
+    .mobile-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-primary);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease;
+    }
+
+    .mobile-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .mobile-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-primary);
+    }
+
+    .mobile-card-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .mobile-card-title {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mobile-card-title h3 {
+      margin: 0 0 0.25rem 0;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
+    }
+
+    .mobile-card-title p {
+      margin: 0;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mobile-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .mobile-card-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.8125rem;
+    }
+
+    .mobile-card-label {
+      color: var(--text-secondary);
+      font-weight: 600;
+      min-width: 60px;
+      flex-shrink: 0;
+      font-size: 0.8125rem;
+    }
+
+    .mobile-card-value {
+      color: var(--text-primary);
+      text-align: right;
+      flex: 1;
+      word-break: break-word;
+      font-size: 0.8125rem;
+    }
+
+    .mobile-card-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .mobile-card-brand-logo {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .mobile-card-stats {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .mobile-card-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      min-width: 60px;
+      flex: 1;
+      max-width: 80px;
+    }
+
+    .mobile-card-stat-value {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .mobile-card-stat-label {
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .mobile-card-actions {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-primary);
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .mobile-card-actions .btn {
+      flex: 1;
+      justify-content: center;
+      min-height: 44px;
+      font-size: 0.8125rem;
+      padding: 0.625rem 0.75rem;
+      min-width: 0;
+    }
+
+    .mobile-card-actions .btn i {
+      font-size: 0.875rem;
+    }
+
+    /* Desktop large screen adjustments */
+    @media (min-width: 1400px) {
+      .dashboard-main {
+        padding: 2.5rem 4rem;
+      }
+
+      .table th,
+      .table td {
+        padding: 1.25rem 2rem;
+      }
+    }
+
+    @media (min-width: 1600px) {
+      .dashboard-main {
+        padding: 3rem 5rem;
+      }
+    }
+
+    /* Tablet landscape: 1024px - 1200px */
+    @media (max-width: 1200px) and (min-width: 1024px) {
+      .dashboard-main {
+        padding: 1.5rem 2rem;
+        margin-left: 260px;
+        width: calc(100% - 260px);
+      }
+
+      .page-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .filter-group:last-child {
+        grid-column: 1 / -1;
+      }
+    }
+
+    /* Tablet portrait: 769px - 1023px */
+    @media (max-width: 1023px) and (min-width: 769px) {
+      .dashboard-main {
+        padding: 1.5rem;
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .page-header p {
+        font-size: 0.875rem;
+      }
+
+      .filters-section {
+        padding: 1rem;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      .table th,
+      .table td {
+        padding: 0.75rem 1rem;
+        font-size: 0.8125rem;
+        white-space: nowrap;
+      }
+
+      .table td:first-child {
+        white-space: normal;
+      }
+
+      .client-avatar {
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    /* Desktop: Show table, hide cards */
+    @media (min-width: 769px) {
+      .table-container .table {
+        display: table;
+      }
+
+      .mobile-card-view {
+        display: none !important;
+      }
+    }
+
+    /* Mobile landscape: 481px - 768px */
+    @media (max-width: 768px) and (min-width: 481px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1rem;
+        width: 100%;
+      }
+
+      .page-header {
+        margin-bottom: 1.5rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .page-header p {
+        font-size: 0.8125rem;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .btn-primary {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+      }
+
+      .filters-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .filter-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
+
+      .table-container .table {
+        display: none !important;
+      }
+
+      .mobile-card-view {
+        display: block !important;
+        padding: 0.25rem;
+      }
+
+      .mobile-card {
+        padding: 0.875rem;
+      }
+
+      .modal-content-wrapper {
+        padding: 1.5rem;
+        width: 95%;
+        max-height: 85vh;
+      }
+
+      .modal-title {
+        font-size: 1.5rem;
+      }
+
+      .modal-message {
+        font-size: 0.9375rem;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-btn {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+      }
+    }
+
+    /* Mobile portrait: up to 480px */
+    @media (max-width: 480px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 0.75rem;
+        width: 100%;
+      }
+
+      .page-header {
+        margin-bottom: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+        line-height: 1.3;
+      }
+
+      .page-header p {
+        font-size: 0.75rem;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .btn-primary {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+      }
+
+      .btn-primary i {
+        font-size: 0.875rem;
+      }
+
+      .filters-section {
+        padding: 0.875rem;
+        margin-bottom: 0.875rem;
+        border-radius: 8px;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 0.625rem;
+      }
+
+      .filter-group label {
+        font-size: 0.8125rem;
+      }
+
+      .filter-input {
+        padding: 0.75rem;
+        font-size: 16px; /* Prevents zoom on iOS */
+        border-radius: 8px;
+      }
+
+      .btn-filter {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+      }
+
+      .table-container {
+        border-radius: 8px;
+      }
+
+      .table-container .table {
+        display: none !important;
+      }
+
+      .mobile-card-view {
+        display: block !important;
+        padding: 0;
+      }
+
+      .mobile-card {
+        padding: 0.75rem;
+        margin-bottom: 0.625rem;
+        border-radius: 8px;
+      }
+
+      .mobile-card-header {
+        gap: 0.625rem;
+        margin-bottom: 0.625rem;
+        padding-bottom: 0.625rem;
+      }
+
+      .mobile-card-avatar {
+        width: 44px;
+        height: 44px;
+      }
+
+      .mobile-card-title h3 {
+        font-size: 0.875rem;
+      }
+
+      .mobile-card-title p {
+        font-size: 0.75rem;
+      }
+
+      .mobile-card-body {
+        gap: 0.625rem;
+      }
+
+      .mobile-card-row {
+        font-size: 0.75rem;
+        gap: 0.5rem;
+      }
+
+      .mobile-card-label {
+        min-width: 55px;
+        font-size: 0.75rem;
+      }
+
+      .mobile-card-value {
+        font-size: 0.75rem;
+      }
+
+      .mobile-card-stat {
+        padding: 0.5rem 0.625rem;
+        min-width: 55px;
+        max-width: 70px;
+      }
+
+      .mobile-card-stat-value {
+        font-size: 1rem;
+      }
+
+      .mobile-card-stat-label {
+        font-size: 0.625rem;
+      }
+
+      .mobile-card-actions {
+        margin-top: 0.625rem;
+        padding-top: 0.625rem;
+        gap: 0.375rem;
+        flex-direction: column;
+      }
+
+      .mobile-card-actions .btn {
+        width: 100%;
+        min-height: 42px;
+        font-size: 0.8125rem;
+        padding: 0.625rem;
+      }
+
+      .mobile-card-actions .btn i {
+        font-size: 0.8125rem;
+      }
+
+      .empty-state {
+        padding: 2rem 1rem;
+      }
+
+      .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .empty-state p {
+        font-size: 0.875rem;
+      }
+
+      .modal-content-wrapper {
+        padding: 1.25rem;
+        width: 95%;
+        max-height: 90vh;
+        border-radius: 12px;
+      }
+
+      .modal-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 1rem;
+      }
+
+      .modal-icon i {
+        font-size: 2rem;
+      }
+
+      .modal-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .modal-message {
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+        gap: 0.625rem;
+      }
+
+      .modal-btn {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        font-size: 0.875rem;
+      }
+    }
+
+    /* Extra small devices: up to 360px */
+    @media (max-width: 360px) {
+      .dashboard-main {
+        padding: 0.5rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.125rem;
+      }
+
+      .mobile-card {
+        padding: 0.625rem;
+      }
+
+      .mobile-card-avatar {
+        width: 40px;
+        height: 40px;
+      }
+
+      .mobile-card-title h3 {
+        font-size: 0.8125rem;
+      }
+
+      .mobile-card-title p {
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-row {
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-label {
+        min-width: 50px;
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-value {
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-stat {
+        padding: 0.375rem 0.5rem;
+        min-width: 50px;
+        max-width: 65px;
+      }
+
+      .mobile-card-stat-value {
+        font-size: 0.9375rem;
+      }
+
+      .mobile-card-stat-label {
+        font-size: 0.5625rem;
+      }
     }
 
     /* Success/Error/Confirmation Modal Styles */
@@ -288,6 +926,8 @@
       padding: 2.5rem;
       max-width: 480px;
       width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       transform: scale(0.8);
       transition: transform 0.3s ease;
@@ -390,40 +1030,6 @@
       background: #e5e7eb;
     }
 
-    @media (max-width: 768px) {
-      .dashboard-main {
-        margin-left: 0;
-        padding: 1rem;
-      }
-
-      .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-      }
-
-      .filters-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .filter-group {
-        width: 100%;
-      }
-
-      .table {
-        font-size: 0.875rem;
-      }
-
-      .table th,
-      .table td {
-        padding: 0.75rem;
-      }
-
-      .action-buttons {
-        grid-template-columns: repeat(2, 1fr);
-        max-width: 80px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -479,6 +1085,8 @@
 
       <div class="table-container">
         <% if (clients && clients.length > 0) { %>
+          <!-- Desktop Table View -->
+          <div class="table-wrapper">
           <table class="table">
             <thead>
               <tr>
@@ -487,6 +1095,7 @@
                 <th>Brand</th>
                 <th>Projects</th>
                 <th>Inquiries</th>
+                <th>Last Active</th>
                 <th>Joined</th>
                 <th>Actions</th>
               </tr>
@@ -495,19 +1104,19 @@
               <% clients.forEach(client => { %>
                 <tr>
                   <td>
-                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                      <img src="<%= client.avatar || '/images/default-avatar.png' %>" alt="<%= client.name %>" class="client-avatar" onerror="this.onerror=null; this.src='/images/default-avatar.png';" referrerpolicy="no-referrer">
-                      <span><%= client.name %></span>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
+                      <img src="<%= client.avatar || '/images/default-avatar.webp' %>" alt="<%= client.name %>" class="client-avatar" onerror="this.onerror=null; this.src='/images/default-avatar.webp';" referrerpolicy="no-referrer">
+                      <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= client.name %></span>
                     </div>
                   </td>
-                  <td><%= client.email %></td>
+                  <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;"><%= client.email %></td>
                   <td>
                     <% if (client.brand_name) { %>
-                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 0;">
                         <% if (client.brand_logo) { %>
-                          <img src="<%= client.brand_logo %>" alt="<%= client.brand_name %>" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.style.display='none';">
+                          <img src="<%= client.brand_logo %>" alt="<%= client.brand_name %>" style="width: 24px; height: 24px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none';">
                         <% } %>
-                        <span><%= client.brand_name %></span>
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= client.brand_name %></span>
                       </div>
                     <% } else { %>
                       <span style="color: var(--text-secondary);">—</span>
@@ -515,6 +1124,16 @@
                   </td>
                   <td><%= client.project_count || 0 %></td>
                   <td><%= client.inquiry_count || 0 %></td>
+                  <td>
+                    <% if (client.last_active) { %>
+                      <span title="<%= new Date(client.last_active).toLocaleString() %>">
+                        <%= new Date(client.last_active).toLocaleDateString() %><br>
+                        <small style="color: var(--text-secondary); font-size: 0.75rem;" data-time="<%= client.last_active %>"><%= new Date(client.last_active).toLocaleTimeString() %></small>
+                      </span>
+                    <% } else { %>
+                      <span style="color: var(--text-secondary);">Never</span>
+                    <% } %>
+                  </td>
                   <td><%= new Date(client.created_at).toLocaleDateString() %></td>
                   <td>
                     <div class="action-buttons">
@@ -533,6 +1152,79 @@
               <% }) %>
             </tbody>
           </table>
+          </div>
+
+          <!-- Mobile Card View -->
+          <div class="mobile-card-view">
+            <% clients.forEach(client => { %>
+              <div class="mobile-card">
+                <div class="mobile-card-header">
+                  <img src="<%= client.avatar || '/images/default-avatar.webp' %>" alt="<%= client.name %>" class="mobile-card-avatar" onerror="this.onerror=null; this.src='/images/default-avatar.webp';" referrerpolicy="no-referrer">
+                  <div class="mobile-card-title">
+                    <h3><%= client.name %></h3>
+                    <p><%= client.email %></p>
+                  </div>
+                </div>
+                <div class="mobile-card-body">
+                  <div class="mobile-card-row">
+                    <span class="mobile-card-label">Brand:</span>
+                    <span class="mobile-card-value">
+                      <% if (client.brand_name) { %>
+                        <div class="mobile-card-brand">
+                          <% if (client.brand_logo) { %>
+                            <img src="<%= client.brand_logo %>" alt="<%= client.brand_name %>" class="mobile-card-brand-logo" onerror="this.style.display='none';">
+                          <% } %>
+                          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;"><%= client.brand_name %></span>
+                        </div>
+                      <% } else { %>
+                        <span style="color: var(--text-secondary);">—</span>
+                      <% } %>
+                    </span>
+                  </div>
+                  <div class="mobile-card-row">
+                    <span class="mobile-card-label">Last Active:</span>
+                    <span class="mobile-card-value">
+                      <% if (client.last_active) { %>
+                        <%= new Date(client.last_active).toLocaleDateString() %> <%= new Date(client.last_active).toLocaleTimeString() %>
+                      <% } else { %>
+                        <span style="color: var(--text-secondary);">Never</span>
+                      <% } %>
+                    </span>
+                  </div>
+                  <div class="mobile-card-row">
+                    <span class="mobile-card-label">Joined:</span>
+                    <span class="mobile-card-value"><%= new Date(client.created_at).toLocaleDateString() %></span>
+                  </div>
+                  <div class="mobile-card-row">
+                    <span class="mobile-card-label">Stats:</span>
+                    <span class="mobile-card-value">
+                      <div class="mobile-card-stats">
+                        <div class="mobile-card-stat">
+                          <span class="mobile-card-stat-value"><%= client.project_count || 0 %></span>
+                          <span class="mobile-card-stat-label">Projects</span>
+                        </div>
+                        <div class="mobile-card-stat">
+                          <span class="mobile-card-stat-value"><%= client.inquiry_count || 0 %></span>
+                          <span class="mobile-card-stat-label">Inquiries</span>
+                        </div>
+                      </div>
+                    </span>
+                  </div>
+                </div>
+                <div class="mobile-card-actions">
+                  <a href="/admin/clients/view/<%= client.id %>" class="btn btn-info" style="text-decoration: none;">
+                    <i class="fas fa-eye"></i> View
+                  </a>
+                  <a href="/admin/clients/edit/<%= client.id %>" class="btn btn-secondary" style="text-decoration: none;">
+                    <i class="fas fa-edit"></i> Edit
+                  </a>
+                  <button class="btn btn-danger delete-client" data-client-id="<%= client.id %>" data-client-name="<%= client.name %>">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            <% }) %>
+          </div>
         <% } else { %>
           <div class="empty-state">
             <i class="fas fa-users"></i>
@@ -544,6 +1236,22 @@
   </div>
 
   <script>
+
+    function formatRelativeTime(dateString) {
+      if (!dateString) return 'Never';
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+      
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+      if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+      if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+      return date.toLocaleDateString();
+    }
 
     function showModal(modalId) {
       const modal = document.getElementById(modalId);
@@ -618,6 +1326,32 @@
       if (e.target.classList.contains('success-modal') || e.target.classList.contains('confirmation-modal')) {
         closeModal(e.target.id);
       }
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('[data-time]').forEach(el => {
+        const timeStr = el.getAttribute('data-time');
+        if (timeStr) {
+          const relativeTime = formatRelativeTime(timeStr);
+          if (relativeTime !== 'Never' && !relativeTime.includes('/')) {
+            el.textContent = relativeTime;
+          }
+        }
+      });
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('[data-time]').forEach(el => {
+        const timeStr = el.getAttribute('data-time');
+        if (timeStr) {
+          const relativeTime = formatRelativeTime(timeStr);
+          if (relativeTime !== 'Never' && !relativeTime.includes('/')) {
+            el.textContent = relativeTime;
+          }
+        }
+      });
     });
   </script>
 

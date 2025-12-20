@@ -29,6 +29,8 @@
       padding: 2rem 2.5rem;
       margin-left: 280px;
       background: var(--bg-secondary);
+      width: calc(100% - 280px);
+      min-width: 0;
     }
 
     .page-header {
@@ -43,11 +45,13 @@
       font-weight: 700;
       color: var(--text-primary);
       margin-bottom: 0.5rem;
+      line-height: 1.2;
     }
 
     .page-header p {
       color: var(--text-secondary);
       font-size: 0.9375rem;
+      margin: 0;
     }
 
     .btn-primary {
@@ -60,7 +64,11 @@
       cursor: pointer;
       transition: all 0.2s;
       text-decoration: none;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .btn-primary:hover {
@@ -101,6 +109,8 @@
       font-size: 0.875rem;
       background: white;
       transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .filter-input:focus {
@@ -131,11 +141,23 @@
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
       overflow: hidden;
       margin-bottom: 2rem;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+      max-width: 100%;
     }
 
     .table {
       width: 100%;
+      min-width: 900px;
       border-collapse: collapse;
+      table-layout: auto;
     }
 
     .table thead {
@@ -150,12 +172,24 @@
       color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      white-space: nowrap;
     }
 
     .table td {
       padding: 1rem 1.5rem;
       border-top: 1px solid var(--border-primary);
       color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .table td:nth-child(3) {
+      white-space: normal;
+    }
+
+    .table th:nth-child(5),
+    .table td:nth-child(5) {
+      white-space: normal;
+      min-width: 140px;
     }
 
     .table tbody tr:hover {
@@ -255,6 +289,14 @@
     .action-buttons {
       display: flex;
       gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .action-buttons .btn {
+      min-width: 36px;
+      min-height: 36px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .empty-state {
@@ -267,6 +309,552 @@
       font-size: 3rem;
       margin-bottom: 1rem;
       opacity: 0.3;
+    }
+
+    /* Mobile Card Layout */
+    .mobile-card-view {
+      display: none;
+      padding: 0.5rem;
+    }
+
+    .mobile-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-primary);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease;
+    }
+
+    .mobile-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .mobile-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-primary);
+      flex-wrap: wrap;
+    }
+
+    .mobile-card-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .mobile-card-title {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mobile-card-title h3 {
+      margin: 0 0 0.25rem 0;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
+      line-height: 1.3;
+    }
+
+    .mobile-card-title p {
+      margin: 0;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .mobile-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+    }
+
+    .mobile-card-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.8125rem;
+    }
+
+    .mobile-card-label {
+      color: var(--text-secondary);
+      font-weight: 600;
+      min-width: 60px;
+      flex-shrink: 0;
+      font-size: 0.8125rem;
+    }
+
+    .mobile-card-value {
+      color: var(--text-primary);
+      text-align: right;
+      flex: 1;
+      word-break: break-word;
+      font-size: 0.8125rem;
+    }
+
+    .mobile-card-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      justify-content: flex-end;
+    }
+
+    .mobile-card-skill {
+      font-size: 0.75rem;
+      padding: 0.125rem 0.5rem;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      color: var(--text-primary);
+    }
+
+    .mobile-card-actions {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-primary);
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .mobile-card-actions .btn {
+      flex: 1;
+      justify-content: center;
+      min-height: 44px;
+      font-size: 0.8125rem;
+      padding: 0.625rem 0.75rem;
+      min-width: 0;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-card-actions .btn i {
+      font-size: 0.875rem;
+    }
+
+    /* Desktop large screen adjustments */
+    @media (min-width: 1400px) {
+      .dashboard-main {
+        padding: 2.5rem 4rem;
+        width: calc(100% - 280px);
+      }
+
+      .table th,
+      .table td {
+        padding: 1.25rem 2rem;
+      }
+    }
+
+    @media (min-width: 1600px) {
+      .dashboard-main {
+        padding: 3rem 5rem;
+        width: calc(100% - 280px);
+      }
+    }
+
+    /* Tablet landscape: 1024px - 1199px - Sidebar visible */
+    @media (min-width: 1024px) and (max-width: 1199px) {
+      .dashboard-main {
+        padding: 1.5rem 2rem;
+        margin-left: 260px;
+        width: calc(100% - 260px);
+      }
+
+      .page-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .table th,
+      .table td {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.875rem;
+      }
+    }
+
+    /* Tablet: 900px - 1023px - Sidebar collapsed, main content full width */
+    @media (max-width: 1023px) and (min-width: 900px) {
+      .dashboard-main {
+        padding: 1.25rem 1.5rem;
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .page-header p {
+        font-size: 0.8125rem;
+      }
+
+      .table th,
+      .table td {
+        padding: 0.75rem 0.875rem;
+        font-size: 0.8125rem;
+      }
+
+      .team-avatar {
+        width: 32px;
+        height: 32px;
+      }
+
+      .table th:nth-child(3),
+      .table td:nth-child(3) {
+        max-width: 120px;
+      }
+
+      .page-header > div:last-child {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .page-header > div:last-child > * {
+        width: 100%;
+      }
+
+      .btn-primary {
+        padding: 0.5rem 1rem;
+        font-size: 0.8125rem;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .action-buttons .btn-sm {
+        width: 30px;
+        height: 30px;
+        padding: 0.25rem;
+        font-size: 0.75rem;
+      }
+
+      .filters-section {
+        padding: 1rem;
+      }
+
+      .filter-input {
+        padding: 0.5rem 0.625rem;
+        font-size: 0.8125rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .btn-filter {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    /* Medium desktop: 1200px - 1285px */
+    @media (max-width: 1285px) and (min-width: 1200px) {
+      .dashboard-main {
+        padding: 1.75rem 2rem;
+        margin-left: 260px;
+        width: calc(100% - 260px);
+      }
+
+      .table th,
+      .table td {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.8125rem;
+      }
+
+      .team-avatar {
+        width: 36px;
+        height: 36px;
+      }
+
+      .page-header h1 {
+        font-size: 1.875rem;
+      }
+
+      .btn-primary {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+      }
+
+      .action-buttons .btn-sm {
+        width: 32px;
+        height: 32px;
+        padding: 0.375rem;
+      }
+
+      .filters-section {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Medium desktop: 1100px - 1199px */
+    @media (max-width: 1199px) and (min-width: 1100px) {
+      .dashboard-main {
+        padding: 1.5rem 1.5rem;
+        margin-left: 260px;
+        width: calc(100% - 260px);
+      }
+
+      .table th,
+      .table td {
+        padding: 0.875rem 1rem;
+        font-size: 0.8125rem;
+      }
+
+      .team-avatar {
+        width: 34px;
+        height: 34px;
+      }
+
+      .page-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .page-header p {
+        font-size: 0.875rem;
+      }
+
+      .btn-primary {
+        padding: 0.625rem 1.125rem;
+        font-size: 0.875rem;
+      }
+
+      .action-buttons .btn-sm {
+        width: 32px;
+        height: 32px;
+        padding: 0.375rem;
+      }
+
+      .filters-section {
+        padding: 1.125rem;
+      }
+
+      .filter-input {
+        padding: 0.5rem 0.625rem;
+        font-size: 0.8125rem;
+      }
+
+      /* Limit Skills column width */
+      .table th:nth-child(3),
+      .table td:nth-child(3) {
+        max-width: 150px;
+      }
+    }
+
+    /* Small desktop: 1024px - 1099px - Sidebar visible */
+    @media (max-width: 1099px) and (min-width: 1024px) {
+      .dashboard-main {
+        padding: 1.25rem 1.5rem;
+        margin-left: 240px;
+        width: calc(100% - 240px);
+      }
+
+      .table th,
+      .table td {
+        padding: 0.75rem 0.875rem;
+        font-size: 0.8125rem;
+      }
+
+      .team-avatar {
+        width: 32px;
+        height: 32px;
+      }
+
+      .table th:nth-child(3),
+      .table td:nth-child(3) {
+        max-width: 120px;
+      }
+
+      .page-header h1 {
+        font-size: 1.5rem;
+        line-height: 1.2;
+      }
+
+      .page-header p {
+        font-size: 0.8125rem;
+        margin: 0;
+      }
+
+      .page-header > div:last-child {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .page-header > div:last-child > * {
+        width: 100%;
+      }
+
+      .btn-primary {
+        padding: 0.5rem 1rem;
+        font-size: 0.8125rem;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .action-buttons .btn-sm {
+        width: 30px;
+        height: 30px;
+        padding: 0.25rem;
+        font-size: 0.75rem;
+      }
+
+      .filters-section {
+        padding: 1rem;
+      }
+
+      .filter-input {
+        padding: 0.5rem 0.625rem;
+        font-size: 0.8125rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .btn-filter {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    /* Tablet: 769px - 899px */
+    @media (max-width: 899px) and (min-width: 769px) {
+      .dashboard-main {
+        padding: 1rem 1.25rem;
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .table th,
+      .table td {
+        padding: 0.625rem 0.5rem;
+        font-size: 0.75rem;
+      }
+
+      .team-avatar {
+        width: 28px;
+        height: 28px;
+      }
+
+      /* Limit Skills column width on smaller tablets */
+      .table th:nth-child(3),
+      .table td:nth-child(3) {
+        max-width: 100px;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.35rem;
+      }
+
+      .page-header p {
+        font-size: 0.8125rem;
+        margin-bottom: 0;
+      }
+
+      .page-header > div:last-child {
+        width: 100%;
+        flex-direction: row;
+        gap: 0.5rem;
+      }
+
+      .page-header > div:last-child .btn-primary {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+      }
+
+      .btn-primary {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .action-buttons .btn-sm {
+        width: 28px;
+        height: 28px;
+        padding: 0.25rem;
+        font-size: 0.6875rem;
+      }
+
+      .filters-section {
+        padding: 0.875rem;
+        margin-bottom: 1rem;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr auto;
+        gap: 0.75rem;
+      }
+
+      .filter-input {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+      }
+
+      .btn-filter {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.75rem;
+      }
+
+      .status-badge {
+        padding: 0.1875rem 0.5rem;
+        font-size: 0.6875rem;
+      }
+
+      .table-container {
+        margin-bottom: 1.25rem;
+        border-radius: 8px;
+      }
+
+      /* Compact member info */
+      .table td:first-child > div {
+        gap: 0.5rem;
+      }
+
+      .table td:first-child > div > div > div:first-child {
+        font-size: 0.8125rem;
+      }
+
+      .table td:first-child > div > div > div:last-child {
+        font-size: 0.6875rem;
+      }
+    }
+
+    /* Desktop: Show table, hide cards */
+    @media (min-width: 769px) {
+      .table-container .table {
+        display: table;
+      }
+
+      .mobile-card-view {
+        display: none !important;
+      }
+    }
+
+    /* Tablet and Mobile: Hide table, show cards */
+    @media (max-width: 768px) {
+      .table-container .table {
+        display: none !important;
+      }
+
+      .mobile-card-view {
+        display: block !important;
+      }
     }
 
     /* Reorder Modal Styles */
@@ -446,33 +1034,469 @@
       cursor: not-allowed;
     }
 
+    /* Success/Error/Confirmation Modal Styles */
+    .success-modal,
+    .confirmation-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .success-modal.show,
+    .confirmation-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .success-modal.show .modal-content-wrapper,
+    .confirmation-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    .modal-icon.error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .modal-icon.warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
     @media (max-width: 768px) {
       .dashboard-main {
         margin-left: 0;
         padding: 1rem;
+        width: 100%;
       }
 
       .page-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+        line-height: 1.2;
+      }
+
+      .page-header p {
+        font-size: 0.875rem;
+        margin: 0;
       }
 
       .page-header > div:last-child {
         width: 100%;
         flex-direction: column;
+        gap: 0.75rem;
       }
 
       .page-header > div:last-child > * {
         width: 100%;
       }
 
+      .filters-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+      }
+
       .filters-grid {
         grid-template-columns: 1fr;
+        gap: 0.75rem;
       }
 
       .filter-group {
         width: 100%;
+      }
+
+      .filter-input {
+        padding: 0.75rem;
+        font-size: 16px; /* Prevents zoom on iOS */
+        min-height: 44px;
+        border-radius: 8px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .btn-filter {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        min-height: 44px;
+        justify-content: center;
+        font-size: 0.875rem;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .mobile-card-view {
+        padding: 0.25rem;
+      }
+
+      .mobile-card {
+        padding: 0.875rem;
+        margin-bottom: 0.625rem;
+      }
+
+      .mobile-select-all-bar {
+        padding: 0.875rem;
+        margin-bottom: 0.875rem;
+      }
+
+      .reorder-modal-content {
+        padding: 1.25rem;
+        max-height: 90vh;
+      }
+
+      .reorder-modal-header h2 {
+        font-size: 1.25rem;
+      }
+
+      .reorder-modal-header p {
+        font-size: 0.8125rem;
+      }
+
+      .reorder-list {
+        min-height: 200px;
+        max-height: 50vh;
+      }
+
+      .reorder-item {
+        padding: 0.75rem;
+        gap: 0.75rem;
+      }
+
+      .reorder-item-avatar {
+        width: 40px;
+        height: 40px;
+      }
+
+      .reorder-item-name {
+        font-size: 0.875rem;
+      }
+
+      .reorder-item-position {
+        font-size: 0.75rem;
+      }
+
+      .reorder-modal-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+      }
+
+      .reorder-modal-actions .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    /* Extra small devices */
+    @media (max-width: 480px) {
+      .dashboard-main {
+        padding: 0.75rem;
+        width: 100%;
+      }
+
+      .page-header {
+        margin-bottom: 1rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.25rem;
+        line-height: 1.3;
+      }
+
+      .page-header p {
+        font-size: 0.75rem;
+      }
+
+      .filters-section {
+        padding: 0.875rem;
+        margin-bottom: 0.875rem;
+        border-radius: 8px;
+      }
+
+      .filter-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 0.75rem 0.875rem;
+      }
+
+      .mobile-card-view {
+        padding: 0;
+      }
+
+      .mobile-card {
+        padding: 0.75rem;
+        margin-bottom: 0.625rem;
+        border-radius: 8px;
+      }
+
+      .mobile-card-header {
+        gap: 0.625rem;
+        margin-bottom: 0.625rem;
+        padding-bottom: 0.625rem;
+      }
+
+      .mobile-card-avatar {
+        width: 48px;
+        height: 48px;
+      }
+
+      .mobile-card-title h3 {
+        font-size: 0.875rem;
+        line-height: 1.3;
+      }
+
+      .mobile-card-title p {
+        font-size: 0.75rem;
+      }
+
+      .mobile-card-body {
+        gap: 0.625rem;
+      }
+
+      .mobile-card-row {
+        font-size: 0.75rem;
+        flex-direction: column;
+        gap: 0.375rem;
+        align-items: flex-start;
+      }
+
+      .mobile-card-label {
+        min-width: auto;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      .mobile-card-value {
+        text-align: left;
+        width: 100%;
+        font-size: 0.75rem;
+      }
+
+      .mobile-card-skills {
+        justify-content: flex-start;
+      }
+
+      .mobile-card-actions {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        gap: 0.5rem;
+        flex-direction: column;
+      }
+
+      .mobile-card-actions .btn {
+        width: 100%;
+        font-size: 0.8125rem;
+        padding: 0.625rem;
+        min-height: 42px;
+      }
+
+      .mobile-card-actions .btn i {
+        font-size: 0.8125rem;
+      }
+
+      .btn-primary {
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .status-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.625rem;
+      }
+
+      .modal-content-wrapper {
+        padding: 1.25rem;
+        width: 95%;
+        max-height: 90vh;
+        border-radius: 12px;
+      }
+
+      .modal-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 1rem;
+      }
+
+      .modal-icon i {
+        font-size: 2rem;
+      }
+
+      .modal-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .modal-message {
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+        gap: 0.625rem;
+      }
+
+      .modal-btn {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        font-size: 0.875rem;
+      }
+
+      .reorder-modal-content {
+        padding: 1.25rem;
+        width: 95%;
+        max-height: 90vh;
+      }
+    }
+
+    /* Extra extra small devices: up to 360px */
+    @media (max-width: 360px) {
+      .dashboard-main {
+        padding: 0.5rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.125rem;
+      }
+
+      .filters-section {
+        padding: 0.75rem;
+      }
+
+      .mobile-card {
+        padding: 0.625rem;
+      }
+
+      .mobile-card-title h3 {
+        font-size: 0.8125rem;
+      }
+
+      .mobile-card-title p {
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-row {
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-label {
+        font-size: 0.6875rem;
+      }
+
+      .mobile-card-value {
+        font-size: 0.6875rem;
       }
     }
   </style>
@@ -522,6 +1546,8 @@
 
       <div class="table-container">
         <% if (teamMembers && teamMembers.length > 0) { %>
+          <!-- Desktop Table View -->
+          <div class="table-wrapper">
           <table class="table">
             <thead>
               <tr>
@@ -529,6 +1555,7 @@
                 <th>Position</th>
                 <th>Skills</th>
                 <th>Status</th>
+                <th>Last Active</th>
                 <th>Order</th>
                 <th>Actions</th>
               </tr>
@@ -538,7 +1565,7 @@
                 <tr>
                   <td>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
-                      <img src="<%= member.avatar || '/images/default-avatar.png' %>" alt="<%= member.name %>" class="team-avatar">
+                      <img src="<%= member.avatar || '/images/default-avatar.webp' %>" alt="<%= member.name %>" class="team-avatar">
                       <div>
                         <div style="font-weight: 600;"><%= member.name %></div>
                         <div style="font-size: 0.8125rem; color: var(--text-secondary);"><%= member.email %></div>
@@ -568,18 +1595,98 @@
                       <%= member.is_active ? 'Active' : 'Inactive' %>
                     </span>
                   </td>
+                  <td>
+                    <% if (member.last_active) { %>
+                      <span title="<%= new Date(member.last_active).toLocaleString() %>">
+                        <%= new Date(member.last_active).toLocaleDateString() %><br>
+                        <small style="color: var(--text-secondary); font-size: 0.75rem;" data-time="<%= member.last_active %>"><%= new Date(member.last_active).toLocaleTimeString() %></small>
+                      </span>
+                    <% } else { %>
+                      <span style="color: var(--text-secondary);">Never</span>
+                    <% } %>
+                  </td>
                   <td><%= member.display_order || 0 %></td>
                   <td>
                     <div class="action-buttons">
                       <a href="/admin/team/edit/<%= member.id %>" class="btn btn-secondary btn-sm btn-icon-only" style="text-decoration: none; display: inline-flex;" title="Edit Team Member">
                         <i class="fas fa-edit"></i>
                       </a>
+                      <button class="btn btn-danger btn-sm btn-icon-only delete-team-member" data-member-id="<%= member.id %>" data-member-name="<%= member.name %>" title="Delete Team Member">
+                        <i class="fas fa-trash"></i>
+                      </button>
                     </div>
                   </td>
                 </tr>
               <% }) %>
             </tbody>
           </table>
+          </div>
+
+          <!-- Mobile Card View -->
+          <div class="mobile-card-view">
+            <% teamMembers.forEach(member => { %>
+              <% 
+                const mobileSkills = member.skills ? (Array.isArray(member.skills) ? member.skills : JSON.parse(member.skills)) : [];
+              %>
+              <div class="mobile-card">
+                <div class="mobile-card-header">
+                  <img src="<%= member.avatar || '/images/default-avatar.webp' %>" alt="<%= member.name %>" class="mobile-card-avatar">
+                  <div class="mobile-card-title">
+                    <h3><%= member.name %></h3>
+                    <p><%= member.position || 'No position' %></p>
+                  </div>
+                  <span class="status-badge <%= member.is_active ? 'active' : 'inactive' %>">
+                    <%= member.is_active ? 'Active' : 'Inactive' %>
+                  </span>
+                </div>
+                <div class="mobile-card-body">
+                  <div class="mobile-card-row">
+                    <span class="mobile-card-label">Email:</span>
+                    <span class="mobile-card-value"><%= member.email %></span>
+                  </div>
+                  <div class="mobile-card-row">
+                    <span class="mobile-card-label">Last Active:</span>
+                    <span class="mobile-card-value">
+                      <% if (member.last_active) { %>
+                        <%= new Date(member.last_active).toLocaleDateString() %> <%= new Date(member.last_active).toLocaleTimeString() %>
+                      <% } else { %>
+                        <span style="color: var(--text-secondary);">Never</span>
+                      <% } %>
+                    </span>
+                  </div>
+                  <div class="mobile-card-row">
+                    <span class="mobile-card-label">Order:</span>
+                    <span class="mobile-card-value"><%= member.display_order || 0 %></span>
+                  </div>
+                  <div class="mobile-card-row">
+                    <span class="mobile-card-label">Skills:</span>
+                    <span class="mobile-card-value">
+                      <% if (mobileSkills.length > 0) { %>
+                        <div class="mobile-card-skills">
+                          <% mobileSkills.slice(0, 4).forEach(skill => { %>
+                            <span class="mobile-card-skill"><%= skill %></span>
+                          <% }) %>
+                          <% if (mobileSkills.length > 4) { %>
+                            <span class="mobile-card-skill">+<%= mobileSkills.length - 4 %></span>
+                          <% } %>
+                        </div>
+                      <% } else { %>
+                        <span style="color: var(--text-secondary);">No skills</span>
+                      <% } %>
+                    </span>
+                  </div>
+                </div>
+                <div class="mobile-card-actions">
+                  <a href="/admin/team/edit/<%= member.id %>" class="btn btn-secondary" style="text-decoration: none;">
+                    <i class="fas fa-edit"></i> Edit
+                  </a>
+                  <button class="btn btn-danger delete-team-member" data-member-id="<%= member.id %>" data-member-name="<%= member.name %>">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                </div>
+              </div>
+            <% }) %>
+          </div>
         <% } else { %>
           <div class="empty-state">
             <i class="fas fa-users"></i>
@@ -608,34 +1715,66 @@
   </div>
 
   <!-- Success Modal -->
-  <div class="reorder-modal" id="successModal">
-    <div class="reorder-modal-content" style="max-width: 400px;">
-      <div style="text-align: center;">
-        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-          <i class="fas fa-check" style="color: white; font-size: 2.5rem;"></i>
-        </div>
-        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">Success!</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" id="successMessage">Team member order updated successfully.</p>
-        <button class="btn btn-save" style="display: block; margin: 0 auto;" onclick="closeSuccessModal()">OK</button>
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title">Success!</h3>
+      <p class="modal-message" id="successMessage">Operation completed successfully.</p>
+      <div class="modal-actions">
+        <button onclick="closeSuccessModal()" class="modal-btn modal-btn-primary">OK</button>
       </div>
     </div>
   </div>
 
   <!-- Error Modal -->
-  <div class="reorder-modal" id="errorModal">
-    <div class="reorder-modal-content" style="max-width: 400px;">
-      <div style="text-align: center;">
-        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-          <i class="fas fa-exclamation-triangle" style="color: white; font-size: 2.5rem;"></i>
-        </div>
-        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">Error</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" id="errorMessage">Something went wrong. Please try again.</p>
-        <button class="btn btn-save" onclick="closeErrorModal()">Close</button>
+  <div class="success-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon error">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error Occurred</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong. Please try again.</p>
+      <div class="modal-actions">
+        <button onclick="closeErrorModal()" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="confirmation-modal" id="confirmationModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon warning">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 class="modal-title">Confirm Action</h3>
+      <p class="modal-message" id="confirmationMessage">Are you sure you want to proceed?</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('confirmationModal')" class="modal-btn modal-btn-secondary">Cancel</button>
+        <button id="confirmBtn" class="modal-btn modal-btn-primary">Confirm</button>
       </div>
     </div>
   </div>
 
   <script>
+
+    function formatRelativeTime(dateString) {
+      if (!dateString) return 'Never';
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+      
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+      if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+      if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+      return date.toLocaleDateString();
+    }
+
     let teamMembers = <%- JSON.stringify(teamMembers || []) %>;
     let reorderedMembers = [];
 
@@ -660,6 +1799,39 @@
       document.getElementById('errorModal').classList.remove('show');
     }
 
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function showConfirmation(message, onConfirm) {
+      const modal = document.getElementById('confirmationModal');
+      const messageEl = document.getElementById('confirmationMessage');
+      const confirmBtn = document.getElementById('confirmBtn');
+      
+      if (modal && messageEl) {
+        messageEl.textContent = message;
+        showModal('confirmationModal');
+        
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        newConfirmBtn.onclick = function() {
+          closeModal('confirmationModal');
+          if (onConfirm) onConfirm();
+        };
+      }
+    }
+
     function renderReorderList() {
       const list = document.getElementById('reorderList');
       list.innerHTML = '';
@@ -675,7 +1847,7 @@
           <div class="reorder-handle">
             <i class="fas fa-grip-vertical"></i>
           </div>
-          <img src="${member.avatar || '/images/default-avatar.png'}" alt="${member.name}" class="reorder-item-avatar">
+          <img src="${member.avatar || '/images/default-avatar.webp'}" alt="${member.name}" class="reorder-item-avatar">
           <div class="reorder-item-info">
             <div class="reorder-item-name">${member.name}</div>
             <div class="reorder-item-position">${member.position || 'No position'}</div>
@@ -782,10 +1954,10 @@
         if (data.success) {
           document.getElementById('successMessage').textContent = data.message || 'Team member order updated successfully.';
           document.getElementById('reorderModal').classList.remove('show');
-          document.getElementById('successModal').classList.add('show');
+          showModal('successModal');
         } else {
           document.getElementById('errorMessage').textContent = data.message || 'Error updating team member order.';
-          document.getElementById('errorModal').classList.add('show');
+          showModal('errorModal');
           saveBtn.disabled = false;
           saveBtn.textContent = 'Save Order';
         }
@@ -799,16 +1971,70 @@
     }
 
 
+
+    document.querySelectorAll('.delete-team-member').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const memberId = this.dataset.memberId;
+        const memberName = this.dataset.memberName;
+        const deleteBtn = this;
+
+        showConfirmation(`Are you sure you want to delete team member "${memberName}"? This action cannot be undone and will also delete their user account.`, async function() {
+          const originalText = deleteBtn.innerHTML;
+          deleteBtn.disabled = true;
+          deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+          try {
+            const response = await fetch(`/admin/team/${memberId}`, {
+              method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              document.getElementById('successMessage').textContent = data.message || 'Team member deleted successfully.';
+              showModal('successModal');
+              setTimeout(() => {
+                location.reload();
+              }, 1500);
+            } else {
+              document.getElementById('errorMessage').textContent = data.message || 'Error deleting team member.';
+              showModal('errorModal');
+              deleteBtn.disabled = false;
+              deleteBtn.innerHTML = originalText;
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('errorMessage').textContent = 'An error occurred while deleting the team member.';
+            showModal('errorModal');
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = originalText;
+          }
+        });
+      });
+    });
+
     document.addEventListener('click', function(e) {
       if (e.target.classList.contains('reorder-modal')) {
         if (e.target.id === 'reorderModal') {
           closeReorderModal();
-        } else if (e.target.id === 'successModal') {
-          closeSuccessModal();
-        } else if (e.target.id === 'errorModal') {
-          closeErrorModal();
         }
       }
+      if (e.target.classList.contains('success-modal') || e.target.classList.contains('confirmation-modal')) {
+        closeModal(e.target.id);
+      }
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('[data-time]').forEach(el => {
+        const timeStr = el.getAttribute('data-time');
+        if (timeStr) {
+          const relativeTime = formatRelativeTime(timeStr);
+          if (relativeTime !== 'Never' && !relativeTime.includes('/')) {
+            el.textContent = relativeTime;
+          }
+        }
+      });
     });
   </script>
 

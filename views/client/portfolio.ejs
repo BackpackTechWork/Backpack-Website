@@ -1257,7 +1257,7 @@
             </div>
             <div class="client-avatar-wrapper">
               <%
-              let profileImgSrc = client.avatar ? client.avatar : '/images/default-avatar.png';
+              let profileImgSrc = client.avatar ? client.avatar : '/images/default-avatar.webp';
             
               if (profileImgSrc.includes('googleusercontent.com')) {
                 profileImgSrc = profileImgSrc.replace(/=s\d+-c$/, '');
@@ -1271,7 +1271,7 @@
                 alt="<%= client.name %>" 
                 class="client-avatar-large" 
                 id="clientAvatarImg"
-                onerror="this.onerror=null; this.src='/images/default-avatar.png';"
+                onerror="this.onerror=null; this.src='/images/default-avatar.webp';"
               />
             </div>
             <div class="client-details">
@@ -1333,7 +1333,7 @@
                       <tr>
                         <td>
                           <% if (project.image) { %>
-                            <img src="<%= project.image %>" alt="<%= project.title %>" class="project-image" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+                            <img src="<%= project.image %>" alt="<%= project.title %>" class="project-image" onerror="this.onerror=null; this.src='/images/default-avatar.webp';">
                           <% } else { %>
                             <div style="width: 70px; height: 70px; background: linear-gradient(135deg, var(--accent-red) 0%, #a01628 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
                               <i class="fas fa-image" style="color: white; font-size: 1.5rem; opacity: 0.7;"></i>
@@ -1366,7 +1366,7 @@
                   <div class="mobile-card">
                     <div class="mobile-card-header">
                       <% if (project.image) { %>
-                        <img src="<%= project.image %>" alt="<%= project.title %>" class="mobile-card-image" onerror="this.onerror=null; this.src='/images/default-avatar.png';">
+                        <img src="<%= project.image %>" alt="<%= project.title %>" class="mobile-card-image" onerror="this.onerror=null; this.src='/images/default-avatar.webp';">
                       <% } else { %>
                         <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--accent-red) 0%, #a01628 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                           <i class="fas fa-image" style="color: white; font-size: 1.25rem; opacity: 0.7;"></i>
@@ -1537,7 +1537,7 @@
       </div>
     </div>
     <div class="shareable-content">
-      <img src="/images/default-avatar.png" alt="Profile" class="shareable-avatar" id="shareableAvatarImg" onerror="this.src='/images/default-avatar.png';">
+      <img src="/images/default-avatar.webp" alt="Profile" class="shareable-avatar" id="shareableAvatarImg" onerror="this.src='/images/default-avatar.webp';">
       <div class="shareable-name" id="shareableName"></div>
       <div class="shareable-details" id="shareableEmail"></div>
       <div class="shareable-details" id="shareableBrand" style="display: none;"></div>
@@ -1629,7 +1629,7 @@
         img.onerror = function() {
 
           if (src.includes('avatar') || src.includes('googleusercontent')) {
-            resolve('/images/default-avatar.png');
+            resolve('/images/default-avatar.webp');
           } else {
             resolve('/Backpack.ico');
           }
@@ -1650,7 +1650,7 @@
       
 
       const avatarImg = document.getElementById('clientAvatarImg');
-      let avatarSrc = avatarImg ? avatarImg.src : '/images/default-avatar.png';
+      let avatarSrc = avatarImg ? avatarImg.src : '/images/default-avatar.webp';
       
 
       const headerLogo = document.querySelector('.logo-img');

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#C51D34">
+  <meta http-equiv="x-dns-prefetch-control" content="on">
   <title><%= title %></title>
   <link rel="icon" type="image/x-icon" href="/Backpack.ico">
   <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
@@ -14,8 +15,7 @@
     currentPath: typeof currentPath !== 'undefined' ? currentPath : '/'
   }) %>
   
-  <!-- Resource Hints for Performance -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -24,74 +24,327 @@
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   
-  <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
+  <link rel="preload" href="/images/Assets/People Working.webp" as="image" fetchpriority="high" type="image/png">
   <link rel="preload" href="/css/style.css" as="style">
-  <link rel="preload" href="/Backpack.png" as="image" fetchpriority="high">
-  <link rel="preload" href="/images/Assets/People Working.png" as="image" fetchpriority="high">
   
-  <!-- Critical CSS to prevent FOUC for loading animation -->
+  <!-- Critical CSS to prevent FOUC -->
   <style>
-    .loading-tech-icons,
-    .loading-backpack-container,
-    .loading-backpack-img,
-    .loading-backpack-text,
-    .loading-greeting {
+    /* Smooth scroll behavior - optimized for animations */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+    
+    /* Ensure smooth scrolling isn't blocked by animations */
+    * {
+      scroll-margin-top: 80px;
+    }
+    
+    /* Optimize scroll performance during animations */
+    html, body {
+      will-change: scroll-position;
+    }
+    
+    /* Hide content until CSS is loaded (only for JS-enabled browsers) */
+    html.js-enabled:not(.css-loaded) body {
       visibility: hidden;
+    }
+    
+    html.css-loaded body,
+    html.no-js body {
+      visibility: visible;
+    }
+    
+    /* Ensure content is visible for no-JS users by default */
+    html.no-js .animate-on-scroll,
+    html.no-js .testimonial-card,
+    html.no-js section,
+    html.no-js .service-card,
+    html.no-js .approach-step,
+    html.no-js .about-us-section,
+    html.no-js .why-choose-section,
+    html.no-js .cta-section,
+    html.no-js footer,
+    html.no-js .about-header,
+    html.no-js .about-feature-card,
+    html.no-js .why-item,
+    html.no-js .cta-title,
+    html.no-js .cta-subtitle,
+    html.no-js .cta-button,
+    html.no-js .section-header,
+    html.no-js .section-label,
+    html.no-js .tech-icons,
+    html.no-js .tech-icon-item {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      filter: none !important;
+      animation: none !important;
+      animation-play-state: running !important;
+    }
+    
+    /* Ensure sections are visible and their children are visible */
+    html.no-js section.visible,
+    html.no-js section:not(.hero) {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    
+    /* Make section children visible even without .visible class */
+    html.no-js section .service-card,
+    html.no-js section .brand-item,
+    html.no-js section .testimonial-card,
+    html.no-js section .about-feature-card,
+    html.no-js section .why-item,
+    html.no-js section .team-card,
+    html.no-js section .info-card,
+    html.no-js section .feature-item,
+    html.no-js section .detail-card,
+    html.no-js section .dashboard-card,
+    html.no-js section .form-group,
+    html.no-js section .section-header,
+    html.no-js section .section-label,
+    html.no-js section .about-header,
+    html.no-js section .dashboard-header,
+    html.no-js section .contact-form-wrapper,
+    html.no-js section .service-hero-icon,
+    html.no-js section .auth-card,
+    html.no-js footer .footer-section {
+      animation-play-state: running !important;
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+      visibility: visible !important;
+    }
+    
+    html.no-js section .cta-title,
+    html.no-js section .cta-subtitle,
+    html.no-js section .cta-button,
+    html.no-js section .tech-icons,
+    html.no-js section .tech-icon-item {
+      animation-play-state: running !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: scale(1) rotate(0deg) !important;
+    }
+    
+    /* Also handle when sections have .visible class */
+    html.no-js section.visible .service-card,
+    html.no-js section.visible .brand-item,
+    html.no-js section.visible .testimonial-card,
+    html.no-js section.visible .about-feature-card,
+    html.no-js section.visible .why-item,
+    html.no-js section.visible .team-card,
+    html.no-js section.visible .info-card,
+    html.no-js section.visible .feature-item,
+    html.no-js section.visible .detail-card,
+    html.no-js section.visible .dashboard-card,
+    html.no-js section.visible .form-group,
+    html.no-js section.visible .section-header,
+    html.no-js section.visible .section-label,
+    html.no-js section.visible .about-header,
+    html.no-js section.visible .dashboard-header,
+    html.no-js section.visible .contact-form-wrapper,
+    html.no-js section.visible .service-hero-icon,
+    html.no-js section.visible .auth-card,
+    html.no-js footer.visible .footer-section {
+      animation-play-state: running !important;
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+    }
+    
+    html.no-js section.visible .cta-title,
+    html.no-js section.visible .cta-subtitle,
+    html.no-js section.visible .cta-button {
+      animation-play-state: running !important;
+    }
+    
+    /* Hide loading screen for no-JS users */
+    html.no-js .loading-screen {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    
+    /* Ensure body is scrollable for no-JS users */
+    html.no-js body {
+      overflow: visible !important;
+    }
+    
+    html.no-js body.loading {
+      overflow: visible !important;
     }
   </style>
   
-  <!-- Critical CSS - Load with high priority -->
-  <link rel="stylesheet" href="/css/style.css" media="all">
+  <!-- Blocking stylesheet to prevent FOUC -->
+  <link rel="stylesheet" href="/css/style.css">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
   
-  <!-- Fonts with font-display: swap for better performance -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+  <!-- Mark that JS is enabled (robots won't execute this, so they'll see content) -->
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.documentElement.classList.remove('no-js');
+  </script>
   
-  <!-- Non-critical CSS - Load asynchronously -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+  <script>
+    (function() {
+      function markCSSLoaded() {
+        document.documentElement.classList.add('css-loaded');
+      }
+      
+
+      var link = document.querySelector('link[href="/css/style.css"]');
+      if (link) {
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', markCSSLoaded);
+        } else {
+          markCSSLoaded();
+        }
+        
+
+        link.addEventListener('load', markCSSLoaded);
+        link.addEventListener('error', markCSSLoaded); 
+      } else {
+
+        markCSSLoaded();
+      }
+    })();
+  </script>
+  
+  <!-- Fallback for no-JS: ensure content is visible -->
+  <noscript>
+    <style>
+      html body {
+        visibility: visible !important;
+      }
+      
+      /* Ensure all content is visible without JavaScript */
+      .animate-on-scroll,
+      .testimonial-card,
+      .testimonials-section,
+      section,
+      .service-card,
+      .approach-step,
+      .hero-content,
+      .hero-image,
+      footer,
+      .about-us-section,
+      .why-choose-section,
+      .cta-section,
+      .about-header,
+      .about-feature-card,
+      .why-item,
+      .cta-title,
+      .cta-subtitle,
+      .cta-button,
+      .section-header,
+      .section-label,
+      .footer-section,
+      .tech-icons,
+      .tech-icon-item {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        filter: none !important;
+        clip-path: none !important;
+        animation: none !important;
+        animation-play-state: running !important;
+      }
+      
+      /* Ensure section children are visible (with or without .visible class) */
+      section .service-card,
+      section .brand-item,
+      section .testimonial-card,
+      section .about-feature-card,
+      section .why-item,
+      section .team-card,
+      section .info-card,
+      section .feature-item,
+      section .detail-card,
+      section .dashboard-card,
+      section .form-group,
+      section .section-header,
+      section .section-label,
+      section .about-header,
+      section .dashboard-header,
+      section .contact-form-wrapper,
+      section .service-hero-icon,
+      section .auth-card,
+      footer .footer-section,
+      section.visible .service-card,
+      section.visible .brand-item,
+      section.visible .testimonial-card,
+      section.visible .about-feature-card,
+      section.visible .why-item,
+      section.visible .team-card,
+      section.visible .info-card,
+      section.visible .feature-item,
+      section.visible .detail-card,
+      section.visible .dashboard-card,
+      section.visible .form-group,
+      section.visible .section-header,
+      section.visible .section-label,
+      section.visible .about-header,
+      section.visible .dashboard-header,
+      section.visible .contact-form-wrapper,
+      section.visible .service-hero-icon,
+      section.visible .auth-card,
+      footer.visible .footer-section {
+        animation-play-state: running !important;
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+        visibility: visible !important;
+      }
+      
+      section .cta-title,
+      section .cta-subtitle,
+      section .cta-button,
+      section .tech-icons,
+      section .tech-icon-item,
+      section.visible .cta-title,
+      section.visible .cta-subtitle,
+      section.visible .cta-button,
+      section.visible .tech-icons,
+      section.visible .tech-icon-item {
+        animation-play-state: running !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: scale(1) rotate(0deg) translateY(0) !important;
+      }
+      
+      /* Hide loading screen for no-JS users */
+      .loading-screen {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+      
+      /* Ensure body is scrollable */
+      body {
+        overflow: visible !important;
+      }
+      
+      body.loading {
+        overflow: visible !important;
+      }
+    </style>
+  </noscript>
+  
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
   
-  <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" media="print" onload="this.media='all'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"></noscript>
 </head>
 <body>
-  <!-- Loading Animation -->
-  <div class="loading-screen" id="loadingScreen">
-    <div class="loading-content">
-      <!-- Tech Icons from 4 corners -->
-      <div class="loading-tech-icons">
-        <!-- Bottom Left Icons (2 icons) -->
-        <i class="fab fa-react loading-icon bl-icon" style="--delay: 0s;"></i>
-        <i class="fab fa-python loading-icon bl-icon" style="--delay: 0.2s;"></i>
-        
-        <!-- Bottom Right Icons (2 icons) -->
-        <i class="fab fa-html5 loading-icon br-icon" style="--delay: 0.4s;"></i>
-        <i class="fab fa-css3-alt loading-icon br-icon" style="--delay: 0.6s;"></i>
-        
-        <!-- Top Left Icons (2 icons) -->
-        <i class="fab fa-java loading-icon tl-icon" style="--delay: 0.8s;"></i>
-        <i class="fab fa-php loading-icon tl-icon" style="--delay: 1s;"></i>
-        
-        <!-- Top Right Icons (2 icons) -->
-        <i class="fab fa-android loading-icon tr-icon" style="--delay: 1.2s;"></i>
-        <i class="fas fa-database loading-icon tr-icon" style="--delay: 1.4s;"></i>
-      </div>
-      
-      <!-- Backpack Image Container -->
-      <div class="loading-backpack-container">
-        <img src="/Backpack.png" alt="Backpack" class="loading-backpack-img" id="loadingBackpackImg" draggable="false" oncontextmenu="return false;" width="240" height="240" fetchpriority="high">
-        <div class="loading-text-container">
-          <span class="loading-backpack-text" id="loadingBackpackText"></span>
-          <span class="loading-greeting" id="loadingGreeting"></span>
-        </div>
-        <div class="image-protection-overlay"></div>
-      </div>
-    </div>
-  </div>
-
   <%- include('partials/header') %>
 
-  <!-- Hero Section -->
+  
   <section class="hero">
     <!-- Tech Circuit Pattern Background -->
     <div class="circuit-pattern"></div>
@@ -133,7 +386,7 @@
       
       <!-- People Working Image -->
       <div class="hero-image">
-        <img src="/images/Assets/People Working.png" alt="People Working Together" draggable="false" oncontextmenu="return false;" loading="eager" fetchpriority="high" width="600" height="400">
+        <img src="/images/Assets/People Working.webp" alt="People Working Together" draggable="false" oncontextmenu="return false;" loading="eager" fetchpriority="high" decoding="sync" width="600" height="400">
         <div class="image-glow"></div>
         <div class="image-protection-overlay"></div>
       </div>
@@ -151,7 +404,7 @@
         <% logos.forEach((logo, index) => { %>
           <div class="brand-item" data-index="<%= index + 1 %>">
             <div class="brand-item-inner">
-              <img src="/logos/<%= logo.filename %>" alt="<%= logo.name %>" loading="lazy" width="120" height="60">
+              <img src="/logos/<%= logo.filename %>" alt="<%= logo.name %>" loading="lazy" decoding="async" width="120" height="60">
             </div>
           </div>
         <% }) %>
@@ -168,21 +421,26 @@
       <div class="services-grid">
         <% services.forEach(service => { %>
           <div class="service-card">
-            <div class="service-icon">
-              <% if (service.icon) { %>
-                <% if (service.icon.startsWith('/')) { %>
-                  <img src="<%= service.icon %>" alt="<%= service.title %> Icon" class="service-icon-img" loading="lazy" width="64" height="64" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                  <i class="fas fa-cog" style="display: none;"></i>
+            <div class="service-icon-wrapper">
+              <div class="icon-wrapper">
+                <% if (service.icon) { %>
+                  <% if (service.icon.startsWith('/')) { %>
+                    <img src="<%= service.icon %>" alt="<%= service.title %> Icon" class="service-icon-img" loading="lazy" decoding="async" width="32" height="32" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <i class="fas fa-cog" style="display: none;"></i>
+                  <% } else { %>
+                    <i class="fas fa-<%= service.icon %>"></i>
+                  <% } %>
                 <% } else { %>
-                  <i class="fas fa-<%= service.icon %>"></i>
+                  <i class="fas fa-cog"></i>
                 <% } %>
-              <% } else { %>
-                <i class="fas fa-cog"></i>
-              <% } %>
+              </div>
             </div>
-            <h3><%= service.title %></h3>
-            <p><%= service.short_description %></p>
-            <a href="/services/<%= service.slug %>" class="btn btn-outline">Learn More</a>
+            <h3 class="service-title"><%= service.title %></h3>
+            <p class="service-description"><%= service.short_description %></p>
+            <a href="/services/<%= service.slug %>" class="learn-more" aria-label='Explore <%= service.title %>'>
+              Explore <%= service.title %>
+              <i class="fas fa-arrow-right"></i>
+            </a>
           </div>
         <% }) %>
       </div>
@@ -275,8 +533,14 @@
       
       <div class="testimonials-bento">
         <% testimonials.forEach((testimonial, index) => { %>
-          <div class="testimonial-card <%= testimonial.featured ? 'testimonial-featured' : '' %>">
+          <div class="testimonial-card <%= testimonial.featured ? 'testimonial-featured' : '' %>" data-index="<%= index %>">
             <div class="testimonial-content">
+              <div class="testimonial-quote-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" fill="currentColor" opacity="0.3"/>
+                  <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" fill="currentColor" opacity="0.3"/>
+                </svg>
+              </div>
               <p class="testimonial-text">"<%= testimonial.text %>"</p>
               
               <div class="testimonial-rating">
@@ -293,13 +557,17 @@
               </div>
               
               <div class="testimonial-author">
-                <img src="/<%= testimonial.avatarFolder ? testimonial.avatarFolder : 'images/team members' %>/<%= testimonial.avatar %>" alt="<%= testimonial.name %>" draggable="false" oncontextmenu="return false;" loading="lazy" width="60" height="60">
+                <div class="testimonial-avatar-wrapper">
+                  <img src="/<%= testimonial.avatarFolder ? testimonial.avatarFolder : 'images/team members' %>/<%= testimonial.avatar %>" alt="<%= testimonial.name %>" draggable="false" oncontextmenu="return false;" loading="lazy" decoding="async" width="60" height="60">
+                  <div class="avatar-glow"></div>
+                </div>
                 <div class="author-info">
-                  <h4><%= testimonial.name %></h4>
-                  <p><%= testimonial.company %></p>
+                  <strong class="author-name"><%= testimonial.name %></strong>
+                  <p class="author-company"><%= testimonial.company %></p>
                 </div>
               </div>
             </div>
+            <div class="testimonial-card-glow"></div>
           </div>
         <% }) %>
       </div>
@@ -345,7 +613,7 @@
         <div class="approach-center">
           <div class="backpack-container">
             <div class="backpack-glow"></div>
-            <img src="/images/Assets/Backpack Bag.png" alt="Backpack" class="backpack-image" draggable="false" oncontextmenu="return false;" loading="lazy" width="300" height="300">
+            <img src="/images/Assets/Backpack Bag.webp" alt="Backpack" class="backpack-image" draggable="false" oncontextmenu="return false;" loading="lazy" decoding="async" width="300" height="300">
             <div class="image-protection-overlay"></div>
           </div>
         </div>
@@ -385,10 +653,10 @@
                 stroke-width: 3;
                 fill: none;
                 stroke-dashoffset: 1000;
-                filter: drop-shadow(0 2px 6px rgba(197, 29, 52, 0.5));
                 stroke-linecap: round;
                 stroke-linejoin: round;
                 opacity: 0;
+                will-change: stroke-dashoffset, opacity;
               }
               
               .approach-section.animate-active .approach-line {
@@ -396,11 +664,11 @@
               }
               
               .approach-section.animate-active .line-1 {
-                animation-delay: 0.3s;
+                animation-delay: 0.4s;
               }
               
               .approach-section.animate-active .line-2 {
-                animation-delay: 0.45s;
+                animation-delay: 0.5s;
               }
               
               .approach-section.animate-active .line-3 {
@@ -408,7 +676,7 @@
               }
               
               .approach-section.animate-active .line-4 {
-                animation-delay: 0.75s;
+                animation-delay: 0.7s;
               }
               
               @keyframes shootArrow {
@@ -458,7 +726,7 @@
               <i class="fas fa-blog" style="color: #c51d34; margin-right: 0.5rem;"></i>
               Latest Blogs
             </h3>
-            <a href="/blogs" class="updates-view-all">
+            <a href="/blogs" class="updates-view-all" aria-label="View all blog posts">
               View All <i class="fas fa-arrow-right"></i>
             </a>
           </div>
@@ -469,7 +737,7 @@
                 <div class="blog-card" onclick="window.location.href='/blogs/<%= blog.slug %>'">
                   <div class="blog-card-content">
                     <% if (blog.cover_image) { %>
-                      <img src="<%= blog.cover_image %>" alt="<%= blog.title %>" class="blog-image" loading="lazy" width="150" height="120">
+                      <img src="<%= blog.cover_image %>" alt="<%= blog.title %>" class="blog-image" loading="lazy" decoding="async" width="150" height="120">
                     <% } else { %>
                       <div class="blog-image-placeholder">
                         <i class="fas fa-blog"></i>
@@ -483,7 +751,7 @@
                         <%= new Date(blog.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
                       </p>
                       <a href="/blogs/<%= blog.slug %>" class="blog-link">
-                        Read More <i class="fas fa-arrow-right"></i>
+                        Read article: <%= blog.title %> <i class="fas fa-arrow-right" aria-hidden="true"></i>
                       </a>
                     </div>
                   </div>
@@ -502,10 +770,10 @@
         <div class="updates-section">
           <div class="updates-header">
             <h3 class="updates-title">
-              <i class="fas fa-poll" style="color: #10b981; margin-right: 0.5rem;"></i>
+              <i class="fas fa-poll" style="color: #047857; margin-right: 0.5rem;"></i>
               Active Polls
             </h3>
-            <a href="/polls" class="updates-view-all">
+            <a href="/polls" class="updates-view-all" aria-label="View all active polls">
               View All <i class="fas fa-arrow-right"></i>
             </a>
           </div>
@@ -589,8 +857,7 @@
 
   <%- include('partials/footer') %>
   
-  <!-- Adding scroll animation script - Deferred for performance -->
-  <script defer>
+    <script defer>
     (function() {
       const observerOptions = {
         threshold: 0.1,
@@ -605,7 +872,7 @@
         });
       }, observerOptions);
 
-      // Wait for DOM to be ready
+
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initScrollAnimations);
       } else {
@@ -640,825 +907,436 @@
     })();
   </script>
 
-  <!-- White Image to Black Converter Script - Deferred for performance -->
-  <script defer>
-    function checkImageBrightness(img) {
-      return new Promise((resolve) => {
-
-        if (img.dataset.processed === 'true') {
-          resolve(false);
-          return;
-        }
-        
-
-        if (!img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
-          const checkLoaded = () => {
-            if (img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
-              analyzeImage(img).then(resolve);
-            } else {
-              setTimeout(checkLoaded, 100);
-            }
-          };
-          checkLoaded();
-          return;
-        }
-        
-        analyzeImage(img).then(resolve);
-      });
-    }
-    
-    function analyzeImage(img) {
-      return new Promise((resolve) => {
+    <script defer>
+    function processServiceIcons() {
+      const imgs = document.querySelectorAll('.service-icon-img:not([data-processed])');
+      imgs.forEach(img => {
+        if (img.closest('.icon-wrapper') || !img.complete) return;
         try {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          canvas.width = img.naturalWidth || img.width;
-          canvas.height = img.naturalHeight || img.height;
-          
-          if (canvas.width === 0 || canvas.height === 0) {
-            img.dataset.processed = 'true';
-            resolve(false);
-            return;
-          }
-          
+          const c = document.createElement('canvas');
+          const ctx = c.getContext('2d');
+          c.width = img.naturalWidth; c.height = img.naturalHeight;
+          if (!c.width) return;
           ctx.drawImage(img, 0, 0);
-          
-
-          const samplePoints = [];
-          const gridSize = 5; 
-          
-          for (let i = 0; i <= gridSize; i++) {
-            for (let j = 0; j <= gridSize; j++) {
-              samplePoints.push({
-                x: (i / gridSize) * canvas.width,
-                y: (j / gridSize) * canvas.height
-              });
+          let b = 0, n = 0;
+          for (let i = 0; i < 6; i++) {
+            for (let j = 0; j < 6; j++) {
+              const d = ctx.getImageData(i * c.width / 5, j * c.height / 5, 1, 1).data;
+              if (d[3] > 128) { b += (d[0] + d[1] + d[2]) / 3; n++; }
             }
           }
-          
-          let totalBrightness = 0;
-          let sampleCount = 0;
-          let whitePixelCount = 0;
-          
-          samplePoints.forEach(point => {
-            const x = Math.floor(point.x);
-            const y = Math.floor(point.y);
-            
-            if (x >= 0 && x < canvas.width && y >= 0 && y < canvas.height) {
-              try {
-                const pixelData = ctx.getImageData(x, y, 1, 1).data;
-                const r = pixelData[0];
-                const g = pixelData[1];
-                const b = pixelData[2];
-                const a = pixelData[3];
-                
-
-                if (a < 128) return;
-                
-
-                const brightness = (r + g + b) / 3;
-                totalBrightness += brightness;
-                sampleCount++;
-                
-
-                if (brightness > 200) {
-                  whitePixelCount++;
-                }
-              } catch (e) {
-
-              }
-            }
-          });
-          
-          if (sampleCount === 0) {
-            img.dataset.processed = 'true';
-            resolve(false);
-            return;
-          }
-          
-          const averageBrightness = totalBrightness / sampleCount;
-          const whitePixelRatio = whitePixelCount / sampleCount;
-          
-
-
-
-          const shouldConvert = averageBrightness > 200 || whitePixelRatio > 0.8;
-          
-          if (shouldConvert) {
-            img.style.filter = 'brightness(0)';
-            img.style.transition = 'filter 0.3s ease';
-          }
-          
-          img.dataset.processed = 'true';
-          resolve(shouldConvert);
-        } catch (e) {
-          console.warn('Error analyzing image:', e);
-          img.dataset.processed = 'true';
-          resolve(false);
-        }
+          if (n && b / n > 200) img.style.filter = 'brightness(0)';
+        } catch (e) {}
+        img.dataset.processed = '1';
       });
     }
-    
-    function processAllImages() {
-      const serviceImages = document.querySelectorAll('.service-icon-img:not([data-processed="true"])');
-      
-      if (serviceImages.length === 0) return;
-      
-      serviceImages.forEach(img => {
-        checkImageBrightness(img);
-      });
-    }
-    
-
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', processServiceIcons);
+    } else {
+      processServiceIcons();
+    }
+  </script>
 
-        setTimeout(processAllImages, 100);
-        
+    <script>
+    (function() {
+      const cards = document.querySelectorAll('.service-card');
+      const hoverTimeouts = new Map();
+      const LEAVE_DELAY = 100; 
 
-        setTimeout(processAllImages, 1000);
-        setTimeout(processAllImages, 2000);
-        
+      cards.forEach(card => {
+        let hoverTimeout = null;
 
-        const observer = new MutationObserver(processAllImages);
-        observer.observe(document.body, {
-          childList: true,
-          subtree: true
+        card.addEventListener('mouseenter', () => {
+
+          if (hoverTimeout) {
+            clearTimeout(hoverTimeout);
+            hoverTimeout = null;
+          }
+
+          card.classList.add('is-hovering');
+        });
+
+        card.addEventListener('mouseleave', () => {
+
+          if (hoverTimeout) {
+            clearTimeout(hoverTimeout);
+          }
+
+          hoverTimeout = setTimeout(() => {
+            card.classList.remove('is-hovering');
+            hoverTimeout = null;
+          }, LEAVE_DELAY);
         });
       });
-    } else {
+    })();
+  </script>
 
-      setTimeout(processAllImages, 100);
-      setTimeout(processAllImages, 1000);
-      setTimeout(processAllImages, 2000);
-    }
-    
+    <script>
+    function updateCardTiltDirections() {
+      const servicesGrid = document.querySelector('.services-grid');
+      if (!servicesGrid) return;
 
-    document.addEventListener('load', function(e) {
-      if (e.target.classList && e.target.classList.contains('service-icon-img')) {
-        checkImageBrightness(e.target);
+      const cards = Array.from(servicesGrid.querySelectorAll('.service-card'));
+      if (cards.length === 0) return;
+
+
+      cards.forEach(card => {
+        card.classList.remove('tilt-left', 'tilt-right', 'tilt-back');
+      });
+
+
+      const firstCard = cards[0];
+      const firstCardRect = firstCard.getBoundingClientRect();
+      const gridRect = servicesGrid.getBoundingClientRect();
+      
+
+      const rows = [];
+      let currentRow = [];
+      let currentTop = null;
+
+      cards.forEach((card, index) => {
+        const cardRect = card.getBoundingClientRect();
+        const cardTop = Math.round(cardRect.top);
+
+        if (currentTop === null || Math.abs(cardTop - currentTop) < 10) {
+
+          currentRow.push(card);
+          currentTop = cardTop;
+        } else {
+
+          if (currentRow.length > 0) {
+            rows.push(currentRow);
+          }
+          currentRow = [card];
+          currentTop = cardTop;
+        }
+      });
+
+
+      if (currentRow.length > 0) {
+        rows.push(currentRow);
       }
-    }, true);
+
+
+      rows.forEach(row => {
+        const rowLength = row.length;
+
+        if (rowLength === 1) {
+
+          row[0].classList.add('tilt-back');
+        } else if (rowLength === 2) {
+
+          row[0].classList.add('tilt-left');
+          row[1].classList.add('tilt-right');
+        } else {
+
+          row[0].classList.add('tilt-left');
+          row[rowLength - 1].classList.add('tilt-right');
+          
+
+          for (let i = 1; i < rowLength - 1; i++) {
+            row[i].classList.add('tilt-back');
+          }
+        }
+      });
+    }
+
+
+    let resizeTiltTimeout;
+    const debouncedTiltUpdate = () => {
+      clearTimeout(resizeTiltTimeout);
+      resizeTiltTimeout = setTimeout(updateCardTiltDirections, 150);
+    };
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        updateCardTiltDirections();
+        window.addEventListener('resize', debouncedTiltUpdate);
+      });
+    } else {
+      updateCardTiltDirections();
+      window.addEventListener('resize', debouncedTiltUpdate);
+    }
   </script>
 
 <script defer>
-const positionApproachLines = () => {
-  const svg = document.querySelector('.approach-lines');
-  const backpack = document.querySelector('.backpack-container img');
-  if (!svg || !backpack) return;
-
-  const svgRect = svg.getBoundingClientRect();
-  const backpackRect = backpack.getBoundingClientRect();
-  const startX = backpackRect.left + backpackRect.width / 2 - svgRect.left;
-  const startY = backpackRect.top + backpackRect.height / 2 - svgRect.top;
-
-  for (let i = 1; i <= 4; i++) {
-    const line = document.getElementById(`line${i}`);
-    const step = document.getElementById(`step${i}`);
-    if (!step || !line) continue;
-
-    const stepRect = step.getBoundingClientRect();
+(function() {
+  let isPositioned = false;
+  let resizeRAF = null;
+  let lastWidth = window.innerWidth;
+  
+  const positionApproachLines = (triggerAnimation = false) => {
+    const svg = document.querySelector('.approach-lines');
+    const backpack = document.querySelector('.backpack-container img');
+    const approachSection = document.querySelector('.approach-section');
+    
+    if (!svg || !backpack || !approachSection) return;
 
 
-    let targetX = stepRect.left + stepRect.width / 2 - svgRect.left;
-    let targetY;
-
-
-
-    if (i === 1 || i === 2) {
-      const topMargin = 8; 
-      targetY = stepRect.top - svgRect.top + topMargin;
-
-      if (i === 1) targetX -= Math.min(30, stepRect.width * 0.15); 
-      if (i === 2) targetX += Math.min(30, stepRect.width * 0.12); 
-    } 
-
-    else {
-      const shortGap = Math.max(12, stepRect.height * 0.18); 
-      targetY = stepRect.top - svgRect.top + shortGap; 
-
-      if (i === 3) targetX -= Math.min(18, stepRect.width * 0.12);
-      if (i === 4) targetX += Math.min(18, stepRect.width * 0.12);
+    if (resizeRAF) {
+      cancelAnimationFrame(resizeRAF);
     }
+    
+    resizeRAF = requestAnimationFrame(() => {
+      const svgRect = svg.getBoundingClientRect();
+      const backpackRect = backpack.getBoundingClientRect();
+      
+
+      if (svgRect.width === 0 || backpackRect.width === 0) {
+        isPositioned = false;
+        return;
+      }
+      
+      const startX = backpackRect.left + backpackRect.width / 2 - svgRect.left;
+      const startY = backpackRect.top + backpackRect.height / 2 - svgRect.top;
+
+      for (let i = 1; i <= 4; i++) {
+        const line = document.getElementById(`line${i}`);
+        const step = document.getElementById(`step${i}`);
+        if (!step || !line) continue;
+
+        const stepRect = step.getBoundingClientRect();
+        let targetX = stepRect.left + stepRect.width / 2 - svgRect.left;
+        let targetY;
+
+        if (i === 1 || i === 2) {
+          targetY = stepRect.top - svgRect.top + 8;
+          if (i === 1) targetX -= Math.min(30, stepRect.width * 0.15);
+          if (i === 2) targetX += Math.min(30, stepRect.width * 0.12);
+        } else {
+          targetY = stepRect.top - svgRect.top + Math.max(12, stepRect.height * 0.18);
+          if (i === 3) targetX -= Math.min(18, stepRect.width * 0.12);
+          if (i === 4) targetX += Math.min(18, stepRect.width * 0.12);
+        }
+
+        const dx = targetX - startX;
+        const dy = targetY - startY;
+        const distance = Math.hypot(dx, dy) || 1;
+        const midX = startX + dx * 0.45;
+        const midY = startY + dy * 0.45;
+        const side = (targetX < startX) ? -1 : 1;
+        const perpX = -dy / distance * distance * 0.12 * side;
+        const perpY = dx / distance * distance * 0.12 * side;
+
+        const d = `M ${startX} ${startY} Q ${midX + perpX} ${midY + perpY} ${targetX} ${targetY}`;
+        line.setAttribute('d', d);
+
+        try {
+          const length = Math.round(line.getTotalLength());
+          line.style.strokeDasharray = length;
+          
+
+          if (triggerAnimation) {
+
+            line.style.strokeDashoffset = length;
+            line.style.opacity = '0';
+
+            line.style.animation = 'none';
+            void line.offsetWidth; 
+            line.style.animation = '';
+          } else {
+            line.style.strokeDashoffset = length;
+          }
+        } catch (e) {}
+      }
+      
+
+      if (triggerAnimation) {
+
+        approachSection.classList.remove('animate-active');
+
+        void approachSection.offsetWidth;
+
+        approachSection.classList.add('animate-active');
+      }
+      
+      isPositioned = true;
+      resizeRAF = null;
+    });
+  };
 
 
-    const dx = targetX - startX;
-    const dy = targetY - startY;
-    const midX = startX + dx * 0.45; 
-    const midY = startY + dy * 0.45;
+  const initApproachLines = () => {
+    const approachSection = document.querySelector('.approach-section');
+    if (!approachSection) return;
+    
 
+    if (window.innerWidth >= 1200) {
 
-    const distance = Math.hypot(dx, dy) || 1;
-    const curveFactor = 0.12; 
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && window.innerWidth >= 1200) {
+            if (!isPositioned) {
+              positionApproachLines(true);
+            } else if (!entry.target.classList.contains('animate-active')) {
 
-    const side = (targetX < startX) ? -1 : 1;
-    const perpX = -dy / distance * distance * curveFactor * side;
-    const perpY = dx / distance * distance * curveFactor * side;
+              entry.target.classList.add('animate-active');
+            }
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      observer.observe(approachSection);
+      
 
-    const controlX = midX + perpX;
-    const controlY = midY + perpY;
-
-
-    const d = `M ${startX} ${startY} Q ${controlX} ${controlY} ${targetX} ${targetY}`;
-    line.setAttribute('d', d);
-
-
-    try {
-      const length = Math.round(line.getTotalLength());
-      line.style.strokeDasharray = length;
-      line.style.strokeDashoffset = length;
-
-    } catch (e) {
-
+      const rect = approachSection.getBoundingClientRect();
+      const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+      if (isVisible && !isPositioned) {
+        positionApproachLines(true);
+      }
     }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApproachLines);
+  } else {
+    initApproachLines();
   }
-};
 
 
-window.addEventListener('load', positionApproachLines);
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    const currentWidth = window.innerWidth;
+    const wasSmallScreen = lastWidth < 1200;
+    const isLargeScreen = currentWidth >= 1200;
+    
+    lastWidth = currentWidth;
+    
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      const approachSection = document.querySelector('.approach-section');
+      if (!approachSection) return;
+      
 
-// Debounce resize handler for better performance
-let resizeTimeout;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(() => {
-    positionApproachLines();
-  }, 150);
-});
+      if (wasSmallScreen && isLargeScreen) {
+        isPositioned = false;
 
+        approachSection.classList.remove('animate-active');
+        
+
+        const rect = approachSection.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        if (isVisible) {
+
+          setTimeout(() => {
+            positionApproachLines(true);
+          }, 100);
+        } else {
+
+          initApproachLines();
+        }
+      } 
+
+      else if (isLargeScreen && isPositioned) {
+        isPositioned = false;
+        positionApproachLines(false);
+      }
+    }, 250);
+  });
+})();
+</script>
+
+  <style>
+    /* Updates Section - Optimized */
+    .updates-grid{display:grid;grid-template-columns:2fr 1fr;gap:2rem;margin-top:3rem;contain:layout}
+    .updates-section{width:100%}
+    .updates-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+    .updates-title{font-size:1.5rem;font-weight:700;color:#111827;margin:0;display:flex;align-items:center}
+    .updates-view-all{color:#c51d34;text-decoration:none;font-weight:600;font-size:0.9375rem;white-space:nowrap;transition:color 0.2s}
+    .updates-view-all:hover{color:#a01628}
+    .blogs-list{display:flex;flex-direction:column;gap:1.5rem}
+    .blog-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:transform 0.25s ease,box-shadow 0.25s ease;cursor:pointer;transform:translateZ(0);will-change:transform}
+    .blog-card:hover{transform:translateZ(0) translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+    .blog-card-content{display:flex;gap:1rem}
+    .blog-image,.blog-image-placeholder{width:150px;height:120px;object-fit:cover;flex-shrink:0}
+    .blog-image-placeholder{background:linear-gradient(135deg,#c51d34 0%,#a01628 100%);display:flex;align-items:center;justify-content:center}
+    .blog-image-placeholder i{font-size:2rem;color:white;opacity:0.5}
+    .blog-text{padding:1rem;flex:1;display:flex;flex-direction:column}
+    .blog-title{font-size:1.125rem;font-weight:700;color:#111827;margin:0 0 0.5rem 0;line-height:1.3}
+    .blog-date{color:#6b7280;font-size:0.875rem;margin:0 0 0.75rem 0}
+    .blog-link{color:#c51d34;text-decoration:none;font-weight:600;font-size:0.875rem;margin-top:auto;transition:color 0.2s}
+    .blog-link:hover{color:#a01628}
+    .polls-list{display:flex;flex-direction:column;gap:1.5rem}
+    .poll-card{background:white;border-radius:12px;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+    .poll-question{font-size:1.125rem;font-weight:700;color:#111827;margin:0 0 1rem 0;line-height:1.4}
+    .poll-results{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1rem}
+    .poll-option{width:100%}
+    .poll-option-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem;gap:0.5rem}
+    .poll-option-text{color:#111827;font-weight:500;font-size:0.875rem;flex:1;word-break:break-word}
+    .poll-option-stats{font-weight:600;color:#047857;font-size:0.875rem;white-space:nowrap;flex-shrink:0}
+    .poll-bar{height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden}
+    .poll-bar-fill{height:100%;background:linear-gradient(90deg,#047857 0%,#065f46 100%);transition:width 0.3s ease;will-change:width}
+    .poll-footer{display:flex;align-items:center;gap:0.5rem;color:#6b7280;font-size:0.875rem;padding-top:0.75rem;border-top:1px solid #e5e7eb}
+    .updates-empty{background:white;border-radius:12px;padding:3rem;text-align:center;color:#111827}
+    .updates-empty p{color:#111827}
+    .updates-empty i{font-size:3rem;opacity:0.3;margin-bottom:1rem;display:block}
+    @media (max-width:1024px){.updates-grid{grid-template-columns:1fr;gap:2.5rem}.updates-section{max-width:100%}}
+    @media (max-width:768px){.blogs-polls-section{padding:2.5rem 0!important}.updates-grid{margin-top:2rem;gap:2rem}.updates-title{font-size:1.25rem}.updates-view-all{font-size:0.875rem}.blog-card-content{flex-direction:column;gap:0}.blog-image,.blog-image-placeholder{width:100%;height:200px}.blog-text{padding:1.25rem}.blog-title{font-size:1rem}.blog-date{font-size:0.8125rem}.blog-link{font-size:0.8125rem}.poll-card{padding:1.25rem}.poll-question{font-size:1rem}.poll-option-text,.poll-option-stats{font-size:0.8125rem}.poll-option-header{flex-wrap:wrap}.updates-empty{padding:2rem 1.5rem}.updates-empty i{font-size:2.5rem}}
+    @media (max-width:480px){.blogs-polls-section{padding:2rem 0!important}.updates-grid{margin-top:1.5rem;gap:1.5rem}.updates-header{margin-bottom:1.25rem}.updates-title{font-size:1.125rem}.updates-view-all{font-size:0.8125rem}.blogs-list,.polls-list{gap:1.25rem}.blog-image,.blog-image-placeholder{height:180px}.blog-text{padding:1rem}.blog-title{font-size:0.9375rem}.blog-date{font-size:0.75rem}.blog-link{font-size:0.75rem}.poll-card{padding:1rem}.poll-question{font-size:0.9375rem;margin-bottom:0.875rem}.poll-results{gap:0.625rem;margin-bottom:0.875rem}.poll-option-text,.poll-option-stats{font-size:0.75rem}.poll-footer{font-size:0.8125rem;padding-top:0.625rem}.updates-empty{padding:1.5rem 1rem}.updates-empty i{font-size:2rem;margin-bottom:0.75rem}.updates-empty p{font-size:0.875rem;color:#111827}}
+    @media (hover:none) and (pointer:coarse){.blog-card:hover{transform:none;box-shadow:0 2px 8px rgba(0,0,0,0.1)}}
+    /* Image Protection */
+    .image-protection-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;background:transparent;cursor:default;pointer-events:auto;user-select:none;-webkit-user-drag:none}
+    .hero-image,.backpack-container{position:relative;pointer-events:auto;user-select:none}
+    .hero-image img,.backpack-image,.testimonial-author img{pointer-events:none;user-select:none;-webkit-user-drag:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
+    .testimonial-author{position:relative;pointer-events:auto;user-select:none}
+  </style>
+
+  <script>
+    const preventImageInteraction = (img) => {
+      if (!img) return;
+      
+      img.style.pointerEvents = 'none';
+      img.style.userSelect = 'none';
+      img.style.webkitUserDrag = 'none';
+      img.style.MozUserSelect = 'none';
+      img.style.msUserSelect = 'none';
+      img.setAttribute('draggable', 'false');
+      img.setAttribute('oncontextmenu', 'return false;');
+      
+      const preventHandler = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      };
+      
+      ['contextmenu', 'dragstart', 'selectstart'].forEach(eventType => {
+        img.addEventListener(eventType, preventHandler, { passive: false });
+      });
+    };
+
+    const protectImageContainer = (container) => {
+      if (!container) return;
+      
+      const preventHandler = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      };
+      
+      ['contextmenu', 'dragstart', 'selectstart'].forEach(eventType => {
+        container.addEventListener(eventType, preventHandler, { passive: false, capture: true });
+      });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initImageProtection);
+    } else {
+      const runWhenIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 100));
+      runWhenIdle(initImageProtection);
+    }
+
+    function initImageProtection() {
+      document.querySelectorAll('.hero-image img, .backpack-image, .testimonial-author img, .empty-state-image img').forEach(preventImageInteraction);
+      document.querySelectorAll('.hero-image, .backpack-container, .testimonial-author, .image-protection-overlay').forEach(protectImageContainer);
+    }
   </script>
 
+  <!-- Enhanced Testimonials Styles -->
   <style>
-    /* Latest Updates Section - Responsive Styles */
-    .updates-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 2rem;
-      margin-top: 3rem;
-    }
-
-    .updates-section {
-      width: 100%;
-    }
-
-    .updates-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .updates-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #111827;
-      margin: 0;
-      display: flex;
-      align-items: center;
-    }
-
-    .updates-view-all {
-      color: #c51d34;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9375rem;
-      white-space: nowrap;
-      transition: color 0.2s;
-    }
-
-    .updates-view-all:hover {
-      color: #a01628;
-    }
-
-    /* Blog Cards */
-    .blogs-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .blog-card {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s;
-      cursor: pointer;
-    }
-
-    .blog-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    }
-
-    .blog-card-content {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .blog-image,
-    .blog-image-placeholder {
-      width: 150px;
-      height: 120px;
-      object-fit: cover;
-      flex-shrink: 0;
-    }
-
-    .blog-image-placeholder {
-      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .blog-image-placeholder i {
-      font-size: 2rem;
-      color: white;
-      opacity: 0.5;
-    }
-
-    .blog-text {
-      padding: 1rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .blog-title {
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: #111827;
-      margin: 0 0 0.5rem 0;
-      line-height: 1.3;
-    }
-
-    .blog-date {
-      color: #6b7280;
-      font-size: 0.875rem;
-      margin: 0 0 0.75rem 0;
-    }
-
-    .blog-link {
-      color: #c51d34;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.875rem;
-      margin-top: auto;
-      transition: color 0.2s;
-    }
-
-    .blog-link:hover {
-      color: #a01628;
-    }
-
-    /* Poll Cards */
-    .polls-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .poll-card {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .poll-question {
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: #111827;
-      margin: 0 0 1rem 0;
-      line-height: 1.4;
-    }
-
-    .poll-results {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-
-    .poll-option {
-      width: 100%;
-    }
-
-    .poll-option-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.25rem;
-      gap: 0.5rem;
-    }
-
-    .poll-option-text {
-      color: #111827;
-      font-weight: 500;
-      font-size: 0.875rem;
-      flex: 1;
-      word-break: break-word;
-    }
-
-    .poll-option-stats {
-      font-weight: 600;
-      color: #10b981;
-      font-size: 0.875rem;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .poll-bar {
-      height: 8px;
-      background: #e5e7eb;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .poll-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-      transition: width 0.3s ease;
-    }
-
-    .poll-footer {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #6b7280;
-      font-size: 0.875rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid #e5e7eb;
-    }
-
-    /* Empty State */
-    .updates-empty {
-      background: white;
-      border-radius: 12px;
-      padding: 3rem;
-      text-align: center;
-      color: #6b7280;
-    }
-
-    .updates-empty i {
-      font-size: 3rem;
-      opacity: 0.3;
-      margin-bottom: 1rem;
-      display: block;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 1024px) {
-      .updates-grid {
-        grid-template-columns: 1fr;
-        gap: 2.5rem;
-      }
-
-      .updates-section {
-        max-width: 100%;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .blogs-polls-section {
-        padding: 2.5rem 0 !important;
-      }
-
-      .updates-grid {
-        margin-top: 2rem;
-        gap: 2rem;
-      }
-
-      .updates-title {
-        font-size: 1.25rem;
-      }
-
-      .updates-view-all {
-        font-size: 0.875rem;
-      }
-
-      .blog-card-content {
-        flex-direction: column;
-        gap: 0;
-      }
-
-      .blog-image,
-      .blog-image-placeholder {
-        width: 100%;
-        height: 200px;
-      }
-
-      .blog-text {
-        padding: 1.25rem;
-      }
-
-      .blog-title {
-        font-size: 1rem;
-      }
-
-      .blog-date {
-        font-size: 0.8125rem;
-      }
-
-      .blog-link {
-        font-size: 0.8125rem;
-      }
-
-      .poll-card {
-        padding: 1.25rem;
-      }
-
-      .poll-question {
-        font-size: 1rem;
-      }
-
-      .poll-option-text,
-      .poll-option-stats {
-        font-size: 0.8125rem;
-      }
-
-      .poll-option-header {
-        flex-wrap: wrap;
-      }
-
-      .updates-empty {
-        padding: 2rem 1.5rem;
-      }
-
-      .updates-empty i {
-        font-size: 2.5rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .blogs-polls-section {
-        padding: 2rem 0 !important;
-      }
-
-      .updates-grid {
-        margin-top: 1.5rem;
-        gap: 1.5rem;
-      }
-
-      .updates-header {
-        margin-bottom: 1.25rem;
-      }
-
-      .updates-title {
-        font-size: 1.125rem;
-      }
-
-      .updates-view-all {
-        font-size: 0.8125rem;
-      }
-
-      .blogs-list,
-      .polls-list {
-        gap: 1.25rem;
-      }
-
-      .blog-image,
-      .blog-image-placeholder {
-        height: 180px;
-      }
-
-      .blog-text {
-        padding: 1rem;
-      }
-
-      .blog-title {
-        font-size: 0.9375rem;
-      }
-
-      .blog-date {
-        font-size: 0.75rem;
-      }
-
-      .blog-link {
-        font-size: 0.75rem;
-      }
-
-      .poll-card {
-        padding: 1rem;
-      }
-
-      .poll-question {
-        font-size: 0.9375rem;
-        margin-bottom: 0.875rem;
-      }
-
-      .poll-results {
-        gap: 0.625rem;
-        margin-bottom: 0.875rem;
-      }
-
-      .poll-option-text,
-      .poll-option-stats {
-        font-size: 0.75rem;
-      }
-
-      .poll-footer {
-        font-size: 0.8125rem;
-        padding-top: 0.625rem;
-      }
-
-      .updates-empty {
-        padding: 1.5rem 1rem;
-      }
-
-      .updates-empty i {
-        font-size: 2rem;
-        margin-bottom: 0.75rem;
-      }
-
-      .updates-empty p {
-        font-size: 0.875rem;
-      }
-    }
-
-    /* Disable hover effects on touch devices */
-    @media (hover: none) and (pointer: coarse) {
-      .blog-card:hover {
-        transform: none;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-    }
-  </style>
-
-  <!-- Image Protection Styles -->
-  <style>
-    .image-protection-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 10;
-      background: transparent;
-      cursor: default;
-      pointer-events: auto;
-      user-select: none;
-      -webkit-user-drag: none;
-    }
-
-    .hero-image,
-    .backpack-container {
-      position: relative;
-      pointer-events: auto;
-      user-select: none;
-    }
-
-    .hero-image img,
-    .backpack-image,
-    .loading-backpack-img,
-    .testimonial-author img {
-      pointer-events: none;
-      user-select: none;
-      -webkit-user-drag: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-    }
-
-    .loading-backpack-container,
-    .testimonial-author {
-      position: relative;
-      pointer-events: auto;
-      user-select: none;
-    }
-  </style>
-
-  <!-- Loading Animation Styles -->
-  <style>
-    body.loading {
-      overflow: hidden;
-    }
-
-    .loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, var(--cream-white) 0%, #faf8f3 100%);
-      z-index: 10000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 1;
-      transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s cubic-bezier(0.4, 0, 0.2, 1);
-      visibility: visible;
-      overflow: hidden;
-    }
-
-    .loading-screen::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(197, 29, 52, 0.03) 0%, transparent 70%);
-      animation: pulseBg 4s ease-in-out infinite;
-    }
-
-    .loading-screen::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 200px;
-      height: 200px;
-      transform: translate(-50%, -50%);
-      background: radial-gradient(circle, rgba(197, 29, 52, 0.08) 0%, transparent 70%);
-      border-radius: 50%;
-      animation: centerGlow 3s ease-in-out 4s infinite;
-      pointer-events: none;
-    }
-
-    @keyframes pulseBg {
-      0%, 100% {
-        opacity: 0.4;
-        transform: scale(1);
-      }
-      50% {
-        opacity: 0.8;
-        transform: scale(1.1);
-      }
-    }
-
-    @keyframes centerGlow {
-      0%, 100% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.8);
-      }
-      50% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.3);
-      }
-    }
-
-    .loading-screen.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .loading-content {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      contain: layout style paint;
-    }
-
-    /* Tech Icons Animation */
-    .loading-tech-icons {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      contain: layout style paint;
-      will-change: contents;
-      visibility: visible;
-    }
-
-    /* Hide tech icons on mobile */
-    @media (max-width: 768px) {
-      .loading-tech-icons {
-        display: none;
-      }
-    }
-
-    /* Loading Greeting */
-    .loading-greeting {
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: -1px;
-      background: linear-gradient(135deg, var(--dark-gray) 0%, var(--red) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      position: relative;
-      will-change: clip-path, transform;
-      contain: layout style;
-      clip-path: inset(0 100% 0 -20%);
-      animation: wipeTextGreeting 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 4.4s forwards,
-                 textRevealGreeting 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 4.4s forwards;
-      transform-origin: left center;
-      overflow: visible;
-      padding-right: 20px;
-      visibility: visible;
-      display: block;
-      margin-top: 0.5rem;
-      align-self: flex-start;
-    }
+    /* Testimonials Section */
+    .testimonials-section{position:relative;overflow:hidden}
+    .testimonials-section::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 30% 50%,rgba(197,29,52,0.03) 0%,transparent 50%),radial-gradient(circle at 70% 50%,rgba(197,29,52,0.02) 0%,transparent 50%);pointer-events:none;z-index:0}
+    .testimonials-bento{position:relative;z-index:1}
 
     .loading-greeting::before {
       content: attr(data-greeting);
@@ -1518,16 +1396,20 @@ window.addEventListener('resize', () => {
     @media (max-width: 768px) {
       .loading-greeting {
         font-size: 1.25rem;
-        margin-top: 0.4rem;
+        margin-top: 0;
         letter-spacing: -0.75px;
+        line-height: 1.2;
+        padding-bottom: 0.1em;
       }
     }
 
     @media (max-width: 480px) {
       .loading-greeting {
         font-size: 1.125rem;
-        margin-top: 0.3rem;
+        margin-top: 0;
         letter-spacing: -0.5px;
+        line-height: 1.2;
+        padding-bottom: 0.1em;
       }
     }
 
@@ -1669,6 +1551,7 @@ window.addEventListener('resize', () => {
       gap: -5rem;
       z-index: 10;
       visibility: visible;
+      overflow: visible;
     }
 
     /* Text Container */
@@ -1678,6 +1561,8 @@ window.addEventListener('resize', () => {
       align-items: flex-start;
       position: relative;
       z-index: 2;
+      gap: 0;
+      overflow: visible;
     }
 
     .loading-backpack-img {
@@ -1771,13 +1656,15 @@ window.addEventListener('resize', () => {
       font-size: 4.5rem;
       font-weight: 900;
       letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 0.15rem;
       background: linear-gradient(135deg, var(--dark-gray) 0%, var(--red) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       position: relative;
       will-change: clip-path, transform;
-      contain: layout style;
+      contain: layout;
       clip-path: inset(0 100% 0 -20%);
       animation: wipeText 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 3.8s forwards,
                  textReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 3.8s forwards;
@@ -2259,176 +2146,95 @@ window.addEventListener('resize', () => {
         animation-iteration-count: 1 !important;
       }
     }
+    /* Testimonial Cards */
+    .testimonial-card{position:relative;overflow:visible;will-change:transform;backface-visibility:hidden;-webkit-font-smoothing:antialiased;opacity:1;transform:translateY(0) scale(1);filter:blur(0);animation:testimonialFadeInUpSmooth 0.9s cubic-bezier(0.23,1,0.32,1) both;transition:all 0.6s cubic-bezier(0.23,1,0.32,1)}
+    .testimonial-card-glow{position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;background:linear-gradient(135deg,rgba(197,29,52,0.1),rgba(197,29,52,0.05),rgba(197,29,52,0.1));border-radius:22px;opacity:0;transition:opacity 0.6s cubic-bezier(0.4,0,0.2,1);z-index:-1;filter:blur(8px)}
+    .testimonial-card:hover .testimonial-card-glow{opacity:1}
+    .testimonial-card:hover{transform:translateY(-10px) rotateX(1deg) rotateY(-1deg) scale(1.02);box-shadow:0 25px 70px rgba(0,0,0,0.35),0 0 40px rgba(197,29,52,0.15),inset 0 1px 0 rgba(255,255,255,0.1)}
+    .testimonial-quote-icon{position:absolute;top:1.5rem;right:1.5rem;width:32px;height:32px;opacity:0.15;color:rgba(255,255,255,0.5);transition:all 0.4s cubic-bezier(0.4,0,0.2,1);transform:scale(0.8) rotate(-5deg);animation:quoteIconFadeIn 0.6s cubic-bezier(0.4,0,0.2,1) 0.5s both}
+
+    .testimonials-section.visible .testimonial-card:nth-child(1) .testimonial-quote-icon{animation-delay:0.5s}
+    .testimonials-section.visible .testimonial-card:nth-child(2) .testimonial-quote-icon{animation-delay:0.55s}
+    .testimonials-section.visible .testimonial-card:nth-child(3) .testimonial-quote-icon{animation-delay:0.6s}
+    .testimonials-section.visible .testimonial-card:nth-child(4) .testimonial-quote-icon{animation-delay:0.65s}
+    .testimonials-section.visible .testimonial-card:nth-child(5) .testimonial-quote-icon{animation-delay:0.7s}
+    .testimonials-section.visible .testimonial-card:nth-child(6) .testimonial-quote-icon{animation-delay:0.75s}
+    .testimonials-section.visible .testimonial-card:nth-child(7) .testimonial-quote-icon{animation-delay:0.8s}
+    @keyframes quoteIconFadeIn{from{opacity:0;transform:scale(0.5) rotate(-15deg)}to{opacity:0.15;transform:scale(0.8) rotate(-5deg)}}
+    .testimonial-card:hover .testimonial-quote-icon{opacity:0.25;transform:scale(1) rotate(0deg);color:rgba(255,255,255,0.7)}
+    .testimonial-text{position:relative;z-index:2;font-weight:400;letter-spacing:0.01em;text-rendering:optimizeLegibility}
+    .testimonial-avatar-wrapper{position:relative;display:inline-block}
+    .avatar-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,rgba(197,29,52,0.3) 0%,transparent 70%);opacity:0;transition:opacity 0.5s cubic-bezier(0.4,0,0.2,1);z-index:-1;filter:blur(8px)}
+    .testimonial-card:hover .avatar-glow{opacity:0.6}
+    .testimonial-author img{position:relative;z-index:1;transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+    .testimonial-card:hover .testimonial-author img{transform:scale(1.08) rotate(2deg);box-shadow:0 8px 24px rgba(197,29,52,0.4);border-color:rgba(197,29,52,0.6)}
+    .author-info{flex:1}
+    .author-name{transition:color 0.3s ease}
+    .testimonial-card:hover .author-name{color:rgba(255,255,255,1)}
+    .author-company{transition:color 0.3s ease}
+    .testimonial-card:hover .author-company{color:rgba(255,255,255,0.85)}
+    .testimonial-rating i{transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);filter:drop-shadow(0 2px 4px rgba(251,191,36,0.3))}
+    .testimonial-card:hover .testimonial-rating i{transform:scale(1.15) rotate(5deg);filter:drop-shadow(0 4px 8px rgba(251,191,36,0.6))}
+    .testimonial-card:hover .testimonial-rating i:nth-child(1){transition-delay:0s}
+    .testimonial-card:hover .testimonial-rating i:nth-child(2){transition-delay:0.05s}
+    .testimonial-card:hover .testimonial-rating i:nth-child(3){transition-delay:0.1s}
+    .testimonial-card:hover .testimonial-rating i:nth-child(4){transition-delay:0.15s}
+    .testimonial-card:hover .testimonial-rating i:nth-child(5){transition-delay:0.2s}
+    .testimonial-content{transition:transform 0.6s cubic-bezier(0.23,1,0.32,1)}
+    .testimonial-card:hover .testimonial-content{transform:translateY(-2px)}
+
+    /* Featured Card */
+    .testimonial-featured{background:radial-gradient(circle at 20% 30%,rgba(255,255,255,0.04) 0%,transparent 40%),radial-gradient(circle at 80% 70%,rgba(255,255,255,0.03) 0%,transparent 40%),repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,0.015) 2px,rgba(255,255,255,0.015) 4px),linear-gradient(135deg,#c51d34 0%,#a01628 15%,#c51d34 30%,#d93850 50%,#c51d34 70%,#e04a65 85%,#c51d34 100%);background-size:100% 100%,100% 100%,20px 20px,300% 300%;animation:featuredGradientShift 6s ease infinite;position:relative;border:none;overflow:visible;transform:scale(1.05);z-index:3;isolation:isolate;box-shadow:0 20px 50px rgba(197,29,52,0.25),0 0 30px rgba(197,29,52,0.2),inset 0 1px 0 rgba(255,255,255,0.1),inset 0 -1px 0 rgba(0,0,0,0.1),0 0 40px rgba(197,29,52,0.15),0 0 0 1px rgba(255,255,255,0.1);animation:featuredCardPulse 4s ease-in-out infinite,featuredGradientShift 6s ease infinite}
+    .testimonial-featured::before{content:'';position:absolute;top:-3px;left:-3px;right:-3px;bottom:-3px;background:linear-gradient(45deg,#c51d34,#d93850,#c51d34,#e04a65,#c51d34,#d93850,#c51d34);background-size:400% 400%;border-radius:inherit;z-index:-1;opacity:0.4;animation:featuredBorderGlow 3s linear infinite;filter:blur(6px)}
+    .testimonial-featured::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;border-radius:inherit;padding:2px;background:linear-gradient(135deg,rgba(255,255,255,0.15) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.15) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;pointer-events:none;z-index:1;animation:featuredBorderShine 4s ease-in-out infinite}
+    @keyframes featuredGradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+    @keyframes featuredBorderGlow{0%{background-position:0% 50%;opacity:0.3}50%{opacity:0.5}100%{background-position:100% 50%;opacity:0.3}}
+    @keyframes featuredBorderShine{0%,100%{opacity:0.15;transform:scale(1)}50%{opacity:0.3;transform:scale(1.01)}}
+
+    .testimonial-featured .testimonial-content::before{content:'✦';position:absolute;top:45%;left:48%;transform:translate(-50%,-50%);font-size:1.5rem;color:rgba(255,255,255,0.35);animation:sparkle 2s ease-in-out infinite;z-index:3;pointer-events:none}
+    .testimonial-featured .testimonial-content::after{content:'✦';position:absolute;top:50%;left:52%;transform:translate(-50%,-50%);font-size:1.2rem;color:rgba(255,255,255,0.3);animation:sparkle 2.5s ease-in-out infinite 0.5s;z-index:3;pointer-events:none}
+    @keyframes sparkle{0%,100%{opacity:0.2;transform:scale(0.8) rotate(0deg)}50%{opacity:0.5;transform:scale(1.1) rotate(180deg)}}
+    @keyframes featuredCardPulse{0%,100%{box-shadow:0 20px 50px rgba(197,29,52,0.25),0 0 30px rgba(197,29,52,0.2),inset 0 1px 0 rgba(255,255,255,0.1),inset 0 -1px 0 rgba(0,0,0,0.1),0 0 40px rgba(197,29,52,0.15),0 0 0 1px rgba(255,255,255,0.1)}50%{box-shadow:0 25px 60px rgba(197,29,52,0.3),0 0 40px rgba(197,29,52,0.25),inset 0 1px 0 rgba(255,255,255,0.15),inset 0 -1px 0 rgba(0,0,0,0.15),0 0 50px rgba(197,29,52,0.2),0 0 0 1px rgba(255,255,255,0.15)}}
+    .testimonial-featured:hover{animation:featuredCardPulseHover 2s ease-in-out infinite;transform:scale(1.08) translateY(-15px) rotateZ(0.5deg)}
+    @keyframes featuredCardPulseHover{0%,100%{box-shadow:0 30px 80px rgba(197,29,52,0.35),0 0 60px rgba(197,29,52,0.3),inset 0 2px 0 rgba(255,255,255,0.15),inset 0 -2px 0 rgba(0,0,0,0.2),0 0 70px rgba(197,29,52,0.25),0 0 0 1px rgba(255,255,255,0.2)}50%{box-shadow:0 35px 90px rgba(197,29,52,0.4),0 0 70px rgba(197,29,52,0.35),inset 0 2px 0 rgba(255,255,255,0.2),inset 0 -2px 0 rgba(0,0,0,0.25),0 0 80px rgba(197,29,52,0.3),0 0 0 1px rgba(255,255,255,0.25)}}
+    .testimonial-featured:hover::before{filter:blur(8px);opacity:0.5;animation-duration:1.5s}
+
+    .testimonial-featured .testimonial-text{color:rgba(255,255,255,0.98);text-shadow:0 2px 8px rgba(0,0,0,0.25),0 0 10px rgba(255,255,255,0.05);font-weight:500;position:relative;z-index:2}
+    .testimonial-featured .author-name{color:rgba(255,255,255,0.98);text-shadow:0 1px 4px rgba(0,0,0,0.25),0 0 8px rgba(255,255,255,0.05);font-weight:700;letter-spacing:0.02em}
+    .testimonial-featured .author-company{color:rgba(255,255,255,0.9);text-shadow:0 1px 3px rgba(0,0,0,0.2),0 0 6px rgba(255,255,255,0.04);font-weight:500}
+    .testimonial-featured .testimonial-rating i{filter:drop-shadow(0 2px 6px rgba(251,191,36,0.4));color:#ffd700;text-shadow:0 0 6px rgba(255,215,0,0.3);animation:starTwinkle 2s ease-in-out infinite}
+    .testimonial-featured .testimonial-rating i:nth-child(1){animation-delay:0s}
+    .testimonial-featured .testimonial-rating i:nth-child(2){animation-delay:0.2s}
+    .testimonial-featured .testimonial-rating i:nth-child(3){animation-delay:0.4s}
+    .testimonial-featured .testimonial-rating i:nth-child(4){animation-delay:0.6s}
+    .testimonial-featured .testimonial-rating i:nth-child(5){animation-delay:0.8s}
+    @keyframes starTwinkle{0%,100%{transform:scale(1);filter:drop-shadow(0 2px 6px rgba(251,191,36,0.4))}50%{transform:scale(1.1);filter:drop-shadow(0 3px 8px rgba(251,191,36,0.5))}}
+    .testimonial-featured .testimonial-quote-icon{opacity:0.15;color:rgba(255,255,255,0.5);filter:drop-shadow(0 1px 4px rgba(255,255,255,0.2));animation:quoteIconPulse 3s ease-in-out infinite}
+    @keyframes quoteIconPulse{0%,100%{opacity:0.15;transform:scale(1)}50%{opacity:0.25;transform:scale(1.05)}}
+    .testimonial-featured:hover .testimonial-quote-icon{opacity:0.3;color:rgba(255,255,255,0.7);filter:drop-shadow(0 2px 6px rgba(255,255,255,0.3))}
+    .testimonial-featured .testimonial-content{position:relative;z-index:2;background:radial-gradient(circle at top right,rgba(255,255,255,0.03) 0%,transparent 50%)}
+    .testimonial-featured .testimonial-card-glow{background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 70%);opacity:0.4;animation:featuredCardGlowPulse 3s ease-in-out infinite}
+    @keyframes featuredCardGlowPulse{0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:0.5;transform:scale(1.03)}}
+    .testimonial-featured .avatar-glow{opacity:0.5;filter:blur(10px);animation:featuredAvatarGlow 3s ease-in-out infinite}
+    @keyframes featuredAvatarGlow{0%,100%{opacity:0.4;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.6;transform:translate(-50%,-50%) scale(1.05)}}
+    .testimonial-featured:hover .avatar-glow{opacity:0.7;filter:blur(12px)}
+
+    html.no-js .testimonial-card{opacity:1!important;transform:translateY(0) scale(1)!important;filter:blur(0)!important;animation:none!important}
+    @keyframes testimonialFadeInUpSmooth{from{opacity:0;transform:translateY(50px) scale(0.92);filter:blur(10px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+    .testimonials-section.visible .testimonial-card{animation:testimonialFadeInUpSmooth 0.9s cubic-bezier(0.23,1,0.32,1) both,testimonialFloatSmooth 8s ease-in-out infinite}
+    @keyframes testimonialFloatSmooth{0%,100%{transform:translateY(0px) rotate(0deg)}50%{transform:translateY(-6px) rotate(0.3deg)}}
+    .testimonials-section.visible .testimonial-card:nth-child(1){animation-delay:0.1s,1s;animation-duration:0.9s,8s}
+    .testimonials-section.visible .testimonial-card:nth-child(2){animation-delay:0.15s,1.1s;animation-duration:0.9s,8.2s}
+    .testimonials-section.visible .testimonial-card:nth-child(3){animation-delay:0.2s,1.2s;animation-duration:0.9s,7.8s}
+    .testimonials-section.visible .testimonial-card:nth-child(4){animation-delay:0.25s,1.3s;animation-duration:0.9s,8.1s}
+    .testimonials-section.visible .testimonial-card:nth-child(5){animation-delay:0.3s,1.4s;animation-duration:0.9s,7.9s}
+    .testimonials-section.visible .testimonial-card:nth-child(6){animation-delay:0.35s,1.5s;animation-duration:0.9s,8.3s}
+    .testimonials-section.visible .testimonial-card:nth-child(7){animation-delay:0.4s,1.6s;animation-duration:0.9s,8s}
+    @media (max-width:1024px){.testimonial-card:hover{transform:translateY(-6px) scale(1.01)}.testimonial-quote-icon{width:28px;height:28px;top:1.25rem;right:1.25rem}}
+    @media (max-width:768px){.testimonial-card:hover{transform:translateY(-4px) scale(1.01)}.testimonial-quote-icon{width:24px;height:24px;top:1rem;right:1rem;opacity:0.1}.testimonial-card-glow{filter:blur(4px)}}
+    @media (prefers-reduced-motion:reduce){.testimonial-card,.testimonial-card:hover,.testimonial-content,.testimonial-rating i,.testimonial-author img,.testimonial-quote-icon{animation:none!important;transition:none!important;transform:none!important}}
+    .testimonial-card,.testimonial-content,.testimonial-author img{will-change:transform;transform:translateZ(0)}
   </style>
-
-  <!-- Loading Animation Script - Optimized to not block render -->
-  <script>
-    // Use requestIdleCallback for better performance, fallback to setTimeout
-    const runWhenIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
-    
-    runWhenIdle(function() {
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initLoadingAnimation);
-      } else {
-        initLoadingAnimation();
-      }
-    });
-
-    function initLoadingAnimation() {
-      const loadingScreen = document.getElementById('loadingScreen');
-      const backpackText = document.getElementById('loadingBackpackText');
-      const loadingGreeting = document.getElementById('loadingGreeting');
-      const text = 'Backpack';
-
-      // Function to get greeting based on time of day
-      function getGreeting() {
-        const hour = new Date().getHours();
-        if (hour >= 5 && hour < 12) {
-          return 'Good Morning';
-        } else if (hour >= 12 && hour < 17) {
-          return 'Good Afternoon';
-        } else if (hour >= 17 && hour < 22) {
-          return 'Good Evening';
-        } else {
-          return 'Good Evening';
-        }
-      }
-
-      // Check if loading animation should be shown (once per day)
-      function shouldShowLoading() {
-        const today = new Date().toDateString();
-        const lastShownDate = localStorage.getItem('backpackLoadingDate');
-        
-        if (lastShownDate !== today) {
-          localStorage.setItem('backpackLoadingDate', today);
-          return true;
-        }
-        return false;
-      }
-
-      // Check if we should show the loading screen
-      if (!shouldShowLoading()) {
-        // Hide loading screen immediately if already shown today
-        if (loadingScreen) {
-          loadingScreen.style.display = 'none';
-          loadingScreen.remove();
-        }
-        document.body.classList.remove('loading');
-        return;
-      }
-
-      // Set greeting
-      if (loadingGreeting) {
-        const greetingText = getGreeting();
-        loadingGreeting.textContent = greetingText;
-        loadingGreeting.setAttribute('data-greeting', greetingText);
-      }
-
-      // Show loading animation
-      document.body.classList.add('loading');
-
-      // Set backpack text
-      backpackText.textContent = text;
-
-      // Hide loading screen after animation
-      setTimeout(() => {
-        if (loadingScreen) {
-          loadingScreen.classList.add('hidden');
-          document.body.classList.remove('loading');
-
-          setTimeout(() => {
-            loadingScreen.remove();
-          }, 1000);
-        }
-      }, 5500);
-    }
-
-    const preventImageInteraction = (img) => {
-      if (!img) return;
-      
-
-      ['dragstart', 'drag', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(eventType => {
-        img.addEventListener(eventType, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }, { passive: false });
-      });
-      
-
-      ['click', 'mousedown', 'mouseup', 'mousemove', 'dblclick'].forEach(eventType => {
-        img.addEventListener(eventType, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }, { passive: false });
-      });
-      
-
-      img.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }, { passive: false });
-      
-
-      ['selectstart', 'select', 'copy'].forEach(eventType => {
-        img.addEventListener(eventType, (e) => {
-          e.preventDefault();
-          return false;
-        }, { passive: false });
-      });
-      
-
-      img.addEventListener('auxclick', (e) => {
-        if (e.button === 1) {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }
-      }, { passive: false });
-      
-
-      img.style.pointerEvents = 'none';
-      img.style.userSelect = 'none';
-      img.style.webkitUserDrag = 'none';
-      img.style.MozUserSelect = 'none';
-      img.style.msUserSelect = 'none';
-      img.setAttribute('draggable', 'false');
-      img.setAttribute('oncontextmenu', 'return false;');
-    };
-
-
-    const protectImageContainer = (container) => {
-      if (!container) return;
-      
-      ['dragstart', 'drag', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop',
-       'click', 'mousedown', 'mouseup', 'mousemove', 'dblclick', 'contextmenu',
-       'selectstart', 'select', 'copy', 'auxclick'].forEach(eventType => {
-        container.addEventListener(eventType, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-          return false;
-        }, { passive: false, capture: true });
-      });
-    };
-
-
-    // Defer image protection to not block initial render
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initImageProtection);
-    } else {
-      // Use requestIdleCallback for non-critical image protection
-      const runWhenIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 100));
-      runWhenIdle(initImageProtection);
-    }
-
-    function initImageProtection() {
-      document.querySelectorAll('.hero-image img, .backpack-image, .loading-backpack-img, .testimonial-author img, .empty-state-image img').forEach(preventImageInteraction);
-      document.querySelectorAll('.hero-image, .backpack-container, .loading-backpack-container, .testimonial-author, .image-protection-overlay').forEach(protectImageContainer);
-    }
-  </script>
   
 </body>
 </html>

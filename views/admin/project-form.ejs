@@ -337,12 +337,32 @@
       overflow: hidden;
       border: 2px solid #e5e7eb;
       background: #f9fafb;
+      transition: all 0.2s;
+    }
+
+    .image-item.selected {
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.2);
     }
 
     .image-item img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    .image-checkbox {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      accent-color: #c51d34;
+      z-index: 10;
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .image-actions {
@@ -400,6 +420,49 @@
     .remove-image-btn:hover {
       background: rgba(220, 38, 38, 1);
       transform: scale(1.1);
+    }
+
+    .bulk-delete-container {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #fef2f2;
+      border: 2px solid #fee2e2;
+      border-radius: 8px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .bulk-delete-container.show {
+      display: flex;
+    }
+
+    .bulk-delete-info {
+      font-size: 0.875rem;
+      color: #111827;
+      font-weight: 500;
+    }
+
+    .bulk-delete-btn {
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .bulk-delete-btn:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
 
     .image-upload-input {
@@ -1256,7 +1319,7 @@
               <small class="form-help">Select multiple technologies (searchable)</small>
             </div>
 
-            <!-- Project Images (Multiple) -->
+            <!-- Project Images -->
             <div class="form-group full-width">
               <label>Project Images <span class="required">*</span></label>
               <div class="image-upload-container">
@@ -1272,6 +1335,7 @@
                     <div class="images-grid" id="existingImagesGrid">
                       <% existingImages.forEach((img, index) => { %>
                         <div class="image-item" data-image-filename="<%= img.filename %>" data-image-path="<%= img.path %>">
+                          <input type="checkbox" class="image-checkbox" data-image-filename="<%= img.filename %>" onchange="toggleImageSelection(this)">
                           <img src="<%= img.path %>" alt="Project Image" onerror="this.parentElement.remove();">
                           <div class="image-actions">
                             <button type="button" class="cover-image-btn <%= project.cover_image === img.filename ? 'active' : '' %>" 
@@ -1287,10 +1351,16 @@
                         </div>
                       <% }) %>
                     </div>
-                    <% } %>
+                    <div class="bulk-delete-container" id="bulkDeleteContainer">
+                      <span class="bulk-delete-info" id="bulkDeleteInfo">0 images selected</span>
+                      <button type="button" class="bulk-delete-btn" onclick="deleteSelectedImages()">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  <% } %>
                   </div>
                 
-                <!-- Cover Image Input (always present) -->
+                <!-- Cover Image Input -->
                 <input type="hidden" name="cover_image" id="coverImageInput" value="<%= isEdit && project ? (project.cover_image || '') : '' %>">
                 
                 <!-- New Images Upload -->
@@ -1310,6 +1380,12 @@
                   
                   <!-- Preview for new images -->
                   <div id="newImagesPreview" class="images-grid" style="margin-top: 1rem; display: none;"></div>
+                  <div class="bulk-delete-container" id="bulkDeleteNewContainer" style="margin-top: 1rem;">
+                    <span class="bulk-delete-info" id="bulkDeleteNewInfo">0 images selected</span>
+                    <button type="button" class="bulk-delete-btn" onclick="deleteSelectedNewImages()">
+                      <i class="fas fa-trash"></i> Delete Selected
+                    </button>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -1346,7 +1422,7 @@
             <div class="form-group full-width">
               <label>Project Milestones</label>
               <div id="milestonesContainer" class="milestones-container">
-                <!-- Milestones will be added here dynamically -->
+                <!-- Milestones will be added here -->
               </div>
               <button type="button" class="btn btn-secondary" id="addMilestoneBtn" style="margin-top: 1rem; width: auto; padding: 0.75rem 1.5rem;">
                 <i class="fas fa-plus"></i> Add Milestone
@@ -1498,7 +1574,11 @@
       const currentTotal = existingCount + newPreviewCount;
       
       if (filesArray.length + currentTotal > 20) {
-        alert(`Maximum 20 images allowed. You currently have ${currentTotal} image(s). Please select fewer images.`);
+        const errorMessageEl = document.getElementById('errorMessage');
+        if (errorMessageEl) {
+          errorMessageEl.textContent = `Maximum 20 images allowed. You currently have ${currentTotal} image(s). Please select fewer images.`;
+        }
+        showModal('errorModal');
         return;
       }
 
@@ -1510,13 +1590,21 @@
       filesArray.forEach((file, relativeIndex) => {
 
         if (file.size > 5 * 1024 * 1024) {
-          alert(`Image "${file.name}" is too large. Maximum size is 5MB.`);
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = `Image "${file.name}" is too large. Maximum size is 5MB. Please select a smaller image.`;
+          }
+          showModal('errorModal');
           return;
         }
 
 
         if (!file.type.startsWith('image/')) {
-          alert(`"${file.name}" is not an image file.`);
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = `"${file.name}" is not an image file. Please select an image file.`;
+          }
+          showModal('errorModal');
           return;
         }
 
@@ -1524,7 +1612,11 @@
         const currentCount = existingImagesGrid ? existingImagesGrid.children.length : 0;
         const previewCount = newImagesPreview ? newImagesPreview.children.length : 0;
         if (currentCount + previewCount >= 20) {
-          alert('Maximum 20 images allowed. Please remove some images first.');
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = 'Maximum 20 images allowed. Please remove some images first.';
+          }
+          showModal('errorModal');
           return;
         }
 
@@ -1541,6 +1633,7 @@
           const previewId = `preview_${Date.now()}_${index}`;
           
           imageItem.innerHTML = `
+            <input type="checkbox" class="image-checkbox" data-file-index="${index}" onchange="toggleImageSelection(this)">
             <img src="${e.target.result}" alt="Preview">
             <div class="image-actions">
               <button type="button" class="cover-image-btn" 
@@ -1572,16 +1665,29 @@
 
       if (imagesInput && validFiles.length > 0) {
         const dataTransfer = new DataTransfer();
+        const seenFiles = new Map(); 
+
 
         if (imagesInput.files) {
           for (let i = 0; i < imagesInput.files.length; i++) {
-            dataTransfer.items.add(imagesInput.files[i]);
+            const file = imagesInput.files[i];
+            const fileKey = `${file.name}_${file.size}_${file.lastModified}`;
+            if (!seenFiles.has(fileKey)) {
+              seenFiles.set(fileKey, true);
+              dataTransfer.items.add(file);
+            }
           }
         }
 
+
         validFiles.forEach(file => {
-          dataTransfer.items.add(file);
+          const fileKey = `${file.name}_${file.size}_${file.lastModified}`;
+          if (!seenFiles.has(fileKey)) {
+            seenFiles.set(fileKey, true);
+            dataTransfer.items.add(file);
+          }
         });
+        
         imagesInput.files = dataTransfer.files;
       }
     }
@@ -1690,6 +1796,133 @@
     }
 
 
+    function toggleImageSelection(checkbox) {
+      const imageItem = checkbox.closest('.image-item');
+      if (checkbox.checked) {
+        imageItem.classList.add('selected');
+      } else {
+        imageItem.classList.remove('selected');
+      }
+      updateBulkDeleteUI();
+    }
+
+    function updateBulkDeleteUI() {
+
+      const existingCheckboxes = document.querySelectorAll('#existingImagesGrid .image-checkbox:checked');
+      const bulkDeleteContainer = document.getElementById('bulkDeleteContainer');
+      const bulkDeleteInfo = document.getElementById('bulkDeleteInfo');
+      
+      if (bulkDeleteContainer && bulkDeleteInfo) {
+        if (existingCheckboxes.length > 0) {
+          bulkDeleteContainer.classList.add('show');
+          bulkDeleteInfo.textContent = `${existingCheckboxes.length} image${existingCheckboxes.length > 1 ? 's' : ''} selected`;
+        } else {
+          bulkDeleteContainer.classList.remove('show');
+        }
+      }
+
+
+      const newCheckboxes = document.querySelectorAll('#newImagesPreview .image-checkbox:checked');
+      const bulkDeleteNewContainer = document.getElementById('bulkDeleteNewContainer');
+      const bulkDeleteNewInfo = document.getElementById('bulkDeleteNewInfo');
+      
+      if (bulkDeleteNewContainer && bulkDeleteNewInfo) {
+        if (newCheckboxes.length > 0) {
+          bulkDeleteNewContainer.classList.add('show');
+          bulkDeleteNewInfo.textContent = `${newCheckboxes.length} image${newCheckboxes.length > 1 ? 's' : ''} selected`;
+        } else {
+          bulkDeleteNewContainer.classList.remove('show');
+        }
+      }
+    }
+
+    function deleteSelectedImages() {
+      const selectedCheckboxes = document.querySelectorAll('#existingImagesGrid .image-checkbox:checked');
+      if (selectedCheckboxes.length === 0) {
+        return;
+      }
+
+      showConfirmation(`Are you sure you want to delete ${selectedCheckboxes.length} selected image${selectedCheckboxes.length > 1 ? 's' : ''}?`, function() {
+        const coverImageInput = document.getElementById('coverImageInput');
+        const projectForm = document.getElementById('projectForm');
+        
+        selectedCheckboxes.forEach(checkbox => {
+          const imageItem = checkbox.closest('.image-item');
+          const filename = checkbox.dataset.imageFilename || (imageItem ? imageItem.dataset.imageFilename : null);
+          
+          if (coverImageInput && coverImageInput.value === filename) {
+            coverImageInput.value = '';
+          }
+
+          const deleteInput = document.createElement('input');
+          deleteInput.type = 'hidden';
+          deleteInput.name = 'delete_images[]';
+          deleteInput.value = filename;
+          projectForm.appendChild(deleteInput);
+
+          imageItem.remove();
+        });
+
+        const existingGrid = document.getElementById('existingImagesGrid');
+        if (existingGrid && existingGrid.children.length === 0) {
+          existingGrid.parentElement.style.display = 'none';
+        }
+
+        updateBulkDeleteUI();
+      });
+    }
+
+    function deleteSelectedNewImages() {
+      const selectedCheckboxes = document.querySelectorAll('#newImagesPreview .image-checkbox:checked');
+      if (selectedCheckboxes.length === 0) {
+        return;
+      }
+
+      showConfirmation(`Are you sure you want to delete ${selectedCheckboxes.length} selected image${selectedCheckboxes.length > 1 ? 's' : ''}?`, function() {
+        const coverImageInput = document.getElementById('coverImageInput');
+        
+        selectedCheckboxes.forEach(checkbox => {
+          const imageItem = checkbox.closest('.image-item');
+          const fileIndex = parseInt(checkbox.dataset.fileIndex);
+          
+          if (!isNaN(fileIndex)) {
+            removedFileIndices.add(fileIndex);
+          }
+
+          if (coverImageInput && imageItem) {
+            const currentCoverValue = coverImageInput.value;
+            if (currentCoverValue && currentCoverValue.startsWith('new_image_index_')) {
+              const coverIndex = parseInt(currentCoverValue.replace('new_image_index_', ''));
+              if (coverIndex === fileIndex) {
+                coverImageInput.value = '';
+              }
+            }
+          }
+
+          imageItem.remove();
+        });
+
+
+        const remainingImages = newImagesPreview.querySelectorAll('.image-item');
+        if (remainingImages.length > 0 && coverImageInput && !coverImageInput.value) {
+          const firstRemaining = remainingImages[0];
+          const firstIndex = parseInt(firstRemaining.dataset.fileIndex);
+          if (!isNaN(firstIndex) && !removedFileIndices.has(firstIndex)) {
+            const firstCoverBtn = firstRemaining.querySelector('.cover-image-btn');
+            if (firstCoverBtn) {
+              setCoverImageFromPreview(firstIndex, firstCoverBtn);
+            }
+          }
+        }
+
+        if (newImagesPreview && newImagesPreview.children.length === 0) {
+          newImagesPreview.style.display = 'none';
+        }
+
+        updateBulkDeleteUI();
+      });
+    }
+
     function removeExistingImage(filename, button) {
       showConfirmation('Are you sure you want to remove this image?', function() {
         const coverImageInput = document.getElementById('coverImageInput');
@@ -1709,12 +1942,211 @@
         if (existingGrid && existingGrid.children.length === 0) {
           existingGrid.parentElement.style.display = 'none';
         }
+        
+        updateBulkDeleteUI();
       });
     }
 
 
     const removedFileIndices = new Set();
 
+
+
+    const CHUNK_SIZE = 750 * 1024; 
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; 
+
+
+    const uploadedImageUrls = new Map(); 
+
+    /**
+     * Upload a file using chunked upload
+     */
+    async function uploadFileChunked(file, fileIndex) {
+      return new Promise(async (resolve, reject) => {
+        try {
+
+          if (file.size > MAX_FILE_SIZE) {
+            reject(new Error(`File "${file.name}" exceeds 5MB limit`));
+            return;
+          }
+
+
+          const uploadIdResponse = await fetch('/admin/api/chunked-upload/upload-id');
+          
+          if (!uploadIdResponse.ok) {
+            const errorText = await uploadIdResponse.text();
+            reject(new Error(`Failed to get upload ID: ${uploadIdResponse.status} ${uploadIdResponse.statusText}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+          const contentType = uploadIdResponse.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            const errorText = await uploadIdResponse.text();
+            reject(new Error(`Invalid response format. Expected JSON but got: ${contentType}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+          const uploadIdData = await uploadIdResponse.json();
+          
+          if (!uploadIdData.success) {
+            reject(new Error(uploadIdData.message || 'Failed to get upload ID'));
+            return;
+          }
+
+          const uploadId = uploadIdData.uploadId;
+          const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+
+          for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+            const start = chunkIndex * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, file.size);
+            const chunk = file.slice(start, end);
+
+
+            const chunkBase64 = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                const base64 = reader.result.split(',')[1];
+                resolve(base64);
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(chunk);
+            });
+
+
+            const formData = new FormData();
+            formData.append('uploadId', uploadId);
+            formData.append('chunkIndex', chunkIndex);
+            formData.append('totalChunks', totalChunks);
+            formData.append('fileName', file.name);
+            formData.append('fileSize', file.size);
+            formData.append('chunkData', chunkBase64);
+
+            const chunkResponse = await fetch('/admin/api/chunked-upload/chunk', {
+              method: 'POST',
+              body: formData
+            });
+
+
+            if (!chunkResponse.ok) {
+              const errorText = await chunkResponse.text();
+              reject(new Error(`Upload failed: ${chunkResponse.status} ${chunkResponse.statusText}. ${errorText.substring(0, 100)}`));
+              return;
+            }
+
+
+            const contentType = chunkResponse.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+              const errorText = await chunkResponse.text();
+              reject(new Error(`Invalid response format. Expected JSON but got: ${contentType}. ${errorText.substring(0, 100)}`));
+              return;
+            }
+
+            const chunkResult = await chunkResponse.json();
+            
+            if (!chunkResult.success) {
+              reject(new Error(chunkResult.message || 'Failed to upload chunk'));
+              return;
+            }
+
+          }
+
+
+          const completeFormData = new FormData();
+          completeFormData.append('uploadId', uploadId);
+          completeFormData.append('fileName', file.name);
+          completeFormData.append('type', 'project');
+
+          const completeResponse = await fetch('/admin/api/chunked-upload/complete', {
+            method: 'POST',
+            body: completeFormData
+          });
+
+
+          if (!completeResponse.ok) {
+            const errorText = await completeResponse.text();
+            reject(new Error(`Complete upload failed: ${completeResponse.status} ${completeResponse.statusText}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+
+          const completeContentType = completeResponse.headers.get('content-type');
+          if (!completeContentType || !completeContentType.includes('application/json')) {
+            const errorText = await completeResponse.text();
+            reject(new Error(`Invalid response format. Expected JSON but got: ${completeContentType}. ${errorText.substring(0, 100)}`));
+            return;
+          }
+
+          const completeResult = await completeResponse.json();
+          
+          if (!completeResult.success) {
+            reject(new Error(completeResult.message || 'Failed to complete upload'));
+            return;
+          }
+
+          resolve(completeResult.url);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+
+    /**
+     * Upload all new images using chunked upload
+     */
+    async function uploadAllImages() {
+      if (!imagesInput || !imagesInput.files) {
+        return [];
+      }
+
+      const filesToUpload = [];
+      const fileIndices = [];
+      const seenFiles = new Map(); 
+
+
+      for (let i = 0; i < imagesInput.files.length; i++) {
+        if (!removedFileIndices.has(i)) {
+          const file = imagesInput.files[i];
+
+          const fileKey = `${file.name}_${file.size}_${file.lastModified}`;
+          
+
+          if (!seenFiles.has(fileKey)) {
+            seenFiles.set(fileKey, i);
+            filesToUpload.push(file);
+            fileIndices.push(i);
+          }
+        }
+      }
+
+      if (filesToUpload.length === 0) {
+        return [];
+      }
+
+      const uploadedUrls = [];
+      
+
+      for (let i = 0; i < filesToUpload.length; i++) {
+        const file = filesToUpload[i];
+        const originalIndex = fileIndices[i];
+        
+        try {
+          const url = await uploadFileChunked(file, originalIndex);
+          uploadedUrls.push(url);
+          uploadedImageUrls.set(originalIndex, url);
+        } catch (error) {
+          console.error(`Error uploading ${file.name}:`, error);
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = `Failed to upload ${file.name}: ${error.message}`;
+          }
+          showModal('errorModal');
+          throw error;
+        }
+      }
+
+      return uploadedUrls;
+    }
 
     function removeNewImage(button) {
       const imageItem = button.closest('.image-item');
@@ -1759,6 +2191,8 @@
       if (newImagesPreview && newImagesPreview.children.length === 0) {
         newImagesPreview.style.display = 'none';
       }
+      
+      updateBulkDeleteUI();
     }
 
 
@@ -1807,185 +2241,225 @@
     const submitBtn = document.getElementById('submitBtn');
 
     if (projectForm) {
-      projectForm.addEventListener('submit', function(e) {
+      projectForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-
 
         if (submitBtn) {
           submitBtn.disabled = true;
-          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading Images...';
         }
 
+        try {
 
-        const formData = new FormData();
-        
+          const uploadedUrls = await uploadAllImages();
 
-        const formElements = projectForm.elements;
-        for (let element of formElements) {
-          if (element.name && element.name !== 'images' && element.type !== 'file') {
-            if (element.type === 'checkbox') {
-              if (element.checked) {
-                formData.append(element.name, element.value);
-              }
-            } else if (element.type === 'radio') {
-              if (element.checked) {
-                formData.append(element.name, element.value);
-              }
-            } else if (element.tagName === 'SELECT' && element.multiple) {
+          if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving Project...';
+          }
 
-              const selectedOptions = Array.from(element.selectedOptions);
-              selectedOptions.forEach(option => {
-                formData.append(element.name, option.value);
-              });
-            } else {
-              formData.append(element.name, element.value);
+
+          const formData = new FormData();
+
+
+          if (uploadedUrls.length > 0) {
+            formData.append('uploaded_images', JSON.stringify(uploadedUrls));
+          }
+
+
+          const existingImageInputs = projectForm.querySelectorAll('input[name="existing_images[]"]');
+          const existingImageFilenames = [];
+          existingImageInputs.forEach(input => {
+
+            if (input.value && input.value.trim() && input.offsetParent !== null) {
+              existingImageFilenames.push(input.value.trim());
             }
-          }
-        }
-        
-
-        const imagesInput = document.getElementById('images');
-        const indexMapping = new Map(); 
-        let newIndex = 0;
-        
-        if (imagesInput && imagesInput.files) {
-          for (let i = 0; i < imagesInput.files.length; i++) {
-            if (!removedFileIndices.has(i)) {
-              formData.append('images', imagesInput.files[i]);
-              indexMapping.set(i, newIndex);
-              newIndex++;
-            }
-          }
-        }
-        
-
-        const coverImageInput = document.getElementById('coverImageInput');
-        let coverImageValue = coverImageInput ? coverImageInput.value : '';
-        
-        if (coverImageValue && coverImageValue.startsWith('new_image_index_')) {
-          const originalIndex = parseInt(coverImageValue.replace('new_image_index_', ''));
-          if (!isNaN(originalIndex) && indexMapping.has(originalIndex)) {
-            const newCoverIndex = indexMapping.get(originalIndex);
-            coverImageValue = `new_image_index_${newCoverIndex}`;
-          } else if (removedFileIndices.has(originalIndex)) {
-
-            coverImageValue = '';
-          }
-        }
-        
-
-        if (coverImageInput && coverImageInput.name) {
-          formData.set('cover_image', coverImageValue);
-        }
-
-
-        const milestones = [];
-        const milestoneCards = document.querySelectorAll('.milestone-card');
-        
-        milestoneCards.forEach(card => {
-          const titleInput = card.querySelector('.milestone-title-input');
-          const statusSelect = card.querySelector('.milestone-status-select');
-          const dateInput = card.querySelector('.milestone-date-input');
-          const tasksList = card.querySelector('.tasks-list');
+          });
           
-          if (titleInput && titleInput.value.trim()) {
-            const milestone = {
-              id: card.dataset.milestoneId,
-              title: titleInput.value.trim(),
-              status: statusSelect.value,
-              date: dateInput.value || null,
-              tasks: []
-            };
 
-
-            const taskItems = tasksList.querySelectorAll('.task-item');
-            taskItems.forEach(taskItem => {
-              const taskTitleInput = taskItem.querySelector('.task-title-input');
-              const taskDescInput = taskItem.querySelector('.task-description-input');
-              const taskCheckbox = taskItem.querySelector('.task-checkbox');
-              const taskIdInput = taskItem.querySelector('[data-field="id"]');
-              
-              if (taskTitleInput && taskTitleInput.value.trim()) {
-                milestone.tasks.push({
-                  id: taskIdInput ? taskIdInput.value : null,
-                  title: taskTitleInput.value.trim(),
-                  description: taskDescInput ? taskDescInput.value.trim() : null,
-                  is_completed: taskCheckbox ? taskCheckbox.checked : false
-                });
-              }
-            });
-
-            milestones.push(milestone);
+          if (existingImageFilenames.length > 0) {
+            formData.append('existing_images_json', JSON.stringify(existingImageFilenames));
           }
-        });
 
 
-        formData.append('milestones', JSON.stringify(milestones));
+          const formElements = projectForm.elements;
+          for (let element of formElements) {
+            if (element.name && 
+                element.name !== 'images' && 
+                element.type !== 'file' && 
+                element.name !== 'existing_images[]' &&
+                !element.name.startsWith('milestones')) {
+              if (element.type === 'checkbox') {
+                if (element.checked) {
+                  formData.append(element.name, element.value);
+                }
+              } else if (element.type === 'radio') {
+                if (element.checked) {
+                  formData.append(element.name, element.value);
+                }
+              } else if (element.tagName === 'SELECT' && element.multiple) {
+                const selectedOptions = Array.from(element.selectedOptions);
+                selectedOptions.forEach(option => {
+                  formData.append(element.name, option.value);
+                });
+              } else {
+                formData.append(element.name, element.value);
+              }
+            }
+          }
 
 
-        const xhr = new XMLHttpRequest();
+          const coverImageInput = document.getElementById('coverImageInput');
+          let coverImageValue = coverImageInput ? coverImageInput.value : '';
+          
+          if (coverImageValue && coverImageValue.startsWith('new_image_index_')) {
+            const originalIndex = parseInt(coverImageValue.replace('new_image_index_', ''));
+            if (!isNaN(originalIndex) && uploadedUrls.length > 0) {
 
-
-        xhr.addEventListener('load', function() {
-
-          if (xhr.status >= 200 && xhr.status < 400) {
-
-
-            const finalUrl = xhr.responseURL;
-            
-            if (finalUrl) {
-
-              try {
-                const url = new URL(finalUrl);
-                const redirectPath = url.pathname + url.search;
-                window.location.href = redirectPath;
-              } catch (e) {
-
-                const match = finalUrl.match(/https?:\/\/[^\/]+(\/.*)/);
-                if (match) {
-                  window.location.href = match[1];
-                } else {
-                  window.location.href = finalUrl;
+              let uploadedIndex = 0;
+              
+              for (let i = 0; i < imagesInput.files.length; i++) {
+                if (!removedFileIndices.has(i)) {
+                  if (i === originalIndex) {
+                    break;
+                  }
+                  uploadedIndex++;
                 }
               }
+              
+              if (uploadedIndex < uploadedUrls.length) {
+
+                const url = uploadedUrls[uploadedIndex];
+                coverImageValue = url.split('/').pop();
+              } else {
+                coverImageValue = uploadedUrls[0] ? uploadedUrls[0].split('/').pop() : '';
+              }
             } else {
-
-              window.location.reload();
+              coverImageValue = uploadedUrls[0] ? uploadedUrls[0].split('/').pop() : '';
             }
-          } else {
+          }
+          
+          if (coverImageInput && coverImageInput.name) {
+            formData.set('cover_image', coverImageValue);
+          }
 
-            const errorMsg = xhr.responseText || 'Error uploading project. Please try again.';
-            alert(errorMsg);
+
+
+          const milestones = [];
+          const milestoneCards = document.querySelectorAll('.milestone-card');
+          
+          milestoneCards.forEach(card => {
+            const titleInput = card.querySelector('.milestone-title-input');
+            const statusSelect = card.querySelector('.milestone-status-select');
+            const dateInput = card.querySelector('.milestone-date-input');
+            const tasksList = card.querySelector('.tasks-list');
+            
+            if (titleInput && titleInput.value.trim()) {
+              const milestone = {
+                id: card.dataset.milestoneId,
+                title: titleInput.value.trim(),
+                status: statusSelect.value,
+                date: dateInput.value || null,
+                tasks: []
+              };
+
+              const taskItems = tasksList.querySelectorAll('.task-item');
+              taskItems.forEach(taskItem => {
+                const taskTitleInput = taskItem.querySelector('.task-title-input');
+                const taskDescInput = taskItem.querySelector('.task-description-input');
+                const taskCheckbox = taskItem.querySelector('.task-checkbox');
+                const taskIdInput = taskItem.querySelector('[data-field="id"]');
+                
+                if (taskTitleInput && taskTitleInput.value.trim()) {
+                  milestone.tasks.push({
+                    id: taskIdInput ? taskIdInput.value : null,
+                    title: taskTitleInput.value.trim(),
+                    description: taskDescInput ? taskDescInput.value.trim() : null,
+                    is_completed: taskCheckbox ? taskCheckbox.checked : false
+                  });
+                }
+              });
+
+              milestones.push(milestone);
+            }
+          });
+
+          formData.append('milestones', JSON.stringify(milestones));
+
+
+
+          const xhr = new XMLHttpRequest();
+
+          xhr.addEventListener('load', function() {
+            if (xhr.status >= 200 && xhr.status < 400) {
+              const finalUrl = xhr.responseURL;
+              if (finalUrl) {
+                try {
+                  const url = new URL(finalUrl);
+                  window.location.href = url.pathname + url.search;
+                } catch (e) {
+                  const match = finalUrl.match(/https?:\/\/[^\/]+(\/.*)/);
+                  if (match) {
+                    window.location.href = match[1];
+                  } else {
+                    window.location.href = finalUrl;
+                  }
+                }
+              } else {
+                window.location.reload();
+              }
+            } else {
+              const errorMessageEl = document.getElementById('errorMessage');
+              if (errorMessageEl) {
+                errorMessageEl.textContent = 'Error uploading project. Please try again.';
+              }
+              showModal('errorModal');
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Project';
+              }
+            }
+          });
+
+          xhr.addEventListener('error', function() {
+            const errorMessageEl = document.getElementById('errorMessage');
+            if (errorMessageEl) {
+              errorMessageEl.textContent = 'Network error. Please check your connection and try again.';
+            }
+            showModal('errorModal');
             if (submitBtn) {
               submitBtn.disabled = false;
               submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Project';
             }
+          });
+
+          xhr.open('POST', projectForm.action);
+          xhr.timeout = 300000;
+          
+          xhr.addEventListener('timeout', function() {
+            const errorMessageEl = document.getElementById('errorMessage');
+            if (errorMessageEl) {
+              errorMessageEl.textContent = 'Upload timeout. The file may be too large or your connection is slow.';
+            }
+            showModal('errorModal');
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Project';
+            }
+          });
+          
+          xhr.send(formData);
+        } catch (error) {
+          console.error('Error during upload:', error);
+          const errorMessageEl = document.getElementById('errorMessage');
+          if (errorMessageEl) {
+            errorMessageEl.textContent = `Upload failed: ${error.message}`;
           }
-        });
-
-
-        xhr.addEventListener('error', function() {
-          alert('Network error. Please check your connection and try again.');
+          showModal('errorModal');
           if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Project';
           }
-        });
-
-
-        xhr.open('POST', projectForm.action);
-
-        xhr.timeout = 300000;
-        
-        xhr.addEventListener('timeout', function() {
-          alert('Upload timeout. The file may be too large or your connection is slow.');
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-<%= isEdit ? "save" : "plus" %>"></i> <%= isEdit ? "Update" : "Add" %> Project';
-          }
-        });
-        
-        xhr.send(formData);
+        }
       });
     }
 

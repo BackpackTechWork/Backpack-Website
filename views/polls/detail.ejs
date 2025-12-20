@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  
+  <!-- Mark that JS is enabled -->
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.documentElement.classList.remove('no-js');
+  </script>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* Smooth scroll behavior - optimized for animations */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+    
+    /* Ensure smooth scrolling isn't blocked by animations */
+    * {
+      scroll-margin-top: 80px;
+    }
+    
+    /* Optimize scroll performance during animations */
+    html, body {
+      will-change: scroll-position;
+    }
+    
+    /* Ensure content is visible for no-JS users */
+    html.no-js .poll-detail-section,
+    html.no-js .poll-detail-container,
+    html.no-js .poll-detail-card,
+    html.no-js .poll-option,
+    html.no-js section,
+    html.no-js footer {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      animation: none !important;
+    }
+    .poll-detail-section {
+      padding: 4rem 0;
+      background: #f9fafb;
+      min-height: 60vh;
+    }
+
+    .poll-detail-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .poll-detail-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .poll-detail-question {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 2rem;
+    }
+
+    .poll-video-section {
+      margin-bottom: 2rem;
+    }
+
+    .poll-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .poll-option {
+      padding: 1rem;
+      background: #f9fafb;
+      border-radius: 8px;
+      border: 2px solid #e5e7eb;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .poll-option:hover {
+      border-color: #10b981;
+      background: #f0fdf4;
+    }
+
+    .poll-option input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #10b981;
+    }
+
+    .poll-option label {
+      flex: 1;
+      cursor: pointer;
+      color: #111827;
+      font-weight: 500;
+    }
+
+    .poll-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .poll-vote-count {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .vote-btn {
+      background: #10b981;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .vote-btn:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+
+    .vote-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .poll-results {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+      display: none;
+    }
+
+    .poll-results.show {
+      display: block;
+    }
+
+    .poll-result-item {
+      margin-bottom: 0.75rem;
+    }
+
+    .poll-result-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.9375rem;
+      color: #111827;
+    }
+
+    .poll-result-bar {
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .poll-result-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+      transition: width 0.5s ease;
+    }
+
+    .poll-result-percentage {
+      font-weight: 600;
+      color: #10b981;
+    }
+
+    .success-message {
+      background: #f0fdf4;
+      border: 1px solid #10b981;
+      color: #059669;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .poll-voted .poll-option {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #c51d34;
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      color: #a01628;
+      transform: translateX(-4px);
+    }
+
+    /* Video Styles */
+    #video-container {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* Default 16:9 */
+    }
+
+    #video-iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    #video-error {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      padding: 2rem;
+    }
+
+    #video-container[data-orientation="portrait"] #video-wrapper {
+      padding-bottom: 177.78% !important; /* 9:16 portrait */
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    #video-container[data-orientation="landscape"] #video-wrapper {
+      padding-bottom: 56.25% !important; /* 16:9 landscape */
+      max-width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .poll-detail-card {
+        padding: 1.5rem;
+      }
+
+      .poll-detail-question {
+        font-size: 1.5rem;
+      }
+
+      #video-container[data-orientation="portrait"] #video-wrapper {
+        max-width: 100%;
+      }
+    }
+
+    /* Already Voted Modal */
+    .already-voted-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .already-voted-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .already-voted-modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8) translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .already-voted-modal.show .already-voted-modal-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .already-voted-image img {
+      max-width: 200px;
+      margin-bottom: 1rem;
+    }
+
+    .already-voted-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+
+    .already-voted-message {
+      color: #6b7280;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .already-voted-button {
+      background: #c51d34;
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .already-voted-button:hover {
+      background: #a01628;
+      transform: translateY(-1px);
+    }
+  </style>
+  
+  <!-- Fallback for no-JS: ensure content is visible -->
+  <noscript>
+    <style>
+      .poll-detail-section,
+      .poll-detail-container,
+      .poll-detail-card,
+      .poll-option,
+      section,
+      footer {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        animation: none !important;
+      }
+    </style>
+  </noscript>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <section class="poll-detail-section">
+    <div class="container">
+      <div class="poll-detail-container">
+        <a href="/polls" class="back-link">
+          <i class="fas fa-arrow-left"></i>
+          Back to All Polls
+        </a>
+
+        <div class="poll-detail-card">
+          <h1 class="poll-detail-question"><%= poll.question %></h1>
+          
+          <!-- Video Section -->
+          <% if (poll.video_url) { %>
+            <div class="poll-video-section">
+              <div id="video-container" style="position: relative; width: 100%; max-width: 100%; background: #000; border-radius: 8px; overflow: hidden;">
+                <div id="video-wrapper" style="position: relative; width: 100%; padding-bottom: 56.25%;">
+                  <iframe id="video-iframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  <div id="video-error" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 2rem;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.7;"></i>
+                    <p style="margin-bottom: 1.5rem; text-align: center;">Unable to embed video from this platform</p>
+                    <a href="<%= poll.video_url %>" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                      <i class="fas fa-external-link-alt"></i>
+                      Watch on Original Platform
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% } %>
+          
+          <form class="poll-form" data-poll-id="<%= poll.id %>" data-has-voted="false">
+            <div class="poll-options">
+              <% if (pollOptions && pollOptions.length > 0) { %>
+                <% pollOptions.forEach((option, index) => { %>
+                  <div class="poll-option">
+                    <input type="radio" id="poll-option-<%= index %>" name="poll-<%= poll.id %>" value="<%= index %>" required>
+                    <label for="poll-option-<%= index %>"><%= typeof option === 'string' ? option : (option.text || option.value || String(option)) %></label>
+                  </div>
+                <% }) %>
+              <% } else { %>
+                <div style="padding: 2rem; text-align: center; color: #6b7280;">
+                  <p>No options available for this poll.</p>
+                </div>
+              <% } %>
+            </div>
+            
+            <div class="poll-info">
+              <div class="poll-vote-count">
+                <i class="fas fa-users"></i>
+                <span><%= poll.totalVotes || 0 %> votes</span>
+              </div>
+              <button type="submit" class="vote-btn">
+                <i class="fas fa-check"></i> Vote
+              </button>
+            </div>
+            
+            <!-- Results will be shown after voting -->
+            <div class="poll-results" id="pollResults"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+
+  <!-- Already Voted Modal -->
+  <div class="already-voted-modal" id="alreadyVotedModal">
+    <div class="already-voted-modal-content">
+      <div class="already-voted-image">
+        <img src="/images/Assets/Why you lying.webp" alt="Why you lying?">
+      </div>
+      <h3 class="already-voted-title">Wait a minute...</h3>
+      <p class="already-voted-message">
+        You've already voted on this poll!<br>
+        One vote per person, that's the rule!
+      </p>
+      <button class="already-voted-button" onclick="closeAlreadyVotedModal()">
+        <i class="fas fa-check"></i> Got it!
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const pollForm = document.querySelector('.poll-form');
+    const pollCard = document.querySelector('.poll-detail-card');
+    const resultsDiv = document.getElementById('pollResults');
+    const voteBtn = document.querySelector('.vote-btn');
+    const pollId = pollForm.dataset.pollId;
+
+    pollForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (this.dataset.hasVoted === 'true') {
+        showAlreadyVotedModal();
+        return;
+      }
+      
+      const selectedOption = this.querySelector('input[type="radio"]:checked');
+      
+      if (!selectedOption) {
+        alert('Please select an option');
+        return;
+      }
+
+      voteBtn.disabled = true;
+      voteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Voting...';
+      
+      try {
+        const response = await fetch(`/polls/${pollId}/vote`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            option_index: selectedOption.value
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          this.dataset.hasVoted = 'true';
+          pollCard.classList.add('poll-voted');
+          voteBtn.style.display = 'none';
+          
+          const resultsResponse = await fetch(`/polls/${pollId}/results`);
+          const resultsData = await resultsResponse.json();
+          
+          if (resultsData.success) {
+            displayResults(resultsData.poll);
+          }
+          
+          const successMsg = document.createElement('div');
+          successMsg.className = 'success-message';
+          successMsg.innerHTML = '<i class="fas fa-check-circle"></i> Your vote has been recorded!';
+          pollForm.insertBefore(successMsg, pollForm.querySelector('.poll-options'));
+        } else {
+          if (data.message && data.message.toLowerCase().includes('already voted')) {
+            showAlreadyVotedModal();
+          } else {
+            alert(data.message || 'Error submitting vote');
+          }
+          voteBtn.disabled = false;
+          voteBtn.innerHTML = '<i class="fas fa-check"></i> Vote';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while submitting your vote. Please try again.');
+        voteBtn.disabled = false;
+        voteBtn.innerHTML = '<i class="fas fa-check"></i> Vote';
+      }
+    });
+    
+    function displayResults(poll) {
+      resultsDiv.classList.add('show');
+      
+      let pollOptions = [];
+      if (poll.options) {
+        if (Array.isArray(poll.options)) {
+          pollOptions = poll.options;
+        } else if (typeof poll.options === 'string') {
+          try {
+            pollOptions = JSON.parse(poll.options);
+          } catch (e) {
+            pollOptions = [];
+          }
+        } else if (typeof poll.options === 'object') {
+          pollOptions = Object.values(poll.options);
+        }
+      }
+      
+      let html = '<h4 style="margin-bottom: 1rem; color: #111827; font-size: 1.125rem;">Results:</h4>';
+      
+      pollOptions.forEach((option, index) => {
+        const optionText = typeof option === 'string' ? option : (option.text || option.value || String(option));
+        const votes = poll.optionVotes && poll.optionVotes[index] ? poll.optionVotes[index] : 0;
+        const percentage = poll.totalVotes > 0 ? ((votes / poll.totalVotes) * 100).toFixed(1) : 0;
+        
+        html += `
+          <div class="poll-result-item">
+            <div class="poll-result-label">
+              <span>${optionText}</span>
+              <span class="poll-result-percentage">${percentage}% (${votes} votes)</span>
+            </div>
+            <div class="poll-result-bar">
+              <div class="poll-result-fill" style="width: ${percentage}%"></div>
+            </div>
+          </div>
+        `;
+      });
+      
+      resultsDiv.innerHTML = html;
+      
+      const voteCountEl = document.querySelector('.poll-vote-count span');
+      if (voteCountEl) {
+        voteCountEl.textContent = `${poll.totalVotes || 0} votes`;
+      }
+    }
+
+    function showAlreadyVotedModal() {
+      const modal = document.getElementById('alreadyVotedModal');
+      if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeAlreadyVotedModal() {
+      const modal = document.getElementById('alreadyVotedModal');
+      if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+    }
+
+    document.getElementById('alreadyVotedModal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeAlreadyVotedModal();
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeAlreadyVotedModal();
+      }
+    });
+
+
+    <% if (poll.video_url) { %>
+      (function() {
+        const videoUrl = '<%= poll.video_url %>';
+        const videoIframe = document.getElementById('video-iframe');
+        const videoError = document.getElementById('video-error');
+        const videoContainer = document.getElementById('video-container');
+        
+        function convertToEmbedUrl(url) {
+          const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+          const youtubeMatch = url.match(youtubeRegex);
+          if (youtubeMatch) {
+            return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+          }
+          
+          const vimeoRegex = /(?:vimeo\.com\/)(?:.*\/)?(\d+)/;
+          const vimeoMatch = url.match(vimeoRegex);
+          if (vimeoMatch) {
+            return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+          }
+          
+          if (url.includes('youtube.com/embed') || url.includes('youtu.be') || url.includes('vimeo.com/video') || url.includes('player.vimeo.com')) {
+            return url;
+          }
+          
+          return null;
+        }
+        
+        const embedUrl = convertToEmbedUrl(videoUrl);
+        
+        if (embedUrl) {
+          videoIframe.src = embedUrl;
+          
+          let orientation = 'landscape'; 
+          const lowerUrl = videoUrl.toLowerCase();
+          if (lowerUrl.includes('portrait') || 
+              lowerUrl.includes('vertical') || 
+              lowerUrl.includes('9:16') || 
+              lowerUrl.includes('shorts') || 
+              lowerUrl.includes('reels') || 
+              lowerUrl.includes('tiktok')) {
+            orientation = 'portrait'; 
+          }
+          
+          videoContainer.setAttribute('data-orientation', orientation);
+          
+          videoIframe.onload = function() {
+            if (videoError) videoError.style.display = 'none';
+          };
+          
+          videoIframe.onerror = function() {
+            videoIframe.style.display = 'none';
+            if (videoError) videoError.style.display = 'flex';
+          };
+        } else {
+          videoIframe.style.display = 'none';
+          if (videoError) videoError.style.display = 'flex';
+        }
+      })();
+    <% } %>
+  </script>
+</body>
+</html>
+
