@@ -1126,6 +1126,11 @@
 
           const formInputs = teamForm.querySelectorAll('input:not([type="file"]), select, textarea');
           formInputs.forEach(input => {
+
+            if (input.id === 'skills') {
+              return;
+            }
+            
             if (input.name && input.type !== 'file') {
               if (input.type === 'checkbox') {
                 if (input.checked) {
@@ -1501,4 +1506,3 @@
   </script>
 </body>
 </html>
-
