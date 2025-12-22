@@ -288,8 +288,8 @@ router.post("/team/add", ensureAdmin, parseFormDataMiddleware, async (req, res) 
         skillsArray = skills.split(",").map(s => s.trim()).filter(s => s);
       }
     }
-
-
+    
+    skillsArray = [...new Set(skillsArray)];
 
 
     await db.query(
@@ -472,6 +472,8 @@ router.post("/team/:id", ensureAdmin, parseFormDataMiddleware, async (req, res) 
         skillsArray = skills.split(",").map(s => s.trim()).filter(s => s);
       }
     }
+    
+    skillsArray = [...new Set(skillsArray)];
 
 
     await db.query(
