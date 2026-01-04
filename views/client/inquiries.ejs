@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
-  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -191,6 +191,79 @@
               </div>
             <% } %>
           </div>
+
+          <!-- Pagination -->
+          <% if (pagination && pagination.totalPages > 1) { %>
+            <div class="pagination-container" style="margin-top: 2rem; padding: 1.5rem; background: var(--white); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+              <div class="pagination-info" style="color: var(--gray); font-size: 0.875rem;">
+                Showing <%= ((pagination.currentPage - 1) * pagination.limit) + 1 %> to <%= Math.min(pagination.currentPage * pagination.limit, pagination.totalCount) %> of <%= pagination.totalCount %> results
+              </div>
+              <div class="pagination" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                <% 
+                  const buildQuery = (page) => {
+                    const params = [];
+                    if (searchQuery) params.push(`search=${encodeURIComponent(searchQuery)}`);
+                    if (selectedStatus) params.push(`status=${encodeURIComponent(selectedStatus)}`);
+                    params.push(`page=${page}`);
+                    return params.length > 0 ? '?' + params.join('&') : '';
+                  };
+                %>
+                <% if (pagination.hasPrev) { %>
+                  <a href="/client/inquiries<%= buildQuery(pagination.currentPage - 1) %>" class="pagination-btn" style="padding: 0.5rem 0.75rem; border-radius: 6px; background: var(--white); border: 1px solid #e5e7eb; color: var(--dark); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-chevron-left"></i>
+                  </a>
+                <% } else { %>
+                  <span class="pagination-btn disabled" style="padding: 0.5rem 0.75rem; border-radius: 6px; background: var(--white); border: 1px solid #e5e7eb; color: var(--gray); font-size: 0.875rem; font-weight: 500; opacity: 0.5; cursor: not-allowed; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-chevron-left"></i>
+                  </span>
+                <% } %>
+
+                <% 
+                  let startPage = Math.max(1, pagination.currentPage - 2);
+                  let endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
+                  if (endPage - startPage < 4) {
+                    if (startPage === 1) {
+                      endPage = Math.min(5, pagination.totalPages);
+                    } else {
+                      startPage = Math.max(1, pagination.totalPages - 4);
+                    }
+                  }
+                %>
+
+                <% if (startPage > 1) { %>
+                  <a href="/client/inquiries<%= buildQuery(1) %>" class="pagination-btn" style="padding: 0.5rem 0.75rem; border-radius: 6px; background: var(--white); border: 1px solid #e5e7eb; color: var(--dark); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;">1</a>
+                  <% if (startPage > 2) { %>
+                    <span class="pagination-ellipsis" style="padding: 0.5rem 0.25rem; color: var(--gray);">...</span>
+                  <% } %>
+                <% } %>
+
+                <% for (let i = startPage; i <= endPage; i++) { %>
+                  <% if (i === pagination.currentPage) { %>
+                    <span class="pagination-btn active" style="padding: 0.5rem 0.75rem; border-radius: 6px; background: #c51d34; color: white; border: 1px solid #c51d34; font-size: 0.875rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem;"><%= i %></span>
+                  <% } else { %>
+                    <a href="/client/inquiries<%= buildQuery(i) %>" class="pagination-btn" style="padding: 0.5rem 0.75rem; border-radius: 6px; background: var(--white); border: 1px solid #e5e7eb; color: var(--dark); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;"><%= i %></a>
+                  <% } %>
+                <% } %>
+
+                <% if (endPage < pagination.totalPages) { %>
+                  <% if (endPage < pagination.totalPages - 1) { %>
+                    <span class="pagination-ellipsis" style="padding: 0.5rem 0.25rem; color: var(--gray);">...</span>
+                  <% } %>
+                  <a href="/client/inquiries<%= buildQuery(pagination.totalPages) %>" class="pagination-btn" style="padding: 0.5rem 0.75rem; border-radius: 6px; background: var(--white); border: 1px solid #e5e7eb; color: var(--dark); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;"><%= pagination.totalPages %></a>
+                <% } %>
+
+                <% if (pagination.hasNext) { %>
+                  <a href="/client/inquiries<%= buildQuery(pagination.currentPage + 1) %>" class="pagination-btn" style="padding: 0.5rem 0.75rem; border-radius: 6px; background: var(--white); border: 1px solid #e5e7eb; color: var(--dark); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-chevron-right"></i>
+                  </a>
+                <% } else { %>
+                  <span class="pagination-btn disabled" style="padding: 0.5rem 0.75rem; border-radius: 6px; background: var(--white); border: 1px solid #e5e7eb; color: var(--gray); font-size: 0.875rem; font-weight: 500; opacity: 0.5; cursor: not-allowed; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-chevron-right"></i>
+                  </span>
+                <% } %>
+              </div>
+            </div>
+          <% } %>
           </div>
         </div>
       </section>
@@ -859,11 +932,17 @@
       margin-top: 0.125rem;
     }
 
-    .mobile-resolved-notice strong {
-      color: #28a745;
-      font-size: 0.875rem;
-      line-height: 1.5;
-    }
+      .mobile-resolved-notice strong {
+        color: #28a745;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      .pagination-btn:not(.disabled):not(.active):hover {
+        background: #f8f9fa !important;
+        border-color: #c51d34 !important;
+        color: #c51d34 !important;
+      }
 
     .status-badge-mobile {
       padding: 0.5rem 1rem;
@@ -1043,6 +1122,20 @@
       #inquiriesContainer > div > div[style*="text-align: center"] .btn {
         width: 100%;
         min-height: 44px;
+      }
+
+      .pagination-container {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem !important;
+      }
+
+      .pagination-info {
+        text-align: center;
+      }
+
+      .pagination {
+        justify-content: center;
       }
     }
 

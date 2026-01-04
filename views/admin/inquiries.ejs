@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
-  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -405,6 +405,157 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      cursor: pointer;
+      position: relative;
+      padding-right: 1.75rem;
+      transition: color 0.2s;
+    }
+
+    .inquiry-message:hover {
+      color: var(--accent-red);
+    }
+
+    .inquiry-message::after {
+      content: '\f06e';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.875rem;
+      color: var(--accent-red);
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .inquiry-message:hover::after {
+      opacity: 1;
+    }
+
+    /* Message View Modal */
+    .message-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      padding: 1rem;
+    }
+
+    .message-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .message-modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 700px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+      position: relative;
+    }
+
+    .message-modal.show .message-modal-content {
+      transform: scale(1);
+    }
+
+    .message-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-primary);
+    }
+
+    .message-modal-title {
+      flex: 1;
+    }
+
+    .message-modal-title h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .message-modal-title .message-meta {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .message-modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.5rem;
+      line-height: 1;
+      transition: color 0.2s;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .message-modal-close:hover {
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+    }
+
+    .message-modal-body {
+      margin-bottom: 1.5rem;
+    }
+
+    .message-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .message-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      padding: 1.25rem;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      border: 1px solid var(--border-primary);
+    }
+
+    .message-modal-footer {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      padding-top: 1rem;
+      border-top: 2px solid var(--border-primary);
     }
 
     .empty-state {
@@ -417,6 +568,81 @@
       font-size: 3rem;
       margin-bottom: 1rem;
       opacity: 0.3;
+    }
+
+    .pagination-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding: 1rem 0;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .pagination-info {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .pagination {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-primary);
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .pagination-btn:hover:not(.disabled):not(.active) {
+      background: var(--bg-secondary);
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+    }
+
+    .pagination-btn.active {
+      background: var(--accent-red);
+      color: white;
+      border-color: var(--accent-red);
+    }
+
+    .pagination-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination-ellipsis {
+      padding: 0.5rem 0.25rem;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .pagination-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .pagination-info {
+        text-align: center;
+      }
+
+      .pagination {
+        justify-content: center;
+      }
     }
 
     /* Mobile Card Layout for Table */
@@ -712,6 +938,10 @@
       word-break: break-word;
     }
 
+    .mobile-card-message-text.view-message-btn:hover {
+      color: var(--accent-red);
+    }
+
     .mobile-card-actions {
       margin-top: 0.75rem;
       padding-top: 0.75rem;
@@ -857,9 +1087,10 @@
     /* Mobile landscape: 481px - 768px */
     @media (max-width: 768px) and (min-width: 481px) {
       .dashboard-main {
-        margin-left: 0;
-        margin-right: 0;
-        padding: 1rem;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 4.5rem 1rem 1rem 1rem !important;
+        padding-top: 4.5rem !important;
         width: 100%;
       }
 
@@ -868,12 +1099,12 @@
       }
 
       .page-header h1 {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
         margin-bottom: 0.25rem;
       }
 
       .page-header p {
-        font-size: 0.8125rem;
+        font-size: 1rem;
       }
 
       .filters-section {
@@ -1008,9 +1239,10 @@
     /* Mobile portrait: up to 480px */
     @media (max-width: 480px) {
       .dashboard-main {
-        margin-left: 0;
-        margin-right: 0;
-        padding: 0.75rem;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 4.5rem 0.75rem 0.75rem 0.75rem !important;
+        padding-top: 4.5rem !important;
         width: 100%;
       }
 
@@ -1019,13 +1251,13 @@
       }
 
       .page-header h1 {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         margin-bottom: 0.25rem;
         line-height: 1.3;
       }
 
       .page-header p {
-        font-size: 0.75rem;
+        font-size: 0.875rem;
       }
 
       .filters-section {
@@ -1272,6 +1504,23 @@
       .confirmation-modal .modal-content-wrapper {
         padding: 1.25rem;
         width: 95%;
+      }
+
+      .message-modal-content {
+        padding: 1.25rem;
+        max-height: 90vh;
+      }
+
+      .message-modal-title h3 {
+        font-size: 1.25rem;
+      }
+
+      .message-modal-footer {
+        flex-direction: column;
+      }
+
+      .message-modal-footer .btn {
+        width: 100%;
       }
     }
 
@@ -1647,7 +1896,17 @@
                   <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;"><%= inquiry.email %></td>
                   <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;"><%= inquiry.subject %></td>
                   <td>
-                    <div class="inquiry-message" title="<%= inquiry.message %>" style="max-width: 250px;">
+                    <div 
+                      class="inquiry-message view-message-btn" 
+                      title="Click to view full message"
+                      style="max-width: 250px;"
+                      data-inquiry-id="<%= inquiry.id %>"
+                      data-subject="<%= inquiry.subject %>"
+                      data-name="<%= inquiry.user_name || inquiry.name || 'Guest' %>"
+                      data-email="<%= inquiry.email %>"
+                      data-date="<%= new Date(inquiry.created_at).toLocaleDateString() %>"
+                      data-message="<%= inquiry.message.replace(/"/g, '&quot;').replace(/'/g, '&#39;') %>"
+                    >
                       <%= inquiry.message %>
                     </div>
                   </td>
@@ -1718,7 +1977,32 @@
                   </div>
                   <div class="mobile-card-message">
                     <div class="mobile-card-message-label">Message:</div>
-                    <div class="mobile-card-message-text"><%= inquiry.message %></div>
+                    <div 
+                      class="mobile-card-message-text view-message-btn" 
+                      style="cursor: pointer;"
+                      data-inquiry-id="<%= inquiry.id %>"
+                      data-subject="<%= inquiry.subject %>"
+                      data-name="<%= inquiry.user_name || inquiry.name || 'Guest' %>"
+                      data-email="<%= inquiry.email %>"
+                      data-date="<%= new Date(inquiry.created_at).toLocaleDateString() %>"
+                      data-message="<%= inquiry.message.replace(/"/g, '&quot;').replace(/'/g, '&#39;') %>"
+                    >
+                      <%= inquiry.message.length > 150 ? inquiry.message.substring(0, 150) + '...' : inquiry.message %>
+                    </div>
+                    <div 
+                      class="view-message-btn" 
+                      style="margin-top: 0.5rem; cursor: pointer;"
+                      data-inquiry-id="<%= inquiry.id %>"
+                      data-subject="<%= inquiry.subject %>"
+                      data-name="<%= inquiry.user_name || inquiry.name || 'Guest' %>"
+                      data-email="<%= inquiry.email %>"
+                      data-date="<%= new Date(inquiry.created_at).toLocaleDateString() %>"
+                      data-message="<%= inquiry.message.replace(/"/g, '&quot;').replace(/'/g, '&#39;') %>"
+                    >
+                      <span style="color: var(--accent-red); font-weight: 600; font-size: 0.75rem;">
+                        <i class="fas fa-eye"></i> Click to view full message
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div class="mobile-card-actions">
@@ -1746,6 +2030,81 @@
           </div>
         <% } %>
       </div>
+
+      <!-- Pagination -->
+      <% if (pagination && pagination.totalPages > 1) { %>
+        <div class="pagination-container">
+          <div class="pagination-info">
+            Showing <%= ((pagination.currentPage - 1) * pagination.limit) + 1 %> to <%= Math.min(pagination.currentPage * pagination.limit, pagination.totalCount) %> of <%= pagination.totalCount %> results
+          </div>
+          <div class="pagination">
+            <% 
+              const buildQuery = (page) => {
+                const params = [];
+                if (filters.search) params.push(`search=${encodeURIComponent(filters.search)}`);
+                if (filters.date_from) params.push(`date_from=${encodeURIComponent(filters.date_from)}`);
+                if (filters.date_to) params.push(`date_to=${encodeURIComponent(filters.date_to)}`);
+                if (filters.status) params.push(`status=${encodeURIComponent(filters.status)}`);
+                params.push(`page=${page}`);
+                return params.length > 0 ? '?' + params.join('&') : '';
+              };
+            %>
+            <% if (pagination.hasPrev) { %>
+              <a href="/admin/inquiries<%= buildQuery(pagination.currentPage - 1) %>" class="pagination-btn">
+                <i class="fas fa-chevron-left"></i>
+              </a>
+            <% } else { %>
+              <span class="pagination-btn disabled">
+                <i class="fas fa-chevron-left"></i>
+              </span>
+            <% } %>
+
+            <% 
+              let startPage = Math.max(1, pagination.currentPage - 2);
+              let endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
+              if (endPage - startPage < 4) {
+                if (startPage === 1) {
+                  endPage = Math.min(5, pagination.totalPages);
+                } else {
+                  startPage = Math.max(1, pagination.totalPages - 4);
+                }
+              }
+            %>
+
+            <% if (startPage > 1) { %>
+              <a href="/admin/inquiries<%= buildQuery(1) %>" class="pagination-btn">1</a>
+              <% if (startPage > 2) { %>
+                <span class="pagination-ellipsis">...</span>
+              <% } %>
+            <% } %>
+
+            <% for (let i = startPage; i <= endPage; i++) { %>
+              <% if (i === pagination.currentPage) { %>
+                <span class="pagination-btn active"><%= i %></span>
+              <% } else { %>
+                <a href="/admin/inquiries<%= buildQuery(i) %>" class="pagination-btn"><%= i %></a>
+              <% } %>
+            <% } %>
+
+            <% if (endPage < pagination.totalPages) { %>
+              <% if (endPage < pagination.totalPages - 1) { %>
+                <span class="pagination-ellipsis">...</span>
+              <% } %>
+              <a href="/admin/inquiries<%= buildQuery(pagination.totalPages) %>" class="pagination-btn"><%= pagination.totalPages %></a>
+            <% } %>
+
+            <% if (pagination.hasNext) { %>
+              <a href="/admin/inquiries<%= buildQuery(pagination.currentPage + 1) %>" class="pagination-btn">
+                <i class="fas fa-chevron-right"></i>
+              </a>
+            <% } else { %>
+              <span class="pagination-btn disabled">
+                <i class="fas fa-chevron-right"></i>
+              </span>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
     </div>
   </div>
 
@@ -2038,9 +2397,50 @@
 
 
     document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('success-modal') || e.target.classList.contains('confirmation-modal')) {
+      if (e.target.classList.contains('success-modal') || e.target.classList.contains('confirmation-modal') || e.target.classList.contains('message-modal')) {
         closeModal(e.target.id);
       }
+    });
+
+    // Close message modal when clicking outside content
+    document.getElementById('messageModal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal('messageModal');
+      }
+    });
+
+    // Message View Modal
+    document.querySelectorAll('.view-message-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const inquiryId = this.dataset.inquiryId;
+        const subject = this.dataset.subject;
+        const name = this.dataset.name;
+        const email = this.dataset.email;
+        const date = this.dataset.date;
+        const message = this.dataset.message;
+
+        // Decode HTML entities
+        const decodeHtml = (html) => {
+          const txt = document.createElement('textarea');
+          txt.innerHTML = html;
+          return txt.value;
+        };
+
+        document.getElementById('messageModalSubject').textContent = decodeHtml(subject);
+        document.getElementById('messageModalName').textContent = decodeHtml(name);
+        document.getElementById('messageModalEmail').textContent = decodeHtml(email);
+        document.getElementById('messageModalDate').textContent = date;
+        document.getElementById('messageModalText').textContent = decodeHtml(message);
+
+        // Set up email link
+        const emailLink = document.getElementById('messageModalEmailLink');
+        const emailSubject = encodeURIComponent('Re: ' + subject);
+        const emailBody = encodeURIComponent('Hello ' + name + ',\n\nRegarding your inquiry: ' + subject + '\n\n');
+        emailLink.href = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
+
+        showModal('messageModal');
+      });
     });
 
 
@@ -2087,6 +2487,34 @@
       <div class="modal-actions">
         <button onclick="closeModal('confirmationModal')" class="modal-btn modal-btn-secondary">Cancel</button>
         <button id="confirmBtn" class="modal-btn modal-btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message View Modal -->
+  <div class="message-modal" id="messageModal">
+    <div class="message-modal-content">
+      <div class="message-modal-header">
+        <div class="message-modal-title">
+          <h3 id="messageModalSubject"></h3>
+          <div class="message-meta">
+            <span><strong>From:</strong> <span id="messageModalName"></span> (<span id="messageModalEmail"></span>)</span>
+            <span><strong>Date:</strong> <span id="messageModalDate"></span></span>
+          </div>
+        </div>
+        <button class="message-modal-close" onclick="closeModal('messageModal')" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="message-modal-body">
+        <div class="message-label">Message</div>
+        <div class="message-text" id="messageModalText"></div>
+      </div>
+      <div class="message-modal-footer">
+        <a id="messageModalEmailLink" class="btn btn-email" style="text-decoration: none;">
+          <i class="fas fa-envelope"></i> Reply via Email
+        </a>
+        <button onclick="closeModal('messageModal')" class="btn btn-secondary">Close</button>
       </div>
     </div>
   </div>

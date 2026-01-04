@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
-  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -1387,6 +1387,13 @@
                 <a href="<%= project.video_url %>" target="_blank" rel="noopener" class="btn btn-secondary" style="display:flex; align-items:center; gap:0.5rem; justify-content:center;">
                   <i class="fas fa-play-circle"></i> Watch Demo
                 </a>
+              <% } %>
+              <% if (project.links && project.links.length > 0) { %>
+                <% project.links.forEach(link => { %>
+                  <a href="<%= link.url %>" target="_blank" rel="noopener" class="btn btn-secondary" style="display:flex; align-items:center; gap:0.5rem; justify-content:center;">
+                    <i class="fas fa-external-link-alt"></i> <%= link.title %>
+                  </a>
+                <% }) %>
               <% } %>
             </div>
           </div>

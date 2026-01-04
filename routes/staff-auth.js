@@ -7,7 +7,14 @@ const db = require("../config/database")
 
 router.get("/login", (req, res) => {
   if (req.isAuthenticated()) {
-
+    // If already logged in, check for returnTo first
+    const redirectTo = req.cookies.returnTo || req.session.returnTo
+    if (redirectTo) {
+      res.clearCookie('returnTo')
+      delete req.session.returnTo
+      return res.redirect(redirectTo)
+    }
+    // Otherwise use default based on role
     if (req.user.role === "admin") {
       return res.redirect("/admin/dashboard")
     } else if (req.user.role === "team_member") {
@@ -59,15 +66,14 @@ router.post("/login", async (req, res, next) => {
         return next(err)
       }
 
-
-      if (user.role === "admin") {
-        return res.redirect("/admin/dashboard")
-      } else if (user.role === "team_member") {
-        return res.redirect("/")
-      }
-
-
-      res.redirect("/")
+      // Get returnTo from cookie first, then session, then default based on role
+      const redirectTo = req.cookies.returnTo || req.session.returnTo || 
+        (user.role === "admin" ? "/admin/dashboard" : "/")
+      // Clear both cookie and session
+      res.clearCookie('returnTo')
+      delete req.session.returnTo
+      
+      return res.redirect(redirectTo)
     })
   } catch (error) {
     console.error("Staff login error:", error)

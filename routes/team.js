@@ -277,13 +277,29 @@ async function getTeamMemberPublicData(teamMemberId) {
 
 router.get("/", async (req, res) => {
   try {
+    const { page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
+
+    // Get total count
+    const [countResult] = await db.query(`
+      SELECT COUNT(*) as count
+      FROM team_members tm
+      JOIN users u ON tm.user_id = u.id
+      WHERE tm.is_active = true
+    `)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
+
     const [teamMembers] = await db.query(`
       SELECT tm.*, u.name, u.email, u.avatar, u.id as user_id
       FROM team_members tm
       JOIN users u ON tm.user_id = u.id
       WHERE tm.is_active = true
       ORDER BY tm.display_order ASC, tm.id ASC
-    `)
+      LIMIT ? OFFSET ?
+    `, [limit, offset])
 
 
     const formattedMembers = teamMembers.map(member => {
@@ -327,6 +343,15 @@ router.get("/", async (req, res) => {
       seoImage: "/Backpack.webp",
       seoType: "website",
       teamMembers: formattedMembers,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1,
+        queryParams: new URLSearchParams(req.query).toString().replace(/&?page=\d+/, '')
+      }
     })
   } catch (error) {
     console.error("Error loading team members:", error)
@@ -337,6 +362,15 @@ router.get("/", async (req, res) => {
       seoImage: "/Backpack.webp",
       seoType: "website",
       teamMembers: [],
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false,
+        queryParams: ''
+      }
     })
   }
 })

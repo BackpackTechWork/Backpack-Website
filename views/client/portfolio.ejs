@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
-  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -1532,7 +1532,7 @@
   <div id="shareableImageTemplate">
     <div class="shareable-header">
       <div class="shareable-logo">
-        <img src="/Backpack.ico" alt="Backpack Logo" class="shareable-logo-img" id="shareableLogoImg" onerror="this.src='/Backpack.ico';">
+        <img src="/favicon.ico" alt="Backpack Logo" class="shareable-logo-img" id="shareableLogoImg" onerror="this.src='/favicon.ico';">
         <span class="shareable-brand-text">Backpack</span>
       </div>
     </div>
@@ -1631,7 +1631,7 @@
           if (src.includes('avatar') || src.includes('googleusercontent')) {
             resolve('/images/default-avatar.webp');
           } else {
-            resolve('/Backpack.ico');
+            resolve('/favicon.ico');
           }
         };
         
@@ -1654,7 +1654,7 @@
       
 
       const headerLogo = document.querySelector('.logo-img');
-      let logoSrc = headerLogo ? headerLogo.src : '/Backpack.ico';
+      let logoSrc = headerLogo ? headerLogo.src : '/favicon.ico';
       
 
       const [avatarDataUrl, logoDataUrl] = await Promise.all([

@@ -9,6 +9,14 @@ function isStrategyAvailable(name) {
 
 router.get("/login", (req, res) => {
   if (req.isAuthenticated()) {
+    // If already logged in, check for returnTo first
+    const redirectTo = req.cookies.returnTo || req.session.returnTo
+    if (redirectTo) {
+      res.clearCookie('returnTo')
+      delete req.session.returnTo
+      return res.redirect(redirectTo)
+    }
+    // Otherwise use default
     return res.redirect("/client/portfolio")
   }
   res.render("auth/login", { title: "Login - Backpack Tech Works" })
@@ -64,7 +72,12 @@ router.get(
         if (loginErr) {
           return next(loginErr)
         }
-        return res.redirect("/client/portfolio")
+        // Get returnTo from cookie first (most reliable for OAuth), then session, then default
+        const redirectTo = req.cookies.returnTo || req.session.returnTo || "/client/portfolio"
+        // Clear both cookie and session
+        res.clearCookie('returnTo')
+        delete req.session.returnTo
+        return res.redirect(redirectTo)
       })
     })(req, res, next)
   },
@@ -101,7 +114,12 @@ router.get(
         if (loginErr) {
           return next(loginErr)
         }
-        return res.redirect("/client/portfolio")
+        // Get returnTo from cookie first (most reliable for OAuth), then session, then default
+        const redirectTo = req.cookies.returnTo || req.session.returnTo || "/client/portfolio"
+        // Clear both cookie and session
+        res.clearCookie('returnTo')
+        delete req.session.returnTo
+        return res.redirect(redirectTo)
       })
     })(req, res, next)
   },

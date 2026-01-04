@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      background: #f9fafb;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: #6b7280;
+      font-size: 0.9375rem;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .breadcrumb a {
+      color: #c51d34;
+      text-decoration: none;
+    }
+
+    .form-container {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      opacity: 1 !important;
+      visibility: visible !important;
+      animation: none !important;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #111827;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    .form-group label .required {
+      color: #c51d34;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      background: #ffffff;
+      color: #111827;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-help {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.8125rem;
+      color: #6b7280;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .form-checkbox input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #c51d34;
+    }
+
+    .form-checkbox label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: #111827;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.875rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #a01628 0%, #8a1323 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.1);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      color: #dc2626;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="breadcrumb">
+        <a href="/admin/dashboard">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="/admin/activities/videos">Videos</a>
+        <i class="fas fa-chevron-right"></i>
+        <span><%= isEdit ? 'Edit' : 'Add' %> Video</span>
+      </div>
+
+      <div class="page-header">
+        <h1><%= isEdit ? 'Edit' : 'Add' %> Video</h1>
+        <p><%= isEdit ? 'Update video information' : 'Add a new video to "A Video a Day Keeps the QA Away" section' %></p>
+      </div>
+
+
+      <div class="form-container">
+        <form method="POST" action="<%= isEdit ? `/admin/activities/videos/${video.id}` : '/admin/activities/videos/add' %>" id="videoForm">
+          <!-- Title -->
+          <div class="form-group">
+            <label for="title">Title <span class="required">*</span></label>
+            <input type="text" id="title" name="title" class="form-control" required placeholder="Video Title" value="<%= isEdit && video ? (video.title || '') : '' %>">
+            <small class="form-help">Enter a descriptive title for the video</small>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" class="form-control" placeholder="Video description..."><%= isEdit && video ? (video.description || '') : '' %></textarea>
+            <small class="form-help">Optional: Add a description for the video</small>
+          </div>
+
+          <!-- YouTube URL -->
+          <div class="form-group">
+            <label for="youtube_url">YouTube URL <span class="required">*</span></label>
+            <input type="url" id="youtube_url" name="youtube_url" class="form-control" required placeholder="https://www.youtube.com/watch?v=..." value="<%= isEdit && video ? (video.youtube_url || '') : '' %>">
+            <small class="form-help">Paste the full YouTube video URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)</small>
+          </div>
+
+          <!-- Active Status -->
+          <div class="form-group">
+            <div class="form-checkbox">
+              <input type="checkbox" id="is_active" name="is_active" <%= isEdit && video && video.is_active ? 'checked' : 'checked' %>>
+              <label for="is_active">Active (visible on website)</label>
+            </div>
+            <small class="form-help">Uncheck to hide this video from the website</small>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <a href="/admin/activities/videos" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> <%= isEdit ? 'Update' : 'Create' %> Video
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title" id="successTitle"><%= isEdit ? 'Video Updated!' : 'Video Created!' %></h3>
+      <p class="modal-message" id="successMessage"><%= isEdit ? 'The video has been successfully updated.' : 'The video has been successfully added.' %></p>
+      <div class="modal-actions">
+        <a href="/admin/activities/videos" class="modal-btn modal-btn-primary">View Videos</a>
+        <% if (!isEdit) { %>
+        <a href="/admin/activities/videos/add" class="modal-btn modal-btn-secondary" style="background: #f3f4f6; color: #374151;">Add Another</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="success-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error Occurred</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong. Please try again.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('errorModal')" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .success-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .success-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .success-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+
+    .modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+  </style>
+
+  <script>
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('show');
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('show');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isEditMode = <%= JSON.stringify(isEdit) %>;
+      
+      if (urlParams.get('success') === 'true') {
+        showModal('successModal');
+      } else if (urlParams.get('error') === 'true') {
+        const errorMsg = decodeURIComponent(urlParams.get('message') || 'Something went wrong. Please try again.');
+        document.getElementById('errorMessage').textContent = errorMsg;
+        showModal('errorModal');
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('success-modal')) {
+        closeModal(e.target.id);
+      }
+    });
+  </script>
+</body>
+</html>
+

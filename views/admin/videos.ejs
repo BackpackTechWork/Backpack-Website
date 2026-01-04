@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --border-primary: #e5e7eb;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --accent-red: #c51d34;
+    }
+
+    .dashboard-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      margin-left: 280px;
+      background: var(--bg-secondary);
+      width: calc(100% - 280px);
+      min-width: 0;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+      margin: 0;
+    }
+
+    .btn-primary {
+      background: var(--accent-red);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      touch-action: manipulation;
+    }
+
+    .btn-primary:hover {
+      background: #a01628;
+    }
+
+    .table-container {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      margin-bottom: 2rem;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: auto;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table thead {
+      background: var(--bg-secondary);
+    }
+
+    .table th {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .table td {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-primary);
+      color: var(--text-primary);
+    }
+
+    .table tbody tr:hover {
+      background: var(--bg-secondary);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+
+    .status-badge.active {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+
+    .status-badge.inactive {
+      background: rgba(107, 114, 128, 0.1);
+      color: #6b7280;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      touch-action: manipulation;
+    }
+
+    .btn-sm {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      width: 36px;
+      height: 36px;
+      justify-content: center;
+    }
+
+    .btn-icon-only {
+      padding: 0.5rem;
+      width: 36px;
+      height: 36px;
+      gap: 0;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .action-buttons .btn {
+      min-width: 36px;
+      min-height: 36px;
+      touch-action: manipulation;
+    }
+
+    .empty-state {
+      padding: 4rem 2rem;
+      text-align: center;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.3;
+      color: var(--text-secondary);
+    }
+
+    .empty-state h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .empty-state p {
+      font-size: 0.9375rem;
+      margin: 0;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .video-url {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--accent-red);
+      text-decoration: none;
+    }
+
+    .video-url:hover {
+      text-decoration: underline;
+    }
+
+    .video-url-mobile {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .video-url-desktop {
+        display: none;
+      }
+
+      .video-url-mobile {
+        display: inline;
+      }
+
+      .video-url {
+        max-width: 200px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-main {
+        margin-left: 0 !important;
+        padding: 4.5rem 1rem 1rem 1rem !important;
+        width: 100%;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .page-header > div:last-child {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .page-header > div:last-child > * {
+        width: 100%;
+      }
+
+      .btn-primary {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .filters-section {
+        padding: 1rem;
+      }
+
+      .filters-section form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filters-section form > div {
+        width: 100%;
+      }
+
+      .table-container .table {
+        display: none !important;
+      }
+
+      .mobile-card-view {
+        display: block !important;
+      }
+
+      .mobile-card {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .mobile-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-primary);
+      }
+
+      .mobile-card-title h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .mobile-card-body {
+        margin-bottom: 0.75rem;
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+      }
+
+      .mobile-card-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .mobile-card-actions .btn {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
+    .mobile-card-view {
+      display: none;
+    }
+
+    .pagination-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding: 1rem 0;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .pagination-info {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .pagination {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-primary);
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .pagination-btn:hover:not(.disabled):not(.active) {
+      background: var(--bg-secondary);
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+    }
+
+    .pagination-btn.active {
+      background: var(--accent-red);
+      color: white;
+      border-color: var(--accent-red);
+    }
+
+    .pagination-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination-ellipsis {
+      padding: 0.5rem 0.25rem;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .pagination-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .pagination-info {
+        text-align: center;
+      }
+
+      .pagination {
+        justify-content: center;
+      }
+    }
+
+    /* Reorder Modal Styles */
+    .reorder-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .reorder-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .reorder-modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 768px) {
+      .reorder-modal-content {
+        padding: 1.25rem;
+        width: 95%;
+        max-height: 90vh;
+        border-radius: 12px;
+      }
+
+      .reorder-modal-header h2 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .reorder-modal-header p {
+        font-size: 0.8125rem;
+      }
+
+      .reorder-list {
+        min-height: 200px;
+        max-height: 50vh;
+        margin-bottom: 1rem;
+      }
+
+      .reorder-item {
+        padding: 0.75rem;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .reorder-handle {
+        font-size: 1rem;
+      }
+
+      .reorder-item-name {
+        font-size: 0.875rem;
+      }
+
+      .reorder-item-order {
+        font-size: 0.75rem;
+        min-width: 30px;
+      }
+
+      .reorder-modal-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+        padding-top: 1rem;
+      }
+
+      .reorder-modal-actions .btn {
+        width: 100%;
+        text-align: center;
+        padding: 0.875rem 1rem;
+      }
+    }
+
+    .reorder-modal.show .reorder-modal-content {
+      transform: scale(1);
+    }
+
+    .reorder-modal-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .reorder-modal-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .reorder-modal-header p {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .reorder-list {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 1.5rem;
+      min-height: 300px;
+      max-height: 400px;
+    }
+
+    .reorder-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-primary);
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      cursor: move;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .reorder-item:hover {
+      border-color: var(--accent-red);
+      box-shadow: 0 2px 8px rgba(197, 29, 52, 0.1);
+    }
+
+    .reorder-item.dragging {
+      opacity: 0.5;
+      border-color: var(--accent-red);
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.2);
+    }
+
+    .reorder-item.drag-over {
+      border-color: var(--accent-red);
+      background: rgba(197, 29, 52, 0.05);
+    }
+
+    .reorder-handle {
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+      cursor: grab;
+    }
+
+    .reorder-handle:active {
+      cursor: grabbing;
+    }
+
+    .reorder-item-info {
+      flex: 1;
+    }
+
+    .reorder-item-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .reorder-item-order {
+      font-size: 0.875rem;
+      color: var(--accent-red);
+      font-weight: 600;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .reorder-modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-primary);
+    }
+
+    .reorder-modal-actions .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+    }
+
+    .reorder-modal-actions .btn-cancel {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-primary);
+    }
+
+    .reorder-modal-actions .btn-cancel:hover {
+      background: #e5e7eb;
+    }
+
+    .reorder-modal-actions .btn-save {
+      background: var(--accent-red);
+      color: white;
+    }
+
+    .reorder-modal-actions .btn-save:hover {
+      background: #a01628;
+    }
+
+    .reorder-modal-actions .btn-save:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Success/Error Modal Styles */
+    .success-modal,
+    .error-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .success-modal.show,
+    .error-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content-wrapper {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .success-modal.show .modal-content-wrapper,
+    .error-modal.show .modal-content-wrapper {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease-out;
+    }
+
+    .modal-icon.error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .modal-icon.warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .modal-icon i {
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    @keyframes successPulse {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-message {
+      color: #6b7280;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+    }
+
+    .modal-btn-primary {
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(197, 29, 52, 0.3);
+    }
+
+    .modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <%- include('../partials/admin-sidebar') %>
+    
+    <div class="dashboard-main">
+      <div class="page-header">
+        <div>
+          <h1>Videos</h1>
+          <p>Manage videos - We Code, We Show</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <% if (videos && videos.length > 0) { %>
+            <button onclick="openReorderModal()" class="btn-primary" style="background: #6b7280; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap;">
+              <i class="fas fa-sort"></i> <span class="reorder-btn-text">Reorder Videos</span>
+            </button>
+          <% } %>
+          <a href="/admin/activities/videos/add" class="btn-primary" style="white-space: nowrap;">
+            <i class="fas fa-plus"></i> Add Video
+          </a>
+        </div>
+      </div>
+
+      <!-- Search Form -->
+      <div class="filters-section" style="background: var(--bg-primary); border-radius: 12px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); padding: 1.5rem; margin-bottom: 1.5rem;">
+        <form method="GET" action="/admin/activities/videos" style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <label for="search" style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary);">Search Videos</label>
+            <input 
+              type="text" 
+              id="search" 
+              name="search" 
+              class="filter-input" 
+              placeholder="Search by title, description, or URL..."
+              value="<%= search || '' %>"
+              style="width: 100%; padding: 0.625rem 0.75rem; border-radius: 6px; border: 1px solid var(--border-primary); font-size: 0.875rem; background: white; transition: border-color 0.2s; box-sizing: border-box;"
+            >
+          </div>
+          <div>
+            <button type="submit" class="btn-filter" style="padding: 0.625rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; background: var(--accent-red); color: white;">
+              <i class="fas fa-search"></i> Search
+            </button>
+          </div>
+          <% if (search && search.trim()) { %>
+            <div>
+              <a href="/admin/activities/videos" style="padding: 0.625rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-primary);">
+                <i class="fas fa-times"></i> Clear
+              </a>
+            </div>
+          <% } %>
+        </form>
+      </div>
+
+      <div class="table-container">
+        <% if (videos && videos.length > 0) { %>
+          <!-- Desktop Table View -->
+          <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>YouTube URL</th>
+                <th>Status</th>
+                <th>Order</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% videos.forEach(video => { %>
+                <tr>
+                  <td style="max-width: 300px;"><strong><%= video.title %></strong></td>
+                  <td>
+                    <a href="<%= video.youtube_url %>" target="_blank" class="video-url" title="<%= video.youtube_url %>">
+                      <span class="video-url-desktop"><%= video.youtube_url.length > 40 ? video.youtube_url.substring(0, 40) + '...' : video.youtube_url %></span>
+                      <span class="video-url-mobile"><%= video.youtube_url.length > 25 ? video.youtube_url.substring(0, 25) + '...' : video.youtube_url %></span>
+                    </a>
+                  </td>
+                  <td>
+                    <span class="status-badge <%= video.is_active ? 'active' : 'inactive' %>">
+                      <%= video.is_active ? 'Active' : 'Inactive' %>
+                    </span>
+                  </td>
+                  <td class="order-cell" data-order="<%= video.display_order %>"><%= (video.display_order != null && video.display_order !== undefined) ? parseInt(video.display_order) : 0 %></td>
+                  <td><%= new Date(video.created_at).toLocaleDateString() %></td>
+                  <td>
+                    <div class="action-buttons">
+                      <button class="btn btn-success btn-sm btn-icon-only toggle-video" data-video-id="<%= video.id %>" data-status="<%= video.is_active %>" title="<%= video.is_active ? 'Deactivate' : 'Activate' %> Video">
+                        <i class="fas fa-<%= video.is_active ? 'toggle-on' : 'toggle-off' %>"></i>
+                      </button>
+                      <a href="/admin/activities/videos/edit/<%= video.id %>" class="btn btn-secondary btn-sm btn-icon-only" style="text-decoration: none; display: inline-flex;" title="Edit Video">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <button class="btn btn-danger btn-sm btn-icon-only delete-video" data-video-id="<%= video.id %>" data-video-title="<%= video.title %>" title="Delete Video">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+          </div>
+
+          <!-- Mobile Card View -->
+          <div class="mobile-card-view">
+            <% videos.forEach(video => { %>
+              <div class="mobile-card">
+                <div class="mobile-card-header">
+                  <div class="mobile-card-title">
+                    <h3><%= video.title %></h3>
+                    <p><%= new Date(video.created_at).toLocaleDateString() %></p>
+                  </div>
+                  <span class="status-badge <%= video.is_active ? 'active' : 'inactive' %>">
+                    <%= video.is_active ? 'Active' : 'Inactive' %>
+                  </span>
+                </div>
+                <div class="mobile-card-body">
+                  <a href="<%= video.youtube_url %>" target="_blank" class="video-url" style="word-break: break-all; font-size: 0.75rem;">
+                    <%= video.youtube_url.length > 50 ? video.youtube_url.substring(0, 50) + '...' : video.youtube_url %>
+                  </a>
+                </div>
+                <div class="mobile-card-actions">
+                  <button class="btn btn-success toggle-video" data-video-id="<%= video.id %>" data-status="<%= video.is_active %>">
+                    <i class="fas fa-<%= video.is_active ? 'toggle-on' : 'toggle-off' %>"></i> <%= video.is_active ? 'Hide' : 'Show' %>
+                  </button>
+                  <a href="/admin/activities/videos/edit/<%= video.id %>" class="btn btn-secondary" style="text-decoration: none;">
+                    <i class="fas fa-edit"></i> Edit
+                  </a>
+                  <button class="btn btn-danger delete-video" data-video-id="<%= video.id %>" data-video-title="<%= video.title %>">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <i class="fas fa-video"></i>
+            <h3>No Videos Found</h3>
+            <p>Get started by adding your first video</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Pagination -->
+      <% if (pagination && pagination.totalPages > 1) { %>
+        <div class="pagination-container">
+          <div class="pagination-info">
+            Showing <%= ((pagination.currentPage - 1) * pagination.limit) + 1 %> to <%= Math.min(pagination.currentPage * pagination.limit, pagination.totalCount) %> of <%= pagination.totalCount %> results
+          </div>
+          <div class="pagination">
+            <% 
+              const searchParam = search && search.trim() ? `&search=${encodeURIComponent(search)}` : '';
+            %>
+            <% if (pagination.hasPrev) { %>
+              <a href="/admin/activities/videos?page=<%= pagination.currentPage - 1 %><%= searchParam %>" class="pagination-btn">
+                <i class="fas fa-chevron-left"></i>
+              </a>
+            <% } else { %>
+              <span class="pagination-btn disabled">
+                <i class="fas fa-chevron-left"></i>
+              </span>
+            <% } %>
+
+            <% 
+              let startPage = Math.max(1, pagination.currentPage - 2);
+              let endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
+              if (endPage - startPage < 4) {
+                if (startPage === 1) {
+                  endPage = Math.min(5, pagination.totalPages);
+                } else {
+                  startPage = Math.max(1, pagination.totalPages - 4);
+                }
+              }
+            %>
+
+            <% if (startPage > 1) { %>
+              <a href="/admin/activities/videos?page=1<%= searchParam %>" class="pagination-btn">1</a>
+              <% if (startPage > 2) { %>
+                <span class="pagination-ellipsis">...</span>
+              <% } %>
+            <% } %>
+
+            <% for (let i = startPage; i <= endPage; i++) { %>
+              <% if (i === pagination.currentPage) { %>
+                <span class="pagination-btn active"><%= i %></span>
+              <% } else { %>
+                <a href="/admin/activities/videos?page=<%= i %><%= searchParam %>" class="pagination-btn"><%= i %></a>
+              <% } %>
+            <% } %>
+
+            <% if (endPage < pagination.totalPages) { %>
+              <% if (endPage < pagination.totalPages - 1) { %>
+                <span class="pagination-ellipsis">...</span>
+              <% } %>
+              <a href="/admin/activities/videos?page=<%= pagination.totalPages %><%= searchParam %>" class="pagination-btn"><%= pagination.totalPages %></a>
+            <% } %>
+
+            <% if (pagination.hasNext) { %>
+              <a href="/admin/activities/videos?page=<%= pagination.currentPage + 1 %><%= searchParam %>" class="pagination-btn">
+                <i class="fas fa-chevron-right"></i>
+              </a>
+            <% } else { %>
+              <span class="pagination-btn disabled">
+                <i class="fas fa-chevron-right"></i>
+              </span>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Reorder Modal -->
+  <div class="reorder-modal" id="reorderModal">
+    <div class="reorder-modal-content">
+      <div class="reorder-modal-header">
+        <h2>Reorder Videos</h2>
+        <p>Drag and drop videos to reorder them. The topmost video will have order 0.</p>
+      </div>
+      <div class="reorder-list" id="reorderList">
+        <!-- Videos will be populated here -->
+      </div>
+      <div class="reorder-modal-actions">
+        <button class="btn btn-cancel" onclick="closeReorderModal()">Cancel</button>
+        <button class="btn btn-save" id="saveReorderBtn" onclick="saveReorder()">Save Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 class="modal-title">Success!</h3>
+      <p class="modal-message" id="successMessage">Operation completed successfully.</p>
+      <div class="modal-actions">
+        <button onclick="closeSuccessModal()" class="modal-btn modal-btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div class="error-modal" id="errorModal">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon error">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="modal-title">Error Occurred</h3>
+      <p class="modal-message" id="errorMessage">Something went wrong. Please try again.</p>
+      <div class="modal-actions">
+        <button onclick="closeErrorModal()" class="modal-btn modal-btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="error-modal" id="confirmationModal" style="z-index: 10001;">
+    <div class="modal-content-wrapper">
+      <div class="modal-icon warning" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 class="modal-title">Confirm Action</h3>
+      <p class="modal-message" id="confirmationMessage">Are you sure you want to proceed?</p>
+      <div class="modal-actions">
+        <button onclick="closeConfirmationModal()" class="modal-btn modal-btn-secondary" style="background: #f3f4f6; color: #374151;">Cancel</button>
+        <button id="confirmBtn" class="modal-btn modal-btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let videos = <%- JSON.stringify(videos || []) %>;
+    let reorderedVideos = [];
+
+    function openReorderModal() {
+      reorderedVideos = [...videos];
+      renderReorderList();
+      document.getElementById('reorderModal').classList.add('show');
+    }
+
+    function closeReorderModal() {
+      document.getElementById('reorderModal').classList.remove('show');
+      reorderedVideos = [...videos];
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('successModal').classList.remove('show');
+      closeReorderModal();
+      location.reload();
+    }
+
+    function closeErrorModal() {
+      document.getElementById('errorModal').classList.remove('show');
+    }
+
+    function closeConfirmationModal() {
+      document.getElementById('confirmationModal').classList.remove('show');
+    }
+
+    function showConfirmation(message, onConfirm) {
+      const modal = document.getElementById('confirmationModal');
+      const messageEl = document.getElementById('confirmationMessage');
+      const confirmBtn = document.getElementById('confirmBtn');
+      
+      if (modal && messageEl) {
+        messageEl.textContent = message;
+        modal.classList.add('show');
+        
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        newConfirmBtn.onclick = function() {
+          closeConfirmationModal();
+          if (onConfirm) onConfirm();
+        };
+      }
+    }
+
+    function renderReorderList() {
+      const list = document.getElementById('reorderList');
+      list.innerHTML = '';
+
+      reorderedVideos.forEach((video, index) => {
+        const item = document.createElement('div');
+        item.className = 'reorder-item';
+        item.draggable = true;
+        item.dataset.index = index;
+        item.dataset.id = video.id;
+
+        item.innerHTML = `
+          <div class="reorder-handle">
+            <i class="fas fa-grip-vertical"></i>
+          </div>
+          <div class="reorder-item-info">
+            <div class="reorder-item-name">${video.title}</div>
+          </div>
+          <div class="reorder-item-order">${index}</div>
+        `;
+
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragenter', handleDragEnter);
+        item.addEventListener('dragleave', handleDragLeave);
+
+        list.appendChild(item);
+      });
+    }
+
+    let draggedElement = null;
+    let draggedIndex = null;
+
+    function handleDragStart(e) {
+      draggedElement = this;
+      draggedIndex = parseInt(this.dataset.index);
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', this.innerHTML);
+    }
+
+    function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      document.querySelectorAll('.reorder-item').forEach(item => {
+        item.classList.remove('drag-over');
+      });
+    }
+
+    function handleDragOver(e) {
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+    }
+
+    function handleDragEnter(e) {
+      if (this !== draggedElement) {
+        this.classList.add('drag-over');
+      }
+    }
+
+    function handleDragLeave(e) {
+      this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+
+      if (draggedElement !== this) {
+        const dropIndex = parseInt(this.dataset.index);
+        const draggedVideo = reorderedVideos[draggedIndex];
+        
+        reorderedVideos.splice(draggedIndex, 1);
+        reorderedVideos.splice(dropIndex, 0, draggedVideo);
+        
+        renderReorderList();
+      }
+
+      this.classList.remove('drag-over');
+      return false;
+    }
+
+    async function saveReorder() {
+      const saveBtn = document.getElementById('saveReorderBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const videoIds = reorderedVideos.map(video => video.id);
+        
+        const response = await fetch('/admin/activities/videos/reorder', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ videoIds })
+        });
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Server returned an unexpected response. Please try again.');
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById('successMessage').textContent = data.message || 'Video order updated successfully.';
+          document.getElementById('reorderModal').classList.remove('show');
+          document.getElementById('successModal').classList.add('show');
+        } else {
+          document.getElementById('errorMessage').textContent = data.message || 'Error updating video order.';
+          document.getElementById('errorModal').classList.add('show');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Order';
+        }
+      } catch (error) {
+        document.getElementById('errorMessage').textContent = error.message || 'An error occurred while updating the order.';
+        document.getElementById('errorModal').classList.add('show');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Order';
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('reorder-modal')) {
+        if (e.target.id === 'reorderModal') {
+          closeReorderModal();
+        }
+      }
+      if (e.target.classList.contains('success-modal') || e.target.classList.contains('error-modal')) {
+        if (e.target.id === 'successModal') {
+          closeSuccessModal();
+        } else if (e.target.id === 'errorModal') {
+          closeErrorModal();
+        } else if (e.target.id === 'confirmationModal') {
+          closeConfirmationModal();
+        }
+      }
+    });
+
+    // Show success modal if redirected with success parameter
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('success') === 'true') {
+        document.getElementById('successMessage').textContent = 'Operation completed successfully.';
+        document.getElementById('successModal').classList.add('show');
+        // Clean URL
+        window.history.replaceState({}, document.title, window.location.pathname + (urlParams.get('search') ? '?search=' + encodeURIComponent(urlParams.get('search')) : ''));
+      }
+
+    });
+    document.querySelectorAll('.toggle-video').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const videoId = this.dataset.videoId;
+        const currentStatus = this.dataset.status === 'true';
+
+        try {
+          const response = await fetch(`/admin/activities/videos/${videoId}/toggle-active`, {
+            method: 'POST'
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            location.reload();
+          } else {
+            alert(data.message || 'Error toggling video status');
+          }
+        } catch (error) {
+          alert('An error occurred while toggling video status');
+        }
+      });
+    });
+
+    document.querySelectorAll('.delete-video').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const videoId = this.dataset.videoId;
+        const videoTitle = this.dataset.videoTitle;
+        const deleteBtn = this;
+
+        showConfirmation(`Are you sure you want to delete video "${videoTitle}"? This action cannot be undone.`, async function() {
+          const originalText = deleteBtn.innerHTML;
+          deleteBtn.disabled = true;
+          deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+          try {
+            const response = await fetch(`/admin/activities/videos/${videoId}`, {
+              method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              document.getElementById('successMessage').textContent = data.message || 'Video deleted successfully.';
+              document.getElementById('successModal').classList.add('show');
+              setTimeout(() => {
+                location.reload();
+              }, 1500);
+            } else {
+              document.getElementById('errorMessage').textContent = data.message || 'Error deleting video.';
+              document.getElementById('errorModal').classList.add('show');
+              deleteBtn.disabled = false;
+              deleteBtn.innerHTML = originalText;
+            }
+          } catch (error) {
+            document.getElementById('errorMessage').textContent = 'An error occurred while deleting the video.';
+            document.getElementById('errorModal').classList.add('show');
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = originalText;
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+

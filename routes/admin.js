@@ -155,8 +155,17 @@ router.get("/dashboard", ensureAdmin, async (req, res) => {
 
 router.get("/team", ensureAdmin, async (req, res) => {
   try {
-    const { search } = req.query
+    const { search, page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
     
+    let countQuery = `
+      SELECT COUNT(*) as count
+      FROM team_members tm
+      JOIN users u ON tm.user_id = u.id
+      WHERE 1=1
+    `
     let query = `
       SELECT tm.*, u.name, u.email, u.avatar, u.last_login, u.last_active
       FROM team_members tm
@@ -166,20 +175,32 @@ router.get("/team", ensureAdmin, async (req, res) => {
     const params = []
     
     if (search && search.trim()) {
-      query += ` AND (u.name LIKE ? OR tm.position LIKE ?)`
       const searchTerm = `%${search.trim()}%`
+      query += ` AND (u.name LIKE ? OR tm.position LIKE ?)`
+      countQuery += ` AND (u.name LIKE ? OR tm.position LIKE ?)`
       params.push(searchTerm, searchTerm)
     }
     
-    query += ` ORDER BY tm.display_order`
+    query += ` ORDER BY tm.display_order LIMIT ? OFFSET ?`
     
-    const [teamMembers] = await db.query(query, params)
+    const [teamMembers] = await db.query(query, [...params, limit, offset])
+    const [countResult] = await db.query(countQuery, params)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
 
     res.render("admin/team", {
       title: "Manage Team - Backpack Tech Works",
       teamMembers,
       filters: {
         search: search || ''
+      },
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
       }
     })
   } catch (error) {
@@ -189,6 +210,14 @@ router.get("/team", ensureAdmin, async (req, res) => {
       teamMembers: [],
       filters: {
         search: ''
+      },
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false
       }
     })
   }
@@ -288,8 +317,8 @@ router.post("/team/add", ensureAdmin, parseFormDataMiddleware, async (req, res) 
         skillsArray = skills.split(",").map(s => s.trim()).filter(s => s);
       }
     }
-
-
+    
+    skillsArray = [...new Set(skillsArray)];
 
 
     await db.query(
@@ -472,6 +501,8 @@ router.post("/team/:id", ensureAdmin, parseFormDataMiddleware, async (req, res) 
         skillsArray = skills.split(",").map(s => s.trim()).filter(s => s);
       }
     }
+    
+    skillsArray = [...new Set(skillsArray)];
 
 
     await db.query(
@@ -563,8 +594,17 @@ router.delete("/team/:id", ensureAdmin, async (req, res) => {
 
 router.get("/inquiries", ensureAdmin, async (req, res) => {
   try {
-    const { search, date_from, date_to, status } = req.query
+    const { search, date_from, date_to, status, page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
     
+    let countQuery = `
+      SELECT COUNT(*) as count
+      FROM inquiries i
+      LEFT JOIN users u ON i.user_id = u.id
+      WHERE 1=1
+    `
     let query = `
       SELECT i.*, u.name as user_name 
       FROM inquiries i
@@ -575,6 +615,7 @@ router.get("/inquiries", ensureAdmin, async (req, res) => {
     
 
     if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`
       query += ` AND (
         i.name LIKE ? OR 
         i.email LIKE ? OR 
@@ -582,30 +623,42 @@ router.get("/inquiries", ensureAdmin, async (req, res) => {
         i.message LIKE ? OR
         u.name LIKE ?
       )`
-      const searchTerm = `%${search.trim()}%`
+      countQuery += ` AND (
+        i.name LIKE ? OR 
+        i.email LIKE ? OR 
+        i.subject LIKE ? OR 
+        i.message LIKE ? OR
+        u.name LIKE ?
+      )`
       params.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm)
     }
     
 
     if (date_from) {
       query += ` AND DATE(i.created_at) >= ?`
+      countQuery += ` AND DATE(i.created_at) >= ?`
       params.push(date_from)
     }
     
     if (date_to) {
       query += ` AND DATE(i.created_at) <= ?`
+      countQuery += ` AND DATE(i.created_at) <= ?`
       params.push(date_to)
     }
     
 
     if (status) {
       query += ` AND i.status = ?`
+      countQuery += ` AND i.status = ?`
       params.push(status)
     }
     
-    query += ` ORDER BY i.created_at DESC`
+    query += ` ORDER BY i.created_at DESC LIMIT ? OFFSET ?`
     
-    const [inquiries] = await db.query(query, params)
+    const [inquiries] = await db.query(query, [...params, limit, offset])
+    const [countResult] = await db.query(countQuery, params)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
 
     res.render("admin/inquiries", {
       title: "Manage Inquiries - Backpack Tech Works",
@@ -615,6 +668,14 @@ router.get("/inquiries", ensureAdmin, async (req, res) => {
         date_from: date_from || '',
         date_to: date_to || '',
         status: status || ''
+      },
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
       }
     })
   } catch (error) {
@@ -627,6 +688,14 @@ router.get("/inquiries", ensureAdmin, async (req, res) => {
         date_from: '',
         date_to: '',
         status: ''
+      },
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false
       }
     })
   }
@@ -971,8 +1040,17 @@ router.post("/change-password", ensureAdmin, async (req, res) => {
 
 router.get("/clients", ensureAdmin, async (req, res) => {
   try {
-    const { search, brand_id } = req.query
+    const { search, brand_id, page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
     
+    let countQuery = `
+      SELECT COUNT(*) as count
+      FROM users u
+      LEFT JOIN brands b ON u.brand_id = b.id
+      WHERE u.role = 'client'
+    `
     let query = `
       SELECT u.*, 
         b.name as brand_name,
@@ -987,19 +1065,24 @@ router.get("/clients", ensureAdmin, async (req, res) => {
     
 
     if (search && search.trim()) {
-      query += ` AND (u.name LIKE ? OR u.email LIKE ?)`
       const searchTerm = `%${search.trim()}%`
+      query += ` AND (u.name LIKE ? OR u.email LIKE ?)`
+      countQuery += ` AND (u.name LIKE ? OR u.email LIKE ?)`
       params.push(searchTerm, searchTerm)
     }
     
     if (brand_id && brand_id !== '') {
       query += ` AND u.brand_id = ?`
+      countQuery += ` AND u.brand_id = ?`
       params.push(brand_id)
     }
     
-    query += ` ORDER BY u.created_at DESC`
+    query += ` ORDER BY u.created_at DESC LIMIT ? OFFSET ?`
     
-    const [clients] = await db.query(query, params)
+    const [clients] = await db.query(query, [...params, limit, offset])
+    const [countResult] = await db.query(countQuery, params)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
 
 
     const [brands] = await db.query(`
@@ -1015,6 +1098,14 @@ router.get("/clients", ensureAdmin, async (req, res) => {
       filters: {
         search: search || '',
         brand_id: brand_id || ''
+      },
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
       }
     })
   } catch (error) {
@@ -1026,6 +1117,14 @@ router.get("/clients", ensureAdmin, async (req, res) => {
       filters: {
         search: '',
         brand_id: ''
+      },
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false
       }
     })
   }
@@ -1458,8 +1557,16 @@ const serviceIconUpload = multer({
 
 router.get("/services", ensureAdmin, async (req, res) => {
   try {
-    const { search } = req.query
+    const { search, page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
     
+    let countQuery = `
+      SELECT COUNT(*) as count
+      FROM services s
+      WHERE 1=1
+    `
     let query = `
       SELECT s.*, 
         (SELECT COUNT(*) FROM projects WHERE service_id = s.id) as project_count
@@ -1470,19 +1577,32 @@ router.get("/services", ensureAdmin, async (req, res) => {
     
 
     if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`
       query += ` AND s.title LIKE ?`
-      params.push(`%${search.trim()}%`)
+      countQuery += ` AND s.title LIKE ?`
+      params.push(searchTerm)
     }
     
-    query += ` ORDER BY s.display_order, s.created_at DESC`
+    query += ` ORDER BY s.display_order, s.created_at DESC LIMIT ? OFFSET ?`
     
-    const [services] = await db.query(query, params)
+    const [services] = await db.query(query, [...params, limit, offset])
+    const [countResult] = await db.query(countQuery, params)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
 
     res.render("admin/services", {
       title: "Manage Services - Backpack Tech Works",
       services,
       filters: {
         search: search || ''
+      },
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
       }
     })
   } catch (error) {
@@ -1492,6 +1612,14 @@ router.get("/services", ensureAdmin, async (req, res) => {
       services: [],
       filters: {
         search: ''
+      },
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false
       }
     })
   }
@@ -2120,11 +2248,79 @@ async function saveMilestones(projectId, milestonesData) {
   }
 }
 
+async function saveProjectLinks(projectId, linksData) {
+  if (!linksData) return
+
+  try {
+    let links
+    if (typeof linksData === 'string') {
+      links = JSON.parse(linksData)
+    } else {
+      links = linksData
+    }
+
+    if (!Array.isArray(links)) return
+
+    const [existingLinks] = await db.query(
+      'SELECT id FROM project_links WHERE project_id = ?',
+      [projectId]
+    )
+    const existingIds = existingLinks.map(l => l.id)
+    const newIds = []
+
+    for (let i = 0; i < links.length; i++) {
+      const link = links[i]
+      const { id, title, url } = link
+
+      if (!title || !url) continue
+
+      let linkId
+
+      if (id && existingIds.includes(parseInt(id))) {
+        await db.query(
+          `UPDATE project_links SET title = ?, url = ?, display_order = ? WHERE id = ?`,
+          [title, url, i, id]
+        )
+        linkId = parseInt(id)
+        newIds.push(linkId)
+      } else {
+        const [result] = await db.query(
+          `INSERT INTO project_links (project_id, title, url, display_order) VALUES (?, ?, ?, ?)`,
+          [projectId, title, url, i]
+        )
+        linkId = result.insertId
+        newIds.push(linkId)
+      }
+    }
+
+    const linksToDelete = existingIds.filter(id => !newIds.includes(id))
+    if (linksToDelete.length > 0) {
+      await db.query(
+        `DELETE FROM project_links WHERE id IN (${linksToDelete.map(() => '?').join(',')})`,
+        linksToDelete
+      )
+    }
+  } catch (error) {
+    console.error('Error saving project links:', error)
+    throw error
+  }
+}
+
 
 router.get("/projects", ensureAdmin, async (req, res) => {
   try {
-    const { search, client_id, service_id, status } = req.query
+    const { search, client_id, service_id, status, page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
     
+    let countQuery = `
+      SELECT COUNT(*) as count
+      FROM projects p
+      LEFT JOIN users u ON p.client_id = u.id
+      LEFT JOIN services s ON p.service_id = s.id
+      WHERE 1=1
+    `
     let query = `
       SELECT p.*, 
         u.name as client_name,
@@ -2139,19 +2335,23 @@ router.get("/projects", ensureAdmin, async (req, res) => {
     
 
     if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`
       query += ` AND p.title LIKE ?`
-      params.push(`%${search.trim()}%`)
+      countQuery += ` AND p.title LIKE ?`
+      params.push(searchTerm)
     }
     
 
     if (client_id && client_id !== '') {
       query += ` AND p.client_id = ?`
+      countQuery += ` AND p.client_id = ?`
       params.push(client_id)
     }
     
 
     if (service_id && service_id !== '') {
       query += ` AND p.service_id = ?`
+      countQuery += ` AND p.service_id = ?`
       params.push(service_id)
     }
     
@@ -2159,14 +2359,19 @@ router.get("/projects", ensureAdmin, async (req, res) => {
     if (status && status !== '') {
       if (status === 'featured') {
         query += ` AND p.is_featured = 1`
+        countQuery += ` AND p.is_featured = 1`
       } else if (status === 'normal') {
         query += ` AND p.is_featured = 0`
+        countQuery += ` AND p.is_featured = 0`
       }
     }
     
-    query += ` ORDER BY p.created_at DESC`
+    query += ` ORDER BY p.created_at DESC LIMIT ? OFFSET ?`
     
-    const [projects] = await db.query(query, params)
+    const [projects] = await db.query(query, [...params, limit, offset])
+    const [countResult] = await db.query(countQuery, params)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
 
 
     for (let project of projects) {
@@ -2207,6 +2412,14 @@ router.get("/projects", ensureAdmin, async (req, res) => {
         client_id: client_id || '',
         service_id: service_id || '',
         status: status || ''
+      },
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
       }
     })
   } catch (error) {
@@ -2221,6 +2434,14 @@ router.get("/projects", ensureAdmin, async (req, res) => {
         client_id: '',
         service_id: '',
         status: ''
+      },
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false
       }
     })
   }
@@ -2297,6 +2518,11 @@ router.get("/projects/edit/:id", ensureAdmin, async (req, res) => {
 
     project.milestones = milestones || []
 
+    const [links] = await db.query(
+      `SELECT * FROM project_links WHERE project_id = ? ORDER BY display_order, created_at`,
+      [id]
+    )
+    project.links = links || []
 
     const [clients] = await db.query('SELECT id, name, email FROM users WHERE role = "client" ORDER BY name')
     const [services] = await db.query('SELECT id, title FROM services WHERE is_active = true ORDER BY title')
@@ -2445,6 +2671,7 @@ router.post("/projects/add", ensureAdmin, parseFormDataMiddleware, async (req, r
 
 
     await saveMilestones(projectId, req.body.milestones)
+    await saveProjectLinks(projectId, req.body.links)
 
     res.redirect("/admin/projects/add?success=true")
   } catch (error) {
@@ -2618,6 +2845,7 @@ router.post("/projects/:id", ensureAdmin, parseFormDataMiddleware, async (req, r
 
 
     await saveMilestones(id, req.body.milestones)
+    await saveProjectLinks(id, req.body.links)
 
     res.redirect(`/admin/projects/edit/${id}?success=true`)
   } catch (error) {
@@ -2796,8 +3024,16 @@ const brandLogoUpload = multer({
 
 router.get("/brands", ensureAdmin, async (req, res) => {
   try {
-    const { search } = req.query
+    const { search, page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
     
+    let countQuery = `
+      SELECT COUNT(*) as count
+      FROM brands b
+      WHERE 1=1
+    `
     let query = `
       SELECT b.*, 
         (SELECT COUNT(*) FROM users WHERE brand_id = b.id AND role = 'client') as client_count
@@ -2808,19 +3044,32 @@ router.get("/brands", ensureAdmin, async (req, res) => {
     
 
     if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`
       query += ` AND b.name LIKE ?`
-      params.push(`%${search.trim()}%`)
+      countQuery += ` AND b.name LIKE ?`
+      params.push(searchTerm)
     }
     
-    query += ` ORDER BY b.created_at DESC`
+    query += ` ORDER BY b.created_at DESC LIMIT ? OFFSET ?`
     
-    const [brands] = await db.query(query, params)
+    const [brands] = await db.query(query, [...params, limit, offset])
+    const [countResult] = await db.query(countQuery, params)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
 
     res.render("admin/brands", {
       title: "Manage Brands - Backpack Tech Works",
       brands,
       filters: {
         search: search || ''
+      },
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
       }
     })
   } catch (error) {
@@ -2830,6 +3079,14 @@ router.get("/brands", ensureAdmin, async (req, res) => {
       brands: [],
       filters: {
         search: ''
+      },
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false
       }
     })
   }
@@ -3321,8 +3578,17 @@ router.get("/activities", ensureAdmin, async (req, res) => {
 
 router.get("/activities/blogs", ensureAdmin, async (req, res) => {
   try {
-    const { search } = req.query
+    const { search, page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
     
+    let countQuery = `
+      SELECT COUNT(*) as count
+      FROM blogs b
+      LEFT JOIN users u ON b.author_id = u.id
+      WHERE 1=1
+    `
     let query = `
       SELECT b.*, u.name as author_name
       FROM blogs b
@@ -3333,14 +3599,18 @@ router.get("/activities/blogs", ensureAdmin, async (req, res) => {
     
 
     if (search && search.trim()) {
-      query += ` AND (b.title LIKE ? OR b.content LIKE ?)`
       const searchTerm = `%${search.trim()}%`
+      query += ` AND (b.title LIKE ? OR b.content LIKE ?)`
+      countQuery += ` AND (b.title LIKE ? OR b.content LIKE ?)`
       params.push(searchTerm, searchTerm)
     }
     
-    query += ` ORDER BY b.created_at DESC`
+    query += ` ORDER BY b.created_at DESC LIMIT ? OFFSET ?`
     
-    const [blogs] = await db.query(query, params)
+    const [blogs] = await db.query(query, [...params, limit, offset])
+    const [countResult] = await db.query(countQuery, params)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
 
 
     blogs.forEach(blog => {
@@ -3384,7 +3654,15 @@ router.get("/activities/blogs", ensureAdmin, async (req, res) => {
       filters: {
         search: search || ''
       },
-      user: req.user
+      user: req.user,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
+      }
     })
   } catch (error) {
     console.error(error)
@@ -3394,7 +3672,15 @@ router.get("/activities/blogs", ensureAdmin, async (req, res) => {
       filters: {
         search: ''
       },
-      user: req.user
+      user: req.user,
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false
+      }
     })
   }
 })
@@ -4067,12 +4353,22 @@ router.delete("/activities/blogs/:id", ensureAdmin, async (req, res) => {
 
 router.get("/activities/polls", ensureAdmin, async (req, res) => {
   try {
+    const { page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
+    
+    const [countResult] = await db.query(`SELECT COUNT(*) as count FROM polls`)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
+    
     const [polls] = await db.query(`
       SELECT p.*, 
         (SELECT COUNT(*) FROM poll_votes WHERE poll_id = p.id) as vote_count
       FROM polls p
       ORDER BY p.created_at DESC
-    `)
+      LIMIT ? OFFSET ?
+    `, [limit, offset])
 
 
 
@@ -4117,14 +4413,30 @@ router.get("/activities/polls", ensureAdmin, async (req, res) => {
     res.render("admin/polls", {
       title: "Manage Polls - Backpack Tech Works",
       polls,
-      user: req.user
+      user: req.user,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
+      }
     })
   } catch (error) {
     console.error(error)
     res.render("admin/polls", {
       title: "Manage Polls",
       polls: [],
-      user: req.user
+      user: req.user,
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false
+      }
     })
   }
 })
@@ -4415,6 +4727,275 @@ router.delete("/activities/polls/:id", ensureAdmin, async (req, res) => {
   } catch (error) {
     console.error("Error deleting poll:", error)
     res.status(500).json({ success: false, message: "Error deleting poll" })
+  }
+})
+
+
+// ==================== VIDEOS ROUTES ====================
+
+router.get("/activities/videos", ensureAdmin, async (req, res) => {
+  try {
+    // Fix existing videos with display_order = 0 by assigning them based on ID (reverse order, so newest gets highest number)
+    // This only runs if all videos have display_order = 0
+    const [checkResult] = await db.query("SELECT COUNT(*) as total, SUM(CASE WHEN display_order = 0 THEN 1 ELSE 0 END) as zeros FROM videos")
+    if (checkResult[0].total > 0 && checkResult[0].zeros === checkResult[0].total) {
+      // All videos have display_order = 0, fix them
+      const [allVideos] = await db.query("SELECT id FROM videos ORDER BY id DESC")
+      for (let i = 0; i < allVideos.length; i++) {
+        await db.query("UPDATE videos SET display_order = ? WHERE id = ?", [i, allVideos[i].id])
+      }
+      console.log(`Fixed display_order for ${allVideos.length} videos`)
+    }
+
+    const { page = 1, search = '' } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
+    
+    let countQuery = `SELECT COUNT(*) as count FROM videos`
+    let videosQuery = `SELECT * FROM videos`
+    const queryParams = []
+    
+    if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`
+      countQuery += ` WHERE title LIKE ? OR description LIKE ? OR youtube_url LIKE ?`
+      videosQuery += ` WHERE title LIKE ? OR description LIKE ? OR youtube_url LIKE ?`
+      queryParams.push(searchTerm, searchTerm, searchTerm)
+    }
+    
+    videosQuery += ` ORDER BY display_order ASC, created_at DESC LIMIT ? OFFSET ?`
+    
+    const [countResult] = await db.query(countQuery, queryParams.slice(0, queryParams.length))
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
+    
+    const [videos] = await db.query(videosQuery, [...queryParams, limit, offset])
+
+    res.render("admin/videos", {
+      title: "Manage Videos - Backpack Tech Works",
+      videos,
+      user: req.user,
+      search: search || '',
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
+      }
+    })
+  } catch (error) {
+    console.error(error)
+    res.render("admin/videos", {
+      title: "Manage Videos",
+      videos: [],
+      user: req.user,
+      search: req.query.search || '',
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false
+      }
+    })
+  }
+})
+
+
+router.get("/activities/videos/add", ensureAdmin, async (req, res) => {
+  try {
+    res.render("admin/video-form", {
+      title: "Add Video - Backpack Tech Works",
+      isEdit: false,
+      video: {},
+      user: req.user
+    })
+  } catch (error) {
+    console.error(error)
+    req.flash("error_msg", "Failed to load add form")
+    res.redirect("/admin/activities/videos")
+  }
+})
+
+
+router.get("/activities/videos/edit/:id", ensureAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    const [videos] = await db.query(
+      "SELECT * FROM videos WHERE id = ?",
+      [id]
+    )
+
+    if (videos.length === 0) {
+      req.flash("error_msg", "Video not found")
+      return res.redirect("/admin/activities/videos")
+    }
+
+    const video = videos[0]
+
+    res.render("admin/video-form", {
+      title: "Edit Video - Backpack Tech Works",
+      video,
+      isEdit: true,
+      user: req.user
+    })
+  } catch (error) {
+    console.error(error)
+    req.flash("error_msg", "Failed to load edit form")
+    res.redirect("/admin/activities/videos")
+  }
+})
+
+
+router.post("/activities/videos/add", ensureAdmin, async (req, res) => {
+  try {
+    const { title, description, youtube_url, is_active } = req.body
+
+    if (!title || !title.trim()) {
+      const errorMessage = encodeURIComponent("Title is required")
+      return res.redirect(`/admin/activities/videos/add?error=true&message=${errorMessage}`)
+    }
+
+    if (!youtube_url || !youtube_url.trim()) {
+      const errorMessage = encodeURIComponent("YouTube URL is required")
+      return res.redirect(`/admin/activities/videos/add?error=true&message=${errorMessage}`)
+    }
+
+    // Get the next available display_order (highest + 1)
+    const [maxOrderResult] = await db.query("SELECT COALESCE(MAX(display_order), -1) as max_order FROM videos")
+    const nextOrder = (maxOrderResult[0]?.max_order ?? -1) + 1
+
+    await db.query(
+      `INSERT INTO videos (title, description, youtube_url, display_order, is_active) VALUES (?, ?, ?, ?, ?)`,
+      [
+        title.trim(),
+        description ? description.trim() : null,
+        youtube_url.trim(),
+        nextOrder,
+        is_active === 'true' || is_active === true || is_active === 'on'
+      ]
+    )
+
+    res.redirect("/admin/activities/videos?success=true")
+  } catch (error) {
+    console.error("Error creating video:", error)
+    const errorMessage = encodeURIComponent(error.message || "Failed to create video")
+    res.redirect(`/admin/activities/videos/add?error=true&message=${errorMessage}`)
+  }
+})
+
+
+// IMPORTANT: This route must be defined BEFORE /activities/videos/:id to prevent "reorder" being matched as an :id
+router.post("/activities/videos/reorder", ensureAdmin, async (req, res) => {
+  try {
+    const { videoIds } = req.body
+
+    if (!Array.isArray(videoIds)) {
+      return res.status(400).json({ success: false, message: "Invalid video IDs array" })
+    }
+
+    if (videoIds.length === 0) {
+      return res.status(400).json({ success: false, message: "No video IDs provided" })
+    }
+
+    // Update display_order for each video
+    for (let i = 0; i < videoIds.length; i++) {
+      const videoId = parseInt(videoIds[i]);
+      if (isNaN(videoId)) {
+        continue;
+      }
+      await db.query("UPDATE videos SET display_order = ? WHERE id = ?", [i, videoId])
+    }
+
+    res.json({ 
+      success: true, 
+      message: "Video order updated successfully" 
+    })
+  } catch (error) {
+    console.error("Error reordering videos:", error)
+    res.status(500).json({ success: false, message: "Error reordering videos: " + error.message })
+  }
+})
+
+
+router.post("/activities/videos/:id", ensureAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { title, description, youtube_url, is_active } = req.body
+
+    const [existingVideos] = await db.query("SELECT * FROM videos WHERE id = ?", [id])
+    if (existingVideos.length === 0) {
+      const errorMessage = encodeURIComponent("Video not found")
+      return res.redirect(`/admin/activities/videos/edit/${id}?error=true&message=${errorMessage}`)
+    }
+
+    if (!title || !title.trim()) {
+      const errorMessage = encodeURIComponent("Title is required")
+      return res.redirect(`/admin/activities/videos/edit/${id}?error=true&message=${errorMessage}`)
+    }
+
+    if (!youtube_url || !youtube_url.trim()) {
+      const errorMessage = encodeURIComponent("YouTube URL is required")
+      return res.redirect(`/admin/activities/videos/edit/${id}?error=true&message=${errorMessage}`)
+    }
+
+    // Keep existing display_order when updating
+    await db.query(
+      `UPDATE videos SET title = ?, description = ?, youtube_url = ?, is_active = ? WHERE id = ?`,
+      [
+        title.trim(),
+        description ? description.trim() : null,
+        youtube_url.trim(),
+        is_active === 'true' || is_active === true || is_active === 'on',
+        id
+      ]
+    )
+
+    res.redirect(`/admin/activities/videos?success=true`)
+  } catch (error) {
+    console.error("Error updating video:", error)
+    const errorMessage = encodeURIComponent(error.message || "Failed to update video")
+    res.redirect(`/admin/activities/videos/edit/${id}?error=true&message=${errorMessage}`)
+  }
+})
+
+
+router.post("/activities/videos/:id/toggle-active", ensureAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    
+    const [videos] = await db.query("SELECT is_active FROM videos WHERE id = ?", [id])
+    if (videos.length === 0) {
+      return res.status(404).json({ success: false, message: "Video not found" })
+    }
+    
+    const newStatus = !videos[0].is_active
+    
+    await db.query("UPDATE videos SET is_active = ? WHERE id = ?", [newStatus, id])
+    
+    res.json({ 
+      success: true, 
+      message: `Video ${newStatus ? 'activated' : 'deactivated'} successfully`,
+      is_active: newStatus
+    })
+  } catch (error) {
+    console.error("Error toggling video status:", error)
+    res.status(500).json({ success: false, message: "Error toggling video status" })
+  }
+})
+
+
+router.delete("/activities/videos/:id", ensureAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    await db.query("DELETE FROM videos WHERE id = ?", [id])
+    res.json({ success: true, message: "Video deleted successfully" })
+  } catch (error) {
+    console.error("Error deleting video:", error)
+    res.status(500).json({ success: false, message: "Error deleting video" })
   }
 })
 

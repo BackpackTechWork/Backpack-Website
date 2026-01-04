@@ -7,6 +7,74 @@ const path = require("path")
 const { getServices } = require("../utils/servicesCache")
 
 
+// Videos All Page
+router.get("/videos", async (req, res) => {
+  try {
+    const searchQuery = req.query.search || ''
+    const { page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 5
+    const offset = (pageNum - 1) * limit
+
+    let videosQuery = `
+      SELECT * FROM videos
+      WHERE is_active = true
+    `
+    const queryParams = []
+    
+    if (searchQuery.trim()) {
+      videosQuery += ` AND (title LIKE ? OR description LIKE ?)`
+      const searchTerm = `%${searchQuery.trim()}%`
+      queryParams.push(searchTerm, searchTerm)
+    }
+    
+    // Get total count
+    const countQuery = `SELECT COUNT(*) as count FROM videos WHERE is_active = true${searchQuery.trim() ? ' AND (title LIKE ? OR description LIKE ?)' : ''}`
+    const [countResult] = await db.query(countQuery, queryParams)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
+    
+    videosQuery += ` ORDER BY display_order DESC, created_at DESC LIMIT ? OFFSET ?`
+    
+    const [videos] = await db.query(videosQuery, [...queryParams, limit, offset])
+
+    res.render("videos/index", {
+      title: "Videos - We Code, We Show - Backpack Tech Works",
+      seoDescription: "Watch our latest videos and tutorials. Stay updated with tech insights, coding tutorials, and more from Backpack Tech Works.",
+      seoKeywords: "tech videos, coding tutorials, software development videos, Backpack Tech Works videos",
+      seoImage: "/Backpack.webp",
+      seoType: "website",
+      videos,
+      searchQuery: searchQuery,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1,
+        queryParams: new URLSearchParams(req.query).toString().replace(/&?page=\d+/, '')
+      }
+    })
+  } catch (error) {
+    console.error(error)
+    res.render("videos/index", {
+      title: "Videos - Backpack Tech Works",
+      videos: [],
+      searchQuery: req.query.search || '',
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 5,
+        hasNext: false,
+        hasPrev: false,
+        queryParams: ''
+      }
+    })
+  }
+})
+
 router.get("/", async (req, res) => {
   try {
     const [services] = await db.query("SELECT * FROM services WHERE is_active = true ORDER BY display_order")
@@ -20,7 +88,7 @@ router.get("/", async (req, res) => {
       FROM blogs
       WHERE is_published = true
       ORDER BY created_at DESC
-      LIMIT 3
+      LIMIT 7
     `)
     
 
@@ -30,6 +98,13 @@ router.get("/", async (req, res) => {
       FROM polls p
       WHERE p.is_active = true
       ORDER BY p.created_at DESC
+      LIMIT 3
+    `)
+
+    const [videos] = await db.query(`
+      SELECT * FROM videos
+      WHERE is_active = true
+      ORDER BY display_order DESC, created_at DESC
       LIMIT 3
     `)
     
@@ -177,7 +252,8 @@ router.get("/", async (req, res) => {
       logos,
       testimonials,
       blogs: blogs || [],
-      polls: polls || []
+      polls: polls || [],
+      videos: videos || []
     })
   } catch (error) {
     console.error(error)
@@ -191,6 +267,7 @@ router.get("/", async (req, res) => {
       projects: [],
       logos: [],
       testimonials: [],
+      videos: []
     })
   }
 })
@@ -367,6 +444,12 @@ router.get("/projects/:slug", async (req, res) => {
       }
     }
     project.projectLink = projectLink
+
+    const [links] = await db.query(
+      `SELECT * FROM project_links WHERE project_id = ? ORDER BY display_order, created_at`,
+      [project.id]
+    )
+    project.links = links || []
     
     const projectDescription = project.description 
       ? (project.description.length > 160 ? project.description.substring(0, 157) + '...' : project.description)
@@ -488,6 +571,11 @@ router.post("/contact", async (req, res) => {
 router.get("/blogs", async (req, res) => {
   try {
     const searchQuery = req.query.search || ''
+    const { page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
+
     let blogsQuery = `
       SELECT b.*, u.name as author_name
       FROM blogs b
@@ -502,9 +590,15 @@ router.get("/blogs", async (req, res) => {
       queryParams.push(searchTerm, searchTerm)
     }
     
-    blogsQuery += ` ORDER BY b.created_at DESC`
+    // Get total count
+    const countQuery = `SELECT COUNT(*) as count FROM blogs b WHERE b.is_published = true${searchQuery.trim() ? ' AND (b.title LIKE ? OR b.content LIKE ?)' : ''}`
+    const [countResult] = await db.query(countQuery, queryParams)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
     
-    const [blogs] = await db.query(blogsQuery, queryParams)
+    blogsQuery += ` ORDER BY b.created_at DESC LIMIT ? OFFSET ?`
+    
+    const [blogs] = await db.query(blogsQuery, [...queryParams, limit, offset])
 
 
     blogs.forEach(blog => {
@@ -549,7 +643,16 @@ router.get("/blogs", async (req, res) => {
       seoImage: "/Backpack.webp",
       seoType: "website",
       blogs,
-      searchQuery: searchQuery
+      searchQuery: searchQuery,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1,
+        queryParams: new URLSearchParams(req.query).toString().replace(/&?page=\d+/, '')
+      }
     })
   } catch (error) {
     console.error(error)
@@ -560,7 +663,16 @@ router.get("/blogs", async (req, res) => {
       seoImage: "/Backpack.webp",
       seoType: "website",
       blogs: [],
-      searchQuery: req.query.search || ''
+      searchQuery: req.query.search || '',
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false,
+        queryParams: ''
+      }
     })
   }
 })
@@ -741,13 +853,24 @@ router.get("/avatar-proxy", (req, res) => {
 
 router.get("/polls", async (req, res) => {
   try {
+    const { page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
+
+    // Get total count
+    const [countResult] = await db.query(`SELECT COUNT(*) as count FROM polls WHERE is_active = true`)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
+
     const [polls] = await db.query(`
       SELECT p.*, 
         (SELECT COUNT(*) FROM poll_votes WHERE poll_id = p.id) as vote_count
       FROM polls p
       WHERE p.is_active = true
       ORDER BY p.created_at DESC
-    `)
+      LIMIT ? OFFSET ?
+    `, [limit, offset])
 
 
 
@@ -791,13 +914,31 @@ router.get("/polls", async (req, res) => {
 
     res.render("polls/index", {
       title: "Polls - Backpack Tech Works",
-      polls
+      polls,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1,
+        queryParams: new URLSearchParams(req.query).toString().replace(/&?page=\d+/, '')
+      }
     })
   } catch (error) {
     console.error(error)
     res.render("polls/index", {
       title: "Polls - Backpack Tech Works",
-      polls: []
+      polls: [],
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false,
+        queryParams: ''
+      }
     })
   }
 })
@@ -870,7 +1011,11 @@ router.post("/polls/:id/vote", async (req, res) => {
   try {
     const { id } = req.params
     const { option_index } = req.body
-    const userIp = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for']?.split(',')[0] || 'unknown'
+    const { getDeviceId } = require("../utils/deviceFingerprint")
+    
+    // Get device ID from cookie (set by server) or generate one
+    // This ensures consistency - server sets the cookie, we use it here
+    const deviceId = getDeviceId(req, res)
     
 
     const [polls] = await db.query(
@@ -909,10 +1054,24 @@ router.post("/polls/:id/vote", async (req, res) => {
     
 
 
-    const [existingVotes] = await db.query(
-      "SELECT * FROM poll_votes WHERE poll_id = ? AND ip_address = ?",
-      [id, userIp]
-    )
+    // Check for existing vote by device_id (primary check) or user_id
+    let existingVotes = []
+    if (deviceId) {
+      const [deviceVotes] = await db.query(
+        "SELECT * FROM poll_votes WHERE poll_id = ? AND device_id = ?",
+        [id, deviceId]
+      )
+      existingVotes = deviceVotes
+    }
+    
+    // Also check by user_id if user is logged in
+    if (existingVotes.length === 0 && req.user) {
+      const [userVotes] = await db.query(
+        "SELECT * FROM poll_votes WHERE poll_id = ? AND user_id = ?",
+        [id, req.user.id]
+      )
+      existingVotes = userVotes
+    }
     
     if (existingVotes.length > 0) {
       return res.status(400).json({ success: false, message: "You have already voted on this poll" })
@@ -923,8 +1082,8 @@ router.post("/polls/:id/vote", async (req, res) => {
     
 
     await db.query(
-      `INSERT INTO poll_votes (poll_id, user_id, option_index, ip_address) VALUES (?, ?, ?, ?)`,
-      [id, userId, optionIndex, userIp]
+      `INSERT INTO poll_votes (poll_id, user_id, option_index, device_id) VALUES (?, ?, ?, ?)`,
+      [id, userId, optionIndex, deviceId]
     )
     
     res.json({ success: true, message: "Vote recorded successfully" })
@@ -1018,8 +1177,10 @@ router.get("/sitemap.xml", async (req, res) => {
       { loc: `${siteUrl}/services`, changefreq: 'weekly', priority: '0.9', lastmod: currentDate },
       { loc: `${siteUrl}/projects`, changefreq: 'weekly', priority: '0.9', lastmod: currentDate },
       { loc: `${siteUrl}/team`, changefreq: 'monthly', priority: '0.8', lastmod: currentDate },
-      { loc: `${siteUrl}/blogs`, changefreq: 'daily', priority: '0.8', lastmod: currentDate },
-      { loc: `${siteUrl}/contact`, changefreq: 'monthly', priority: '0.7', lastmod: currentDate },
+      { loc: `${siteUrl}/blogs`, changefreq: 'weekly', priority: '0.8', lastmod: currentDate },
+      { loc: `${siteUrl}/videos`, changefreq: 'weekly', priority: '0.8', lastmod: currentDate },
+      { loc: `${siteUrl}/polls`, changefreq: 'weekly', priority: '0.8', lastmod: currentDate },
+      { loc: `${siteUrl}/contact`, changefreq: 'yearly', priority: '0.7', lastmod: currentDate },
     ]
     
 
@@ -1083,6 +1244,22 @@ router.get("/sitemap.xml", async (req, res) => {
       })
     } catch (error) {
       console.error("Error fetching team members for sitemap:", error)
+    }
+    
+
+    try {
+      const [polls] = await db.query("SELECT id, updated_at FROM polls WHERE is_active = true")
+      polls.forEach(poll => {
+        const lastmod = poll.updated_at ? new Date(poll.updated_at).toISOString().split('T')[0] : currentDate
+        urls.push({
+          loc: `${siteUrl}/polls/${poll.id}`,
+          changefreq: 'weekly',
+          priority: '0.7',
+          lastmod: lastmod
+        })
+      })
+    } catch (error) {
+      console.error("Error fetching polls for sitemap:", error)
     }
     
 

@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
-  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -990,6 +990,23 @@
       box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
     }
 
+    .link-title-input,
+    .link-url-input {
+      padding: 0.75rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .link-title-input:focus,
+    .link-url-input:focus {
+      outline: none;
+      border-color: #c51d34;
+      box-shadow: 0 0 0 3px rgba(197, 29, 52, 0.1);
+    }
+
     .milestone-actions {
       display: flex;
       gap: 0.5rem;
@@ -1428,6 +1445,18 @@
                 <i class="fas fa-plus"></i> Add Milestone
               </button>
               <small class="form-help">Add milestones to track project progress with tasks</small>
+            </div>
+
+            <!-- Project Links -->
+            <div class="form-group full-width">
+              <label>Additional Project Links</label>
+              <div id="linksContainer" class="milestones-container">
+                <!-- Links will be added here -->
+              </div>
+              <button type="button" class="btn btn-secondary" id="addLinkBtn" style="margin-top: 1rem; width: auto; padding: 0.75rem 1.5rem;">
+                <i class="fas fa-plus"></i> Add Link
+              </button>
+              <small class="form-help">Add additional links (GitHub, Documentation, etc.) with custom titles</small>
             </div>
           </div>
 
@@ -2385,6 +2414,25 @@
 
           formData.append('milestones', JSON.stringify(milestones));
 
+          // Collect project links
+          const links = [];
+          const linkCards = document.querySelectorAll('#linksContainer .milestone-card');
+          
+          linkCards.forEach(card => {
+            const titleInput = card.querySelector('.link-title-input');
+            const urlInput = card.querySelector('.link-url-input');
+            
+            if (titleInput && urlInput && titleInput.value.trim() && urlInput.value.trim()) {
+              links.push({
+                id: card.dataset.linkId,
+                title: titleInput.value.trim(),
+                url: urlInput.value.trim()
+              });
+            }
+          });
+
+          formData.append('links', JSON.stringify(links));
+
 
 
           const xhr = new XMLHttpRequest();
@@ -2623,6 +2671,68 @@
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
+    }
+
+    // Project Links Management
+    let linkCounter = 0;
+    const linksContainer = document.getElementById('linksContainer');
+    const addLinkBtn = document.getElementById('addLinkBtn');
+
+    <% if (isEdit && project && project.links && project.links.length > 0) { %>
+      <% project.links.forEach(link => { %>
+        addLink({
+          id: <%= link.id %>,
+          title: '<%= (link.title || '').replace(/'/g, "\\'") %>',
+          url: '<%= (link.url || '').replace(/'/g, "\\'") %>'
+        });
+      <% }) %>
+    <% } %>
+
+    addLinkBtn.addEventListener('click', () => {
+      addLink();
+    });
+
+    function addLink(data = {}) {
+      linkCounter++;
+      const linkId = data.id || `new_${linkCounter}`;
+      const link = {
+        id: linkId,
+        title: data.title || '',
+        url: data.url || ''
+      };
+
+      const linkCard = document.createElement('div');
+      linkCard.className = 'milestone-card';
+      linkCard.dataset.linkId = linkId;
+
+      linkCard.innerHTML = `
+        <div class="milestone-header">
+          <div class="milestone-fields" style="grid-template-columns: 1fr 2fr auto;">
+            <input type="text" class="milestone-title-input link-title-input" placeholder="Link Title (e.g., GitHub)" value="${escapeHtml(link.title)}" data-field="title">
+            <input type="url" class="milestone-title-input link-url-input" placeholder="https://example.com" value="${escapeHtml(link.url)}" data-field="url">
+            <button type="button" class="milestone-delete-btn" onclick="deleteLink(this)" title="Delete Link">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `;
+
+      linksContainer.appendChild(linkCard);
+    }
+
+    function deleteLink(button) {
+      showConfirmation('Are you sure you want to delete this link?', function() {
+        button.closest('.milestone-card').remove();
+      });
+    }
+
+    // Update form submission to include links
+    const originalFormSubmit = projectForm ? projectForm.onsubmit : null;
+    if (projectForm) {
+      const formSubmitHandler = projectForm.querySelector('button[type="submit"]')?.onclick || null;
+      
+      // The form is already handled by the existing submit handler, we just need to ensure links are included
+      // Links will be collected in the existing form submission handler
     }
   </script>
 </body>

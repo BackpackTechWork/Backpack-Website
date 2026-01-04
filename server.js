@@ -4,6 +4,7 @@ const session = require("express-session")
 const passport = require("passport")
 const flash = require("express-flash")
 const methodOverride = require("method-override")
+const cookieParser = require("cookie-parser")
 const path = require("path")
 
 const app = express()
@@ -77,6 +78,7 @@ app.engine("ejs", (filePath, options, callback) => {
 app.use(express.static(path.join(__dirname, "public")))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use(cookieParser())
 app.use(methodOverride("_method"))
 
 

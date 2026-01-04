@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
-  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -215,6 +215,81 @@
       opacity: 0.3;
     }
 
+    .pagination-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding: 1rem 0;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .pagination-info {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .pagination {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-primary);
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .pagination-btn:hover:not(.disabled):not(.active) {
+      background: var(--bg-secondary);
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+    }
+
+    .pagination-btn.active {
+      background: var(--accent-red);
+      color: white;
+      border-color: var(--accent-red);
+    }
+
+    .pagination-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination-ellipsis {
+      padding: 0.5rem 0.25rem;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .pagination-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .pagination-info {
+        text-align: center;
+      }
+
+      .pagination {
+        justify-content: center;
+      }
+    }
+
     /* Mobile Card Layout */
     .mobile-card-view {
       display: none;
@@ -391,7 +466,7 @@
       }
 
       .page-header h1 {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
       }
 
       .page-header p {
@@ -447,8 +522,9 @@
     /* Mobile landscape: 481px - 768px */
     @media (max-width: 768px) and (min-width: 481px) {
       .dashboard-main {
-        margin-left: 0;
-        padding: 1rem;
+        margin-left: 0 !important;
+        padding: 4.5rem 1rem 1rem 1rem !important;
+        padding-top: 4.5rem !important;
         width: 100%;
       }
 
@@ -541,8 +617,9 @@
     /* Mobile portrait: up to 480px */
     @media (max-width: 480px) {
       .dashboard-main {
-        margin-left: 0;
-        padding: 0.75rem;
+        margin-left: 0 !important;
+        padding: 4.5rem 0.75rem 0.75rem 0.75rem !important;
+        padding-top: 4.5rem !important;
         width: 100%;
       }
 
@@ -551,6 +628,14 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 0.75rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .page-header p {
+        font-size: 0.875rem;
       }
 
       .page-header h1 {
@@ -1097,6 +1182,79 @@
             <p><% if (filters && filters.search) { %>No brands match your search criteria.<% } else { %>No brands found. Get started by creating your first brand.<% } %></p>
           </div>
         <% } %>
+      </div>
+
+      <!-- Pagination -->
+      <% if (pagination && pagination.totalPages > 1) { %>
+        <div class="pagination-container">
+          <div class="pagination-info">
+            Showing <%= ((pagination.currentPage - 1) * pagination.limit) + 1 %> to <%= Math.min(pagination.currentPage * pagination.limit, pagination.totalCount) %> of <%= pagination.totalCount %> results
+          </div>
+          <div class="pagination">
+            <% 
+              const buildQuery = (page) => {
+                const params = [];
+                if (filters.search) params.push(`search=${encodeURIComponent(filters.search)}`);
+                params.push(`page=${page}`);
+                return params.length > 0 ? '?' + params.join('&') : '';
+              };
+            %>
+            <% if (pagination.hasPrev) { %>
+              <a href="/admin/brands<%= buildQuery(pagination.currentPage - 1) %>" class="pagination-btn">
+                <i class="fas fa-chevron-left"></i>
+              </a>
+            <% } else { %>
+              <span class="pagination-btn disabled">
+                <i class="fas fa-chevron-left"></i>
+              </span>
+            <% } %>
+
+            <% 
+              let startPage = Math.max(1, pagination.currentPage - 2);
+              let endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
+              if (endPage - startPage < 4) {
+                if (startPage === 1) {
+                  endPage = Math.min(5, pagination.totalPages);
+                } else {
+                  startPage = Math.max(1, pagination.totalPages - 4);
+                }
+              }
+            %>
+
+            <% if (startPage > 1) { %>
+              <a href="/admin/brands<%= buildQuery(1) %>" class="pagination-btn">1</a>
+              <% if (startPage > 2) { %>
+                <span class="pagination-ellipsis">...</span>
+              <% } %>
+            <% } %>
+
+            <% for (let i = startPage; i <= endPage; i++) { %>
+              <% if (i === pagination.currentPage) { %>
+                <span class="pagination-btn active"><%= i %></span>
+              <% } else { %>
+                <a href="/admin/brands<%= buildQuery(i) %>" class="pagination-btn"><%= i %></a>
+              <% } %>
+            <% } %>
+
+            <% if (endPage < pagination.totalPages) { %>
+              <% if (endPage < pagination.totalPages - 1) { %>
+                <span class="pagination-ellipsis">...</span>
+              <% } %>
+              <a href="/admin/brands<%= buildQuery(pagination.totalPages) %>" class="pagination-btn"><%= pagination.totalPages %></a>
+            <% } %>
+
+            <% if (pagination.hasNext) { %>
+              <a href="/admin/brands<%= buildQuery(pagination.currentPage + 1) %>" class="pagination-btn">
+                <i class="fas fa-chevron-right"></i>
+              </a>
+            <% } else { %>
+              <span class="pagination-btn disabled">
+                <i class="fas fa-chevron-right"></i>
+              </span>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
       </div>
     </div>
   </div>

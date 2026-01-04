@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <link rel="icon" type="image/x-icon" href="/Backpack.ico">
-  <link rel="shortcut icon" type="image/x-icon" href="/Backpack.ico">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   
   <!-- Mark that JS is enabled -->
   <script>
@@ -472,6 +472,61 @@
   </div>
 
   <script>
+    // Generate or retrieve device ID
+    function getDeviceId() {
+      // Try to get from cookie first
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'device_id' && value) {
+          return value;
+        }
+      }
+      
+      // If no cookie exists, generate a device fingerprint
+      // This will be set by the server, but we can generate a client-side one as fallback
+      const fingerprint = generateClientFingerprint();
+      
+      // Store in localStorage as backup
+      if (typeof(Storage) !== "undefined") {
+        let storedId = localStorage.getItem('device_id');
+        if (!storedId) {
+          storedId = fingerprint;
+          localStorage.setItem('device_id', storedId);
+        }
+        return storedId;
+      }
+      
+      return fingerprint;
+    }
+    
+    // Generate a client-side device fingerprint
+    function generateClientFingerprint() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.textBaseline = 'top';
+      ctx.font = '14px Arial';
+      ctx.fillText('Device fingerprint', 2, 2);
+      
+      const fingerprint = [
+        navigator.userAgent,
+        navigator.language,
+        screen.width + 'x' + screen.height,
+        new Date().getTimezoneOffset(),
+        canvas.toDataURL()
+      ].join('|');
+      
+      // Simple hash function
+      let hash = 0;
+      for (let i = 0; i < fingerprint.length; i++) {
+        const char = fingerprint.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+      }
+      
+      return Math.abs(hash).toString(36);
+    }
+    
     const pollForm = document.querySelector('.poll-form');
     const pollCard = document.querySelector('.poll-detail-card');
     const resultsDiv = document.getElementById('pollResults');
@@ -496,6 +551,9 @@
       voteBtn.disabled = true;
       voteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Voting...';
       
+      // Get device ID
+      const deviceId = getDeviceId();
+      
       try {
         const response = await fetch(`/polls/${pollId}/vote`, {
           method: 'POST',
@@ -503,7 +561,8 @@
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            option_index: selectedOption.value
+            option_index: selectedOption.value,
+            device_id: deviceId
           })
         });
 
@@ -676,6 +735,35 @@
         }
       })();
     <% } %>
+  </script>
+
+  <!-- Scroll Animation Script -->
+  <script>
+    (function() {
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+      const footer = document.querySelector('footer');
+      if (footer) {
+        observer.observe(footer);
+        // Ensure footer is visible if it's already in viewport
+        if (footer.getBoundingClientRect().top < window.innerHeight) {
+          footer.classList.add('visible');
+        }
+      }
+    })();
   </script>
 </body>
 </html>

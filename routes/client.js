@@ -103,6 +103,10 @@ router.get("/projects", ensureAuthenticated, verifyUserExists, async (req, res) 
   try {
     const searchQuery = req.query.search || ""
     const serviceFilter = req.query.service || ""
+    const { page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
 
 
     let whereConditions = ["p.client_id = ?"]
@@ -121,6 +125,18 @@ router.get("/projects", ensureAuthenticated, verifyUserExists, async (req, res) 
       queryParams.push(serviceFilter)
     }
 
+    const whereClause = whereConditions.join(" AND ")
+
+    // Get total count
+    const [countResult] = await db.query(`
+      SELECT COUNT(*) as count
+      FROM projects p
+      LEFT JOIN services s ON p.service_id = s.id
+      WHERE ${whereClause}
+    `, queryParams)
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
+
     const [projects] = await db.query(`
       SELECT p.*, 
         s.title as service_title,
@@ -128,9 +144,10 @@ router.get("/projects", ensureAuthenticated, verifyUserExists, async (req, res) 
         s.id as service_id
       FROM projects p
       LEFT JOIN services s ON p.service_id = s.id
-      WHERE ${whereConditions.join(" AND ")}
+      WHERE ${whereClause}
       ORDER BY p.created_at DESC
-    `, queryParams)
+      LIMIT ? OFFSET ?
+    `, [...queryParams, limit, offset])
 
 
     const [allServices] = await db.query(`
@@ -163,6 +180,15 @@ router.get("/projects", ensureAuthenticated, verifyUserExists, async (req, res) 
       services: allServices || [],
       searchQuery: searchQuery,
       selectedService: serviceFilter,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1,
+        queryParams: new URLSearchParams(req.query).toString().replace(/&?page=\d+/, '')
+      }
     })
   } catch (error) {
     console.error(error)
@@ -172,6 +198,15 @@ router.get("/projects", ensureAuthenticated, verifyUserExists, async (req, res) 
       services: [],
       searchQuery: "",
       selectedService: "",
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false,
+        queryParams: ''
+      }
     })
   }
 })
@@ -285,6 +320,12 @@ router.get("/projects/:identifier", ensureAuthenticated, verifyUserExists, async
 
     project.milestones = milestones
 
+    const [links] = await db.query(
+      `SELECT * FROM project_links WHERE project_id = ? ORDER BY display_order, created_at`,
+      [project.id]
+    )
+    project.links = links || []
+
     const overallProgress = totalTasks > 0
       ? Math.round((completedTasks / totalTasks) * 100)
       : (milestones.every(m => m.status === "Completed") && milestones.length > 0 ? 100 : 0)
@@ -317,6 +358,10 @@ router.get("/inquiries", ensureAuthenticated, verifyUserExists, async (req, res)
   try {
     const searchQuery = req.query.search || ""
     const statusFilter = req.query.status || ""
+    const { page = 1 } = req.query
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limit = 10
+    const offset = (pageNum - 1) * limit
 
 
     let whereConditions = ["user_id = ?"]
@@ -337,9 +382,17 @@ router.get("/inquiries", ensureAuthenticated, verifyUserExists, async (req, res)
 
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : ""
 
-    const [inquiries] = await db.query(
-      `SELECT * FROM inquiries ${whereClause} ORDER BY created_at DESC`,
+    // Get total count
+    const [countResult] = await db.query(
+      `SELECT COUNT(*) as count FROM inquiries ${whereClause}`,
       queryParams
+    )
+    const totalCount = countResult[0].count
+    const totalPages = Math.ceil(totalCount / limit)
+
+    const [inquiries] = await db.query(
+      `SELECT * FROM inquiries ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      [...queryParams, limit, offset]
     )
 
     res.render("client/inquiries", {
@@ -347,6 +400,15 @@ router.get("/inquiries", ensureAuthenticated, verifyUserExists, async (req, res)
       inquiries: inquiries || [],
       searchQuery,
       selectedStatus: statusFilter,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1,
+        queryParams: new URLSearchParams(req.query).toString().replace(/&?page=\d+/, '')
+      }
     })
   } catch (error) {
     console.error(error)
@@ -355,6 +417,15 @@ router.get("/inquiries", ensureAuthenticated, verifyUserExists, async (req, res)
       inquiries: [],
       searchQuery: "",
       selectedStatus: "",
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        limit: 10,
+        hasNext: false,
+        hasPrev: false,
+        queryParams: ''
+      }
     })
   }
 })

@@ -245,19 +245,78 @@ async function createTablesIfNotExist() {
   );`)
   console.log("    ✅ Table 'polls' ready")
 
+  await promisePool.query(`CREATE TABLE IF NOT EXISTS videos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(500) NOT NULL,
+    description TEXT,
+    youtube_url VARCHAR(500) NOT NULL,
+    display_order INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_active (is_active),
+    INDEX idx_display_order (display_order)
+  );`)
+  console.log("    ✅ Table 'videos' ready")
+
   await promisePool.query(`CREATE TABLE IF NOT EXISTS poll_votes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     poll_id INT NOT NULL,
     user_id INT,
     option_index INT NOT NULL,
-    ip_address VARCHAR(45),
+    device_id VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
     UNIQUE KEY unique_vote (poll_id, user_id),
-    INDEX idx_poll (poll_id)
+    INDEX idx_poll (poll_id),
+    INDEX idx_device (poll_id, device_id)
   );`)
   console.log("    ✅ Table 'poll_votes' ready")
+  
+  // Add device_id column if missing (for existing databases)
+  await addColumnIfMissing("poll_votes", "device_id", "VARCHAR(255) NULL")
+  
+  // Remove ip_address column if it exists (migration for existing databases)
+  try {
+    const [columnExists] = await promisePool.query(
+      `SELECT COUNT(*) as count 
+       FROM INFORMATION_SCHEMA.COLUMNS 
+       WHERE TABLE_SCHEMA = ? 
+         AND TABLE_NAME = 'poll_votes' 
+         AND COLUMN_NAME = 'ip_address'`,
+      [DB_NAME]
+    )
+    if (columnExists[0].count > 0) {
+      await promisePool.query(
+        `ALTER TABLE poll_votes DROP COLUMN ip_address`
+      )
+      console.log("    ✅ Removed ip_address column from poll_votes")
+    }
+  } catch (error) {
+    console.error("Error removing ip_address column:", error)
+  }
+  
+  // Add index if missing (for existing databases)
+  try {
+    const [indexExists] = await promisePool.query(
+      `SELECT COUNT(*) as count 
+       FROM INFORMATION_SCHEMA.STATISTICS 
+       WHERE TABLE_SCHEMA = ? 
+         AND TABLE_NAME = 'poll_votes' 
+         AND INDEX_NAME = 'idx_device'`,
+      [DB_NAME]
+    )
+    if (indexExists[0].count === 0) {
+      await promisePool.query(
+        `CREATE INDEX idx_device ON poll_votes (poll_id, device_id)`
+      )
+    }
+  } catch (error) {
+    if (!error.message.includes("Duplicate key name")) {
+      console.error("Error adding device index:", error)
+    }
+  }
 
   await promisePool.query(`CREATE TABLE IF NOT EXISTS project_milestones (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -287,6 +346,19 @@ async function createTablesIfNotExist() {
     INDEX idx_milestone (milestone_id)
   );`)
   console.log("    ✅ Table 'milestone_tasks' ready")
+
+  await promisePool.query(`CREATE TABLE IF NOT EXISTS project_links (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    url VARCHAR(500) NOT NULL,
+    display_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    INDEX idx_project (project_id)
+  );`)
+  console.log("    ✅ Table 'project_links' ready")
 
 
   try {
