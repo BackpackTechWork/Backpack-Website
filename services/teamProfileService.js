@@ -1,5 +1,6 @@
 const db = require("../config/database")
 const { validateMarkdown, normalizeMarkdown, renderMarkdownToHtml } = require("../utils/markdown")
+const { invalidateUserCache } = require("../config/passport")
 
 const sanitizeString = (value) => {
   if (value === undefined || value === null) return null
@@ -141,6 +142,9 @@ async function saveTeamProfileData(userId, payload = {}) {
       "UPDATE users SET name = ?, email = ? WHERE id = ?",
       [nameToUpdate, emailToUpdate, userId]
     )
+    
+    // Invalidate user cache after update
+    invalidateUserCache(userId)
   }
 
 

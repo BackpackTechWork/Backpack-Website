@@ -3,6 +3,7 @@ const router = express.Router()
 const db = require("../config/database")
 const fs = require("fs")
 const path = require("path")
+const { processProjectImages } = require("../utils/fileHelpers")
 
 
 router.get("/", async (req, res) => {
@@ -41,37 +42,50 @@ router.get("/:slug", async (req, res) => {
     const service = services[0]
 
 
-    const [projects] = await db.query(
-      "SELECT * FROM projects WHERE service_id = ? AND is_featured = true ORDER BY RAND() LIMIT 3",
-      [service.id],
+    // Efficient random selection: get count first, then use LIMIT with OFFSET
+    // This avoids ORDER BY RAND() which scans all rows
+    const [[countResult]] = await db.query(
+      "SELECT COUNT(*) as total FROM projects WHERE service_id = ? AND is_featured = true",
+      [service.id]
     )
-
-
-    projects.forEach(project => {
-
-      if (project.cover_image) {
-        project.thumbnail = `/images/Projects/${project.id}/${project.cover_image}`
+    const totalProjects = countResult.total
+    const limit = Math.min(3, totalProjects)
+    
+    let projects = []
+    if (totalProjects > 0) {
+      if (totalProjects <= 3) {
+        // If 3 or fewer projects, just get them all
+        const [allProjects] = await db.query(
+          "SELECT * FROM projects WHERE service_id = ? AND is_featured = true LIMIT 3",
+          [service.id]
+        )
+        projects = allProjects
       } else {
-        const imagesDir = path.join(__dirname, "../public/images/Projects", project.id.toString())
-        if (fs.existsSync(imagesDir)) {
-          const images = fs.readdirSync(imagesDir).filter(f => f.startsWith('image_'))
-          if (images.length > 0) {
-            project.thumbnail = `/images/Projects/${project.id}/${images[0]}`
-          }
+        // Get 3 random offsets and fetch those specific projects
+        const offsets = new Set()
+        while (offsets.size < 3) {
+          offsets.add(Math.floor(Math.random() * totalProjects))
         }
+        const offsetArray = Array.from(offsets)
+        
+        // Fetch projects at random offsets in parallel
+        const projectPromises = offsetArray.map(offset =>
+          db.query(
+            "SELECT * FROM projects WHERE service_id = ? AND is_featured = true LIMIT 1 OFFSET ?",
+            [service.id, offset]
+          )
+        )
+        const results = await Promise.all(projectPromises)
+        projects = results.map(([rows]) => rows[0]).filter(Boolean)
       }
+    }
 
+    // Process project images asynchronously in parallel
+    const basePath = path.join(__dirname, "../public/images/Projects")
+    await processProjectImages(projects, basePath)
 
-      const imagesDir = path.join(__dirname, "../public/images/Projects", project.id.toString())
-      let imageGallery = []
-      if (fs.existsSync(imagesDir)) {
-        imageGallery = fs.readdirSync(imagesDir)
-          .filter(filename => filename.startsWith("image_"))
-          .map(filename => `/images/Projects/${project.id}/${filename}`)
-      }
-      project.images = imageGallery
-
-
+    // Process tech stacks and display names
+    projects.forEach(project => {
       let techStack = []
       if (project.technologies) {
         try {
@@ -83,8 +97,6 @@ router.get("/:slug", async (req, res) => {
         }
       }
       project.techStack = techStack
-
-
       project.displayName = project.title
     })
 

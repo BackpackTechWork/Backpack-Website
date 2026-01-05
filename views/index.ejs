@@ -15,7 +15,7 @@
     currentPath: typeof currentPath !== 'undefined' ? currentPath : '/'
   }) %>
   
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -24,12 +24,19 @@
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
-  <link rel="preload" href="/images/Assets/People Working.webp" as="image" fetchpriority="high" type="image/png">
-  <link rel="preload" href="/css/style.css" as="style">
+    <!-- Critical font CSS - inline for faster rendering -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style" crossorigin>
+    <link rel="preload" href="/images/Assets/People Working.webp" as="image" fetchpriority="high" type="image/webp">
+    <link rel="preload" href="/css/style.css" as="style">
   
-  <!-- Critical CSS to prevent FOUC -->
+  <!-- Critical CSS to prevent FOUC - Optimized for Speed Index -->
   <style>
+    /* Font display optimization for faster text rendering */
+    @font-face {
+      font-family: 'Inter';
+      font-display: swap;
+    }
+    
     /* Smooth scroll behavior - optimized for animations */
     html {
       scroll-behavior: smooth;
@@ -41,9 +48,19 @@
       scroll-margin-top: 80px;
     }
     
-    /* Optimize scroll performance during animations */
+    /* Optimize scroll performance - only when needed */
     html, body {
-      will-change: scroll-position;
+      will-change: auto;
+    }
+    
+    /* Optimize hero section for faster initial render */
+    .hero {
+      contain: layout style paint;
+    }
+    
+    .hero-content h1,
+    .hero-content p {
+      content-visibility: auto;
     }
     
     /* Hide content until CSS is loaded (only for JS-enabled browsers) */
@@ -187,27 +204,26 @@
     document.documentElement.classList.remove('no-js');
   </script>
   
+  <!-- Optimized CSS loading detection - inline for immediate execution -->
   <script>
     (function() {
       function markCSSLoaded() {
         document.documentElement.classList.add('css-loaded');
       }
       
-
       var link = document.querySelector('link[href="/css/style.css"]');
       if (link) {
-
-        if (document.readyState === 'loading') {
+        if (link.sheet || link.styleSheet) {
+          markCSSLoaded();
+        } else if (document.readyState === 'loading') {
           document.addEventListener('DOMContentLoaded', markCSSLoaded);
         } else {
           markCSSLoaded();
         }
         
-
         link.addEventListener('load', markCSSLoaded);
         link.addEventListener('error', markCSSLoaded); 
       } else {
-
         markCSSLoaded();
       }
     })();
@@ -333,13 +349,17 @@
     </style>
   </noscript>
   
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Load fonts with display=swap for faster text rendering -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" crossorigin referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" crossorigin referrerpolicy="no-referrer"></noscript>
   
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+    <!-- Defer Font Awesome - non-critical for initial render -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet';this.media='all'" crossorigin referrerpolicy="no-referrer">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin referrerpolicy="no-referrer"></noscript>
   
-  <link rel="preload" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"></noscript>
+    <!-- Defer Devicons - non-critical for initial render -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" as="style" onload="this.onload=null;this.rel='stylesheet';this.media='all'" crossorigin referrerpolicy="no-referrer">
+    <noscript><link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" crossorigin referrerpolicy="no-referrer"></noscript>
 </head>
 <body>
   <%- include('partials/header') %>
@@ -384,9 +404,9 @@
         </div>
       </div>
       
-      <!-- People Working Image -->
+      <!-- People Working Image - Optimized for Speed Index -->
       <div class="hero-image">
-        <img src="/images/Assets/People Working.webp" alt="People Working Together" draggable="false" oncontextmenu="return false;" loading="eager" fetchpriority="high" decoding="sync" width="600" height="400">
+        <img src="/images/Assets/People Working.webp" alt="People Working Together" draggable="false" oncontextmenu="return false;" loading="eager" fetchpriority="high" decoding="async" width="600" height="400" style="content-visibility: auto;">
         <div class="image-glow"></div>
         <div class="image-protection-overlay"></div>
       </div>
@@ -404,7 +424,7 @@
         <% logos.forEach((logo, index) => { %>
           <div class="brand-item" data-index="<%= index + 1 %>">
             <div class="brand-item-inner">
-              <img src="/logos/<%= logo.filename %>" alt="<%= logo.name %>" loading="lazy" decoding="async" width="120" height="60">
+              <img src="/logos/<%= logo.filename %>" alt="<%= logo.name %>" loading="lazy" decoding="async" width="120" height="60" fetchpriority="<%= index < 3 ? 'high' : 'low' %>">
             </div>
           </div>
         <% }) %>
@@ -805,7 +825,7 @@
           <% if (polls && polls.length > 0) { %>
             <div class="polls-list">
               <% polls.forEach(poll => { %>
-                <div class="poll-card">
+                <div class="poll-card" onclick="window.location.href='/polls/<%= poll.id %>'" style="cursor: pointer;">
                   <h4 class="poll-question">
                     <%= poll.question %>
                   </h4>
@@ -859,11 +879,11 @@
           <span class="highlight" style="color: #c51d34; text-shadow: 0 0 10px rgba(197, 29, 52, 0.5), 0 0 20px rgba(197, 29, 52, 0.3), 0 0 30px rgba(197, 29, 52, 0.2);">We Code</span>, We Show
         </h2>
         <p style="color: rgba(255, 255, 255, 0.8); font-size: 1.125rem; max-width: 600px; margin: 0 auto;">
-          Watch our latest videos and stay updated with tech insights, tutorials, and <a href="/videos" style="color: #c51d34; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border-bottom: 2px solid transparent;" onmouseover="this.style.borderBottomColor='#c51d34'" onmouseout="this.style.borderBottomColor='transparent'">more</a>
+          Watch our latest videos and stay updated with tech insights, tutorials, and <a href="/videos" style="color: #c51d34; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border-bottom: 2px solid transparent;" onmouseover="this.style.borderBottomColor='#c51d34'" onmouseout="this.style.borderBottomColor='transparent'" aria-label="View all videos">view all videos</a>
         </p>
       </div>
       
-      <div class="videos-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(<%= videos && videos.length === 1 ? '600px' : '320px' %>, 1fr)); gap: 2rem; max-width: <%= videos && videos.length === 1 ? '800px' : '1200px' %>; margin: 0 auto;">
+      <div class="videos-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(<%= videos && videos.length === 1 ? '600px' : '280px' %>, 1fr)); gap: 2rem; max-width: <%= videos && videos.length === 1 ? '800px' : '1200px' %>; margin: 0 auto; padding: 0 1rem;">
         <% videos.forEach((video, index) => { %>
           <% 
             // Extract YouTube video ID from URL and detect if it's a Short
@@ -882,28 +902,32 @@
             }
           %>
           <div class="video-card" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; transform: translateZ(0);">
-            <div class="video-embed-wrapper" style="position: relative; width: 100%; padding-top: 56.25%; background: rgba(0, 0, 0, 0.3); overflow: hidden;">
+            <a href="/videos/<%= video.id %>" class="video-thumbnail-link" style="position: relative; display: block; width: 100%; padding-top: 56.25%; background: rgba(0, 0, 0, 0.3); overflow: hidden;">
               <% if (videoId) { %>
-                <iframe 
-                  src="https://www.youtube.com/embed/<%= videoId %>?rel=0&modestbranding=1" 
-                  frameborder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowfullscreen
-                  style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-                  loading="lazy"
-                  title="<%= video.title %>"
-                ></iframe>
+                <img src="https://img.youtube.com/vi/<%= videoId %>/maxresdefault.jpg" 
+                     alt="<%= video.title %>" 
+                     loading="lazy"
+                     referrerpolicy="no-referrer"
+                     onerror="this.src='https://img.youtube.com/vi/<%= videoId %>/hqdefault.jpg'"
+                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;">
+                <div class="video-play-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.35); transition: background 0.3s ease;">
+                  <div class="play-button" style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #c51d34 0%, #a01628 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 30px rgba(197, 29, 52, 0.4); transition: all 0.3s ease;">
+                    <i class="fas fa-play" style="color: white; font-size: 1.75rem; margin-left: 4px;"></i>
+                  </div>
+                </div>
               <% } else { %>
                 <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.3);">
                   <i class="fas fa-video" style="color: rgba(255, 255, 255, 0.5); font-size: 3rem;"></i>
                 </div>
               <% } %>
-            </div>
+            </a>
             <div class="video-content" style="padding: 1.5rem;">
               <% if (isShort) { %><span style="display: inline-block; background: #c51d34; color: white; font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 4px; margin-bottom: 0.5rem;"><i class="fas fa-bolt" style="margin-right: 0.25rem;"></i>Short</span><% } %>
-              <h3 class="video-title" style="color: white; font-size: 1.25rem; font-weight: 700; margin: 0 0 0.75rem 0; line-height: 1.3;">
-                <%= video.title %>
-              </h3>
+              <a href="/videos/<%= video.id %>" style="text-decoration: none;">
+                <h3 class="video-title" style="color: white; font-size: 1.25rem; font-weight: 700; margin: 0 0 0.75rem 0; line-height: 1.3;">
+                  <%= video.title %>
+                </h3>
+              </a>
               <% if (video.description) { %>
                 <p class="video-description" style="color: rgba(255, 255, 255, 0.7); font-size: 0.9375rem; line-height: 1.6; margin: 0;">
                   <%= video.description %>
@@ -1062,7 +1086,8 @@
     }
   </script>
 
-    <script>
+    <!-- Defer service card hover effects - non-critical for initial render -->
+    <script defer>
     (function() {
       const cards = document.querySelectorAll('.service-card');
       const hoverTimeouts = new Map();
@@ -1072,21 +1097,17 @@
         let hoverTimeout = null;
 
         card.addEventListener('mouseenter', () => {
-
           if (hoverTimeout) {
             clearTimeout(hoverTimeout);
             hoverTimeout = null;
           }
-
           card.classList.add('is-hovering');
         });
 
         card.addEventListener('mouseleave', () => {
-
           if (hoverTimeout) {
             clearTimeout(hoverTimeout);
           }
-
           hoverTimeout = setTimeout(() => {
             card.classList.remove('is-hovering');
             hoverTimeout = null;
@@ -1096,7 +1117,8 @@
     })();
   </script>
 
-    <script>
+    <!-- Defer card tilt calculations - non-critical for initial render -->
+    <script defer>
     function updateCardTiltDirections() {
       const servicesGrid = document.querySelector('.services-grid');
       if (!servicesGrid) return;
@@ -1597,7 +1619,8 @@
     .blog-link{color:#c51d34;text-decoration:none;font-weight:600;font-size:0.875rem;margin-top:auto;transition:color 0.2s}
     .blog-link:hover{color:#a01628}
     .polls-list{display:flex;flex-direction:column;gap:1.5rem}
-    .poll-card{background:white;border-radius:12px;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+    .poll-card{background:white;border-radius:12px;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:transform 0.25s ease,box-shadow 0.25s ease;transform:translateZ(0);will-change:transform}
+    .poll-card:hover{transform:translateZ(0) translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,0.15)}
     .poll-question{font-size:1.125rem;font-weight:700;color:#111827;margin:0 0 1rem 0;line-height:1.4}
     .poll-results{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1rem}
     .poll-option{width:100%}
@@ -1613,7 +1636,7 @@
     @media (max-width:1024px){.updates-grid{grid-template-columns:1fr;gap:2.5rem}.updates-section{max-width:100%}}
     @media (max-width:768px){.blogs-polls-section{padding:2.5rem 0!important}.updates-grid{margin-top:2rem;gap:2rem}.updates-title{font-size:1.25rem}.updates-view-all{font-size:0.875rem}.blog-card-content{flex-direction:column;gap:0}.blog-image,.blog-image-placeholder{width:100%;height:200px}.blog-text{padding:1.25rem}.blog-title{font-size:1rem}.blog-date{font-size:0.8125rem}.blog-link{font-size:0.8125rem}.poll-card{padding:1.25rem}.poll-question{font-size:1rem}.poll-option-text,.poll-option-stats{font-size:0.8125rem}.poll-option-header{flex-wrap:wrap}.updates-empty{padding:2rem 1.5rem}.updates-empty i{font-size:2.5rem}}
     @media (max-width:480px){.blogs-polls-section{padding:2rem 0!important}.updates-grid{margin-top:1.5rem;gap:1.5rem}.updates-header{margin-bottom:1.25rem}.updates-title{font-size:1.125rem}.updates-view-all{font-size:0.8125rem}.blogs-list,.polls-list{gap:1.25rem}.blog-image,.blog-image-placeholder{height:180px}.blog-text{padding:1rem}.blog-title{font-size:0.9375rem}.blog-date{font-size:0.75rem}.blog-link{font-size:0.75rem}.poll-card{padding:1rem}.poll-question{font-size:0.9375rem;margin-bottom:0.875rem}.poll-results{gap:0.625rem;margin-bottom:0.875rem}.poll-option-text,.poll-option-stats{font-size:0.75rem}.poll-footer{font-size:0.8125rem;padding-top:0.625rem}.updates-empty{padding:1.5rem 1rem}.updates-empty i{font-size:2rem;margin-bottom:0.75rem}.updates-empty p{font-size:0.875rem;color:#111827}}
-    @media (hover:none) and (pointer:coarse){.blog-card:hover{transform:none;box-shadow:0 2px 8px rgba(0,0,0,0.1)}}
+    @media (hover:none) and (pointer:coarse){.blog-card:hover{transform:none;box-shadow:0 2px 8px rgba(0,0,0,0.1)}.poll-card:hover{transform:none;box-shadow:0 2px 8px rgba(0,0,0,0.1)}}
     
     /* Videos Section Styling */
     .videos-section{position:relative;overflow:hidden}
@@ -1651,11 +1674,14 @@
     }
     .video-card{will-change:transform;backface-visibility:hidden}
     .video-card:hover{transform:translateY(-8px) translateZ(0);box-shadow:0 20px 40px rgba(0,0,0,0.3),0 0 20px rgba(197,29,52,0.2);border-color:rgba(197,29,52,0.3)}
-    .video-embed-wrapper{border-radius:12px 12px 0 0;overflow:hidden}
-    .video-embed-wrapper iframe{border-radius:12px 12px 0 0}
+    .video-thumbnail-link{border-radius:12px 12px 0 0;overflow:hidden}
+    .video-card:hover .video-thumbnail-link img{transform:scale(1.05)}
+    .video-card:hover .video-play-overlay{background:rgba(0,0,0,0.5)!important}
+    .video-card:hover .play-button{transform:scale(1.1);box-shadow:0 12px 40px rgba(197,29,52,0.5)!important}
     @media (max-width:1024px){.videos-grid{grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}}
     @media (max-width:768px){.videos-section{padding:3rem 0}.videos-section .section-header h2{font-size:2rem}.videos-section .section-header p{font-size:1rem;padding:0 1rem}.videos-grid{grid-template-columns:1fr;gap:1.5rem}.video-card:hover{transform:none;box-shadow:0 0 0 rgba(0,0,0,0)}.view-all-videos-btn{font-size:0.9375rem!important;padding:0.75rem 1.5rem!important}}
-    @media (max-width:480px){.videos-section{padding:2.5rem 0}.videos-section .section-header{margin-bottom:2rem}.videos-section .section-header h2{font-size:1.75rem}.videos-section .section-header p{font-size:0.9375rem}.video-content{padding:1.25rem}.video-title{font-size:1.125rem}.video-description{font-size:0.875rem}.view-all-videos-btn{font-size:0.875rem!important;padding:0.625rem 1.25rem!important}}
+    @media (max-width:480px){.videos-section{padding:2.5rem 0}.videos-section .section-header{margin-bottom:2rem}.videos-section .section-header h2{font-size:1.75rem}.videos-section .section-header p{font-size:0.9375rem}.video-content{padding:1.25rem}.video-title{font-size:1.125rem}.video-description{font-size:0.875rem}.view-all-videos-btn{font-size:0.875rem!important;padding:0.625rem 1.25rem!important}.videos-grid{padding:0 0.5rem!important}}
+    @media (max-width:360px){.videos-grid{grid-template-columns:1fr!important;padding:0!important}.video-content{padding:1rem}.video-title{font-size:1rem}.video-description{font-size:0.8125rem}.play-button{width:60px!important;height:60px!important}.play-button i{font-size:1.5rem!important}}
     @media (hover:none) and (pointer:coarse){.video-card:hover{transform:none;box-shadow:none}.view-all-videos-btn:hover{transform:none;background:rgba(197,29,52,0.2)!important}}
     
     /* Image Protection */
@@ -1665,7 +1691,8 @@
     .testimonial-author{position:relative;pointer-events:auto;user-select:none}
   </style>
 
-  <script>
+  <!-- Defer testimonial animations - non-critical for initial render -->
+  <script defer>
     // Optimize testimonial animations - delay float until fade-in completes
     (function() {
       const testimonialSection = document.querySelector('.testimonials-section');

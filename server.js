@@ -1,6 +1,7 @@
 require("dotenv").config()
 const express = require("express")
 const session = require("express-session")
+const MySQLStore = require("express-mysql-session")(session)
 const passport = require("passport")
 const flash = require("express-flash")
 const methodOverride = require("method-override")
@@ -10,6 +11,20 @@ const path = require("path")
 const app = express()
 const PORT = process.env.PORT || 3000
 const SESSION_SECRET = process.env.SESSION_SECRET || "dev_secret_change_me"
+
+// MySQL session store setup
+const sessionStoreOptions = {
+  host: process.env.DB_HOST || "localhost",
+  port: process.env.DB_PORT || 3306,
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "backpack_tech_works",
+  clearExpired: true,
+  checkExpirationInterval: 900000, // 15 minutes
+  expiration: 24 * 60 * 60 * 1000, // 24 hours
+  createDatabaseTable: true,
+}
+const sessionStore = new MySQLStore(sessionStoreOptions)
 
 
 require("./config/passport")
@@ -118,11 +133,13 @@ app.use((req, res, next) => {
 
 app.use(
   session({
+    store: sessionStore,
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 24 * 60 * 60 * 1000, 
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production",
     },
   }),
 )

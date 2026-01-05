@@ -112,6 +112,11 @@
       cursor: pointer;
       color: #111827;
       font-weight: 500;
+      pointer-events: none;
+    }
+
+    .poll-option input[type="radio"] {
+      pointer-events: none;
     }
 
     .poll-info {
@@ -422,7 +427,7 @@
             <div class="poll-options">
               <% if (pollOptions && pollOptions.length > 0) { %>
                 <% pollOptions.forEach((option, index) => { %>
-                  <div class="poll-option">
+                  <div class="poll-option" onclick="document.getElementById('poll-option-<%= index %>').click();">
                     <input type="radio" id="poll-option-<%= index %>" name="poll-<%= poll.id %>" value="<%= index %>" required>
                     <label for="poll-option-<%= index %>"><%= typeof option === 'string' ? option : (option.text || option.value || String(option)) %></label>
                   </div>

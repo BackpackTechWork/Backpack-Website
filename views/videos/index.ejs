@@ -157,21 +157,84 @@
       border-color: rgba(197, 29, 52, 0.3);
     }
 
-    .video-embed-wrapper {
+    .video-thumbnail-wrapper {
       position: relative;
       width: 100%;
       padding-top: 56.25%;
       background: rgba(0, 0, 0, 0.3);
       overflow: hidden;
+      display: block;
     }
 
-    .video-embed-wrapper iframe {
+    .video-thumbnail-wrapper img {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      border: none;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .video-card:hover .video-thumbnail-wrapper img {
+      transform: scale(1.05);
+    }
+
+    .video-play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.35);
+      transition: background 0.3s ease;
+    }
+
+    .video-card:hover .video-play-overlay {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .play-button {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 30px rgba(197, 29, 52, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .video-card:hover .play-button {
+      transform: scale(1.1);
+      box-shadow: 0 12px 40px rgba(197, 29, 52, 0.5);
+    }
+
+    .play-button i {
+      color: white;
+      font-size: 1.75rem;
+      margin-left: 4px;
+    }
+
+    .video-thumbnail-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .video-thumbnail-placeholder i {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 3rem;
     }
 
     .video-content {
@@ -348,25 +411,28 @@
               }
             %>
             <div class="video-card">
-              <div class="video-embed-wrapper">
+              <a href="/videos/<%= video.id %>" class="video-thumbnail-wrapper">
                 <% if (videoId) { %>
-                  <iframe 
-                    src="https://www.youtube.com/embed/<%= videoId %>?rel=0&modestbranding=1" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen
-                    loading="lazy"
-                    title="<%= video.title %>"
-                  ></iframe>
+                  <img src="https://img.youtube.com/vi/<%= videoId %>/maxresdefault.jpg" 
+                       alt="<%= video.title %>" 
+                       loading="lazy"
+                       onerror="this.src='https://img.youtube.com/vi/<%= videoId %>/hqdefault.jpg'">
+                  <div class="video-play-overlay">
+                    <div class="play-button">
+                      <i class="fas fa-play"></i>
+                    </div>
+                  </div>
                 <% } else { %>
-                  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-video" style="color: rgba(255, 255, 255, 0.5); font-size: 3rem;"></i>
+                  <div class="video-thumbnail-placeholder">
+                    <i class="fas fa-video"></i>
                   </div>
                 <% } %>
-              </div>
+              </a>
               <div class="video-content">
                 <% if (isShort) { %><span class="video-short-badge"><i class="fas fa-bolt"></i> Short</span><% } %>
-                <h3 class="video-title"><%= video.title %></h3>
+                <a href="/videos/<%= video.id %>" style="text-decoration: none;">
+                  <h3 class="video-title"><%= video.title %></h3>
+                </a>
                 <% if (video.description) { %>
                   <p class="video-description"><%= video.description %></p>
                 <% } %>

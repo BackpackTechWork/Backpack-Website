@@ -278,5 +278,90 @@
     -moz-user-select: none;
     -ms-user-select: none;
   }
+
+  /* Floating header animation states */
+  header.header-hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+  }
+
+  header.header-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
 </style>
+
+<script>
+  // Floating header - shows when not scrolling, hides while scrolling
+  (function() {
+    const header = document.querySelector('header');
+    if (!header) return;
+
+    let scrollTimeout;
+    let isScrolling = false;
+    let lastScrollTime = 0;
+    const DEBOUNCE_DELAY = 600; // Wait 600ms of no scrolling before showing header
+
+    // Initially show the header
+    header.classList.add('header-visible');
+
+    function showHeader() {
+      header.classList.remove('header-hidden');
+      header.classList.add('header-visible');
+    }
+
+    function hideHeader() {
+      // Only hide if we've scrolled past the header height
+      if (window.scrollY > 100) {
+        header.classList.remove('header-visible');
+        header.classList.add('header-hidden');
+      }
+    }
+
+    function handleScroll() {
+      const currentScrollY = window.scrollY;
+      const now = Date.now();
+      
+      // If at the top of the page, always show
+      if (currentScrollY <= 100) {
+        showHeader();
+        isScrolling = false;
+        return;
+      }
+
+      // Track scroll time
+      lastScrollTime = now;
+
+      // If we're scrolling, hide the header
+      if (!isScrolling) {
+        isScrolling = true;
+        hideHeader();
+      }
+
+      // Clear the previous timeout
+      clearTimeout(scrollTimeout);
+
+      // Set a new timeout to show header after scrolling stops for a while
+      scrollTimeout = setTimeout(() => {
+        // Only show if enough time has passed since last scroll
+        if (Date.now() - lastScrollTime >= DEBOUNCE_DELAY) {
+          isScrolling = false;
+          showHeader();
+        }
+      }, DEBOUNCE_DELAY);
+    }
+
+    // Use passive listener for better scroll performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Also show header on mouse movement near the top
+    document.addEventListener('mousemove', function(e) {
+      if (e.clientY < 100) {
+        showHeader();
+      }
+    });
+  })();
+</script>
 

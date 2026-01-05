@@ -21,8 +21,8 @@
   
   <link rel="stylesheet" href="/css/style.css">
   <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" crossorigin referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin referrerpolicy="no-referrer">
   <style>
     /* Smooth scroll behavior - optimized for animations */
     html {
@@ -408,6 +408,14 @@
       .blog-images {
         grid-template-columns: 1fr;
       }
+
+      .project-detail-center {
+        text-align: center !important;
+      }
+
+      .service-detail-title {
+        text-align: center !important;
+      }
     }
   </style>
   
@@ -455,9 +463,6 @@
     </div>
     <div class="container">
       <div class="project-detail-header">
-        <a href="/blogs" class="back-button">
-          <i class="fas fa-arrow-left"></i> Back to blogs
-        </a>
         <div class="project-detail-center">
           <h1 class="service-detail-title"><%= blog.title %></h1>
         </div>

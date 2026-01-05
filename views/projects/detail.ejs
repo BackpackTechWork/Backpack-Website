@@ -53,41 +53,40 @@
       transform: none !important;
       animation: none !important;
     }
-    /* Improved back button on mobile */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #c51d34;
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    
+    .project-detail-center {
+      width: 100%;
+      text-align: center;
+    }
+
+    .service-detail-title {
+      text-align: center;
+    }
+    
+    /* Improved header on mobile */
     @media (max-width: 768px) {
-      .back-button {
-        position: static !important;
-        transform: none !important;
-        margin-bottom: 1.5rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.9rem;
-        padding: 0.75rem 1.5rem;
-        gap: 0.6rem;
-        width: 100%;
-        max-width: 100%;
-        border-radius: 50px;
-        background: linear-gradient(135deg, var(--red), #ff4757) !important;
-        color: var(--white) !important;
-        border: none;
-      }
-      
-      .back-button:hover {
-        transform: translateY(-2px) !important;
-        background: linear-gradient(135deg, #a01628, var(--red)) !important;
-        box-shadow: 0 6px 20px rgba(197, 29, 52, 0.4);
-      }
-      
       .project-detail-header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         gap: 1rem;
       }
       
       .project-detail-center {
         width: 100%;
-        text-align: left;
+        text-align: center;
       }
     }
   </style>
@@ -136,9 +135,6 @@
     </div>
     <div class="container">
       <div class="project-detail-header">
-        <a href="/projects" class="back-button">
-          <i class="fas fa-arrow-left"></i> Back to Projects
-        </a>
         <div class="project-detail-center">
           <h1 class="service-detail-title"><%= project.displayName %></h1>
         </div>
@@ -148,6 +144,9 @@
 
   <section class="service-detail-content">
     <div class="container">
+      <a href="/projects" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Projects
+      </a>
       <!-- Project Description -->
       <% if (project.description) { %>
         <div class="detail-card" style="margin-bottom: 3rem;">

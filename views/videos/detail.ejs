@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/Backpack.png">
+  
+  <!-- SEO Meta Tags -->
+  <%- include('../partials/seo-meta', { 
+    currentPath: typeof currentPath !== 'undefined' ? currentPath : '/videos'
+  }) %>
+  
+  <script>
+    document.documentElement.classList.add('js-enabled');
+    document.documentElement.classList.remove('no-js');
+  </script>
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* Smooth scroll behavior */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+    
+    * {
+      scroll-margin-top: 80px;
+    }
+    
+    /* Ensure content is visible for no-JS users */
+    html.no-js .video-detail-section,
+    html.no-js .video-player-wrapper,
+    html.no-js .video-info,
+    html.no-js section,
+    html.no-js footer {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      animation: none !important;
+    }
+    
+    .video-detail-section {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .video-detail-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 1;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .video-detail-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Back Button */
+    .back-nav {
+      margin-bottom: 1.5rem;
+    }
+    
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    
+    .back-btn:hover {
+      background: rgba(197, 29, 52, 0.2);
+      border-color: rgba(197, 29, 52, 0.4);
+      color: #fff;
+      transform: translateX(-4px);
+    }
+    
+    .back-btn i {
+      font-size: 0.875rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .back-btn:hover i {
+      transform: translateX(-3px);
+    }
+    
+    /* Main Layout */
+    .video-main-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+    }
+    
+    @media (max-width: 1100px) {
+      .video-main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Video Player */
+    .video-player-wrapper {
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(197, 29, 52, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .video-player-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+    }
+    
+    .video-player-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    /* Video Info */
+    .video-info {
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .video-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      background: linear-gradient(135deg, #c51d34 0%, #a01628 100%);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .video-badge i {
+      font-size: 0.6875rem;
+    }
+    
+    .video-title {
+      color: #fff;
+      font-size: 1.75rem;
+      font-weight: 800;
+      line-height: 1.3;
+      margin: 0 0 1rem 0;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .video-description {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      margin: 0;
+    }
+    
+    /* Share Section */
+    .video-share {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .share-label {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .share-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .share-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .share-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .share-btn.twitter:hover {
+      background: #1da1f2;
+      border-color: #1da1f2;
+      color: #fff;
+    }
+    
+    .share-btn.facebook:hover {
+      background: #4267b2;
+      border-color: #4267b2;
+      color: #fff;
+    }
+    
+    .share-btn.linkedin:hover {
+      background: #0077b5;
+      border-color: #0077b5;
+      color: #fff;
+    }
+    
+    .share-btn.copy:hover {
+      background: #c51d34;
+      border-color: #c51d34;
+      color: #fff;
+    }
+    
+    /* Related Videos Sidebar */
+    .related-videos-section {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+    
+    .related-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .related-title {
+      color: #fff;
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin: 0;
+    }
+    
+    .related-count {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.8125rem;
+    }
+    
+    .related-videos-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .related-video-card {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .related-video-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(197, 29, 52, 0.3);
+      transform: translateX(4px);
+    }
+    
+    .related-video-thumbnail {
+      position: relative;
+      width: 140px;
+      height: 79px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.4);
+    }
+    
+    .related-video-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .related-video-card:hover .related-video-thumbnail img {
+      transform: scale(1.08);
+    }
+    
+    .related-thumbnail-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .related-video-card:hover .related-thumbnail-overlay {
+      opacity: 1;
+    }
+    
+    .related-thumbnail-overlay i {
+      color: #fff;
+      font-size: 1.5rem;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+    }
+    
+    .related-video-info {
+      padding: 0.75rem 0.75rem 0.75rem 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .related-video-title {
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      line-height: 1.4;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .related-short-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #c51d34;
+      color: white;
+      font-size: 0.625rem;
+      font-weight: 600;
+      padding: 0.125rem 0.375rem;
+      border-radius: 3px;
+      margin-top: 0.5rem;
+      width: fit-content;
+    }
+    
+    .view-all-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.875rem 1rem;
+      margin-top: 1.25rem;
+      background: rgba(197, 29, 52, 0.15);
+      border: 1px solid rgba(197, 29, 52, 0.3);
+      border-radius: 10px;
+      color: #c51d34;
+      text-decoration: none;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .view-all-btn:hover {
+      background: #c51d34;
+      color: #fff;
+      border-color: #c51d34;
+      transform: translateY(-2px);
+    }
+    
+    .view-all-btn i {
+      font-size: 0.8125rem;
+    }
+    
+    /* Empty related state */
+    .no-related {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .no-related i {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .related-videos-section {
+        position: static;
+        margin-top: 2rem;
+      }
+      
+      .related-videos-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+      }
+      
+      .related-video-card {
+        grid-template-columns: 120px 1fr;
+      }
+      
+      .related-video-thumbnail {
+        width: 120px;
+        height: 68px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .video-detail-container {
+        padding: 1rem;
+      }
+      
+      .video-main-layout {
+        gap: 1.5rem;
+      }
+      
+      .video-info {
+        padding: 1.5rem;
+      }
+      
+      .video-title {
+        font-size: 1.375rem;
+      }
+      
+      .video-description {
+        font-size: 1rem;
+      }
+      
+      .video-share {
+        flex-wrap: wrap;
+      }
+      
+      .related-videos-list {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .back-btn {
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+      }
+      
+      .video-title {
+        font-size: 1.25rem;
+      }
+      
+      .related-video-card {
+        grid-template-columns: 100px 1fr;
+      }
+      
+      .related-video-thumbnail {
+        width: 100px;
+        height: 56px;
+      }
+      
+      .related-video-title {
+        font-size: 0.8125rem;
+      }
+    }
+    
+    /* Ensure content is visible by default */
+    section,
+    footer,
+    .section-header {
+      opacity: 1;
+      visibility: visible;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <section class="video-detail-section">
+    <div class="video-detail-container">
+      <!-- Back Navigation -->
+      <nav class="back-nav">
+        <a href="/videos" class="back-btn">
+          <i class="fas fa-arrow-left"></i>
+          <span>All Videos</span>
+        </a>
+      </nav>
+      
+      <div class="video-main-layout">
+        <!-- Main Video Player -->
+        <div class="video-player-wrapper">
+          <div class="video-player-container">
+            <% if (youtubeVideoId) { %>
+              <iframe 
+                src="https://www.youtube.com/embed/<%= youtubeVideoId %>?rel=0&modestbranding=1&autoplay=1" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen
+                title="<%= video.title %>"
+              ></iframe>
+            <% } else { %>
+              <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.8);">
+                <div style="text-align: center; color: rgba(255, 255, 255, 0.6);">
+                  <i class="fas fa-video-slash" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                  <p style="margin: 0;">Video unavailable</p>
+                </div>
+              </div>
+            <% } %>
+          </div>
+          
+          <!-- Video Info -->
+          <div class="video-info">
+            <% if (isShort) { %>
+              <span class="video-badge">
+                <i class="fas fa-bolt"></i>
+                YouTube Short
+              </span>
+            <% } %>
+            
+            <h1 class="video-title"><%= video.title %></h1>
+            
+            <% if (video.description) { %>
+              <p class="video-description"><%= video.description %></p>
+            <% } %>
+            
+            <!-- Share Section -->
+            <div class="video-share">
+              <span class="share-label">Share:</span>
+              <div class="share-buttons">
+                <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent('https://backpacktechworks.com/videos/' + video.id) %>&text=<%= encodeURIComponent(video.title) %>" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="share-btn twitter" 
+                   title="Share on Twitter">
+                  <i class="fab fa-x-twitter"></i>
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent('https://backpacktechworks.com/videos/' + video.id) %>" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="share-btn facebook" 
+                   title="Share on Facebook">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.linkedin.com/shareArticle?mini=true&url=<%= encodeURIComponent('https://backpacktechworks.com/videos/' + video.id) %>&title=<%= encodeURIComponent(video.title) %>" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="share-btn linkedin" 
+                   title="Share on LinkedIn">
+                  <i class="fab fa-linkedin-in"></i>
+                </a>
+                <button class="share-btn copy" title="Copy link" onclick="copyVideoLink()">
+                  <i class="fas fa-link"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Related Videos Sidebar -->
+        <aside class="related-videos-section">
+          <div class="related-header">
+            <h2 class="related-title">More Videos</h2>
+            <span class="related-count"><%= relatedVideos.length %> videos</span>
+          </div>
+          
+          <% if (relatedVideos && relatedVideos.length > 0) { %>
+            <div class="related-videos-list">
+              <% relatedVideos.forEach(relVideo => { %>
+                <% 
+                  // Extract YouTube video ID for thumbnail
+                  let relVideoId = '';
+                  let relIsShort = false;
+                  if (relVideo.youtube_url) {
+                    const shortsMatch = relVideo.youtube_url.match(/youtube\.com\/shorts\/([^&\n?#]+)/);
+                    if (shortsMatch) {
+                      relVideoId = shortsMatch[1];
+                      relIsShort = true;
+                    } else {
+                      const urlMatch = relVideo.youtube_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/);
+                      relVideoId = urlMatch ? urlMatch[1] : '';
+                    }
+                  }
+                %>
+                <a href="/videos/<%= relVideo.id %>" class="related-video-card">
+                  <div class="related-video-thumbnail">
+                    <% if (relVideoId) { %>
+                      <img src="https://img.youtube.com/vi/<%= relVideoId %>/mqdefault.jpg" 
+                           alt="<%= relVideo.title %>" 
+                           loading="lazy">
+                    <% } else { %>
+                      <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-video" style="color: rgba(255, 255, 255, 0.4); font-size: 1.5rem;"></i>
+                      </div>
+                    <% } %>
+                    <div class="related-thumbnail-overlay">
+                      <i class="fas fa-play"></i>
+                    </div>
+                  </div>
+                  <div class="related-video-info">
+                    <h3 class="related-video-title"><%= relVideo.title %></h3>
+                    <% if (relIsShort) { %>
+                      <span class="related-short-badge">
+                        <i class="fas fa-bolt"></i> Short
+                      </span>
+                    <% } %>
+                  </div>
+                </a>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <div class="no-related">
+              <i class="fas fa-video"></i>
+              <p>No other videos available</p>
+            </div>
+          <% } %>
+          
+          <a href="/videos" class="view-all-btn">
+            <i class="fas fa-th-large"></i>
+            View All Videos
+          </a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+
+  <script>
+    // Copy video link to clipboard
+    function copyVideoLink() {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        // Show feedback
+        const btn = document.querySelector('.share-btn.copy');
+        const originalIcon = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        btn.style.background = '#10b981';
+        btn.style.borderColor = '#10b981';
+        
+        setTimeout(() => {
+          btn.innerHTML = originalIcon;
+          btn.style.background = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+      });
+    }
+    
+    // Ensure content is visible
+    document.documentElement.classList.add('js-enabled');
+    document.documentElement.classList.remove('no-js');
+
+    // Animation observer for video detail page
+    (function() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px'
+      });
+
+      function initAnimations() {
+        const sections = document.querySelectorAll('section');
+        const footer = document.querySelector('footer');
+        
+        // Observe all elements
+        sections.forEach(section => observer.observe(section));
+        if (footer) observer.observe(footer);
+
+        // Check if elements are already in viewport
+        const checkVisibility = () => {
+          const elements = [...sections];
+          if (footer) elements.push(footer);
+          
+          elements.forEach(el => {
+            if (el && typeof el.getBoundingClientRect === 'function') {
+              const rect = el.getBoundingClientRect();
+              if (rect.top < window.innerHeight && rect.bottom > 0) {
+                el.classList.add('visible');
+              }
+            }
+          });
+        };
+
+        // Check immediately and after a short delay
+        checkVisibility();
+        setTimeout(checkVisibility, 100);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAnimations);
+      } else {
+        initAnimations();
+      }
+    })();
+  </script>
+</body>
+</html>
+

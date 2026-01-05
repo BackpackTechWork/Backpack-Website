@@ -255,7 +255,7 @@
     }
 
     .form-container .btn {
-      padding: 0.5rem;
+      padding: 0.75rem 1.5rem;
       border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
@@ -267,9 +267,28 @@
       justify-content: center;
       gap: 0.5rem;
       opacity: 1 !important;
-      width: 40px;
-      height: 40px;
+      width: auto;
+      min-width: 44px;
+      min-height: 44px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    
+    .form-container .btn .btn-text {
+      display: inline-block;
+    }
+    
+    @media (max-width: 640px) {
+      .form-container .btn .btn-text {
+        display: none;
+      }
+      .form-container .btn {
+        width: 44px;
+        height: 44px;
+        padding: 0.5rem;
+        min-width: 44px;
+      }
     }
 
     .form-container .btn-primary {
@@ -446,6 +465,30 @@
         margin-left: 0;
         padding: 1rem;
       }
+      
+      .form-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+      }
+      
+      .form-actions .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .form-actions .btn .btn-text {
+        display: inline-block;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .form-container {
+        padding: 1.5rem;
+      }
+      
+      .form-actions .btn {
+        font-size: 0.8125rem;
+      }
     }
   </style>
 </head>
@@ -552,6 +595,7 @@
           <div class="form-actions">
             <a href="/admin/activities/polls" class="btn btn-secondary" title="Cancel">
               <i class="fas fa-times"></i>
+              <span class="btn-text">Cancel</span>
             </a>
             <button type="submit" class="btn btn-submit" title="<%= isEdit ? 'Update' : 'Create' %> Poll">
               <i class="fas fa-<%= isEdit ? 'save' : 'plus' %>"></i> <%= isEdit ? 'Update' : 'Create' %> Poll

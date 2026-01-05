@@ -3,24 +3,60 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy
 const GitHubStrategy = require("passport-github2").Strategy
 const db = require("./database")
 
+// User cache to reduce database queries on every request
+// Users are cached for 5 minutes to balance freshness with performance
+const userCache = new Map()
+const USER_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+/**
+ * Get user from cache or database
+ * @param {number} id - User ID
+ * @returns {Promise<object|null>}
+ */
+async function getCachedUser(id) {
+  const cached = userCache.get(id)
+  if (cached && (Date.now() - cached.timestamp < USER_CACHE_TTL)) {
+    return cached.user
+  }
+  
+  const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [id])
+  const user = (rows && rows.length > 0) ? rows[0] : null
+  
+  if (user) {
+    userCache.set(id, { user, timestamp: Date.now() })
+  } else {
+    // Remove from cache if user no longer exists
+    userCache.delete(id)
+  }
+  
+  return user
+}
+
+/**
+ * Invalidate user cache entry (call after user updates)
+ * @param {number} id - User ID
+ */
+function invalidateUserCache(id) {
+  userCache.delete(id)
+}
+
+// Export for use in other modules that update users
+module.exports.invalidateUserCache = invalidateUserCache
 
 passport.serializeUser((user, done) => {
   done(null, user.id)
 })
 
-
 passport.deserializeUser(async (id, done) => {
   try {
-    const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [id])
+    const user = await getCachedUser(id)
     
-
-    if (!rows || rows.length === 0 || !rows[0]) {
+    if (!user) {
       return done(null, false)
     }
     
-    done(null, rows[0])
+    done(null, user)
   } catch (error) {
-
     console.error("Error deserializing user:", error)
     done(null, false)
   }

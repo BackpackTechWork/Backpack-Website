@@ -5,6 +5,7 @@ const db = require("../config/database")
 const { upload, deleteOldProfilePicture } = require("../utils/upload")
 const { getTeamProfileData, saveTeamProfileData, saveBioAndSocialLinks } = require("../services/teamProfileService")
 const { invalidateCache } = require("../utils/servicesCache")
+const { invalidateUserCache } = require("../config/passport")
 const multer = require("multer")
 
 
@@ -522,6 +523,8 @@ router.post("/team/:id", ensureAdmin, parseFormDataMiddleware, async (req, res) 
       ],
     )
 
+    // Invalidate user cache after team member update
+    invalidateUserCache(userId)
 
     res.redirect(`/admin/team/edit/${id}?success=true`)
   } catch (error) {
@@ -863,7 +866,9 @@ router.post("/upload-avatar", ensureAdmin, parseFormDataMiddleware, async (req, 
 
 
       await db.query("UPDATE users SET avatar = ? WHERE id = ?", [newAvatarPath, req.user.id])
-
+      
+      // Invalidate user cache after avatar update
+      invalidateUserCache(req.user.id)
 
       if (oldAvatarPath && oldAvatarPath !== newAvatarPath) {
         deleteOldProfilePicture(oldAvatarPath)
@@ -887,6 +892,9 @@ router.post("/upload-avatar", ensureAdmin, parseFormDataMiddleware, async (req, 
     const oldAvatarPath = users[0]?.avatar
 
     await db.query("UPDATE users SET avatar = ? WHERE id = ?", [newAvatarPath, req.user.id])
+    
+    // Invalidate user cache after avatar update
+    invalidateUserCache(req.user.id)
 
     if (oldAvatarPath) {
       deleteOldProfilePicture(oldAvatarPath)
@@ -1030,6 +1038,9 @@ router.post("/change-password", ensureAdmin, async (req, res) => {
 
 
     await db.query("UPDATE users SET password = ? WHERE id = ?", [hashedPassword, req.user.id])
+    
+    // Invalidate user cache after password change
+    invalidateUserCache(req.user.id)
 
     res.json({ success: true, message: "Password changed successfully" })
   } catch (error) {
@@ -1452,6 +1463,9 @@ router.post("/clients/:id", ensureAdmin, upload, async (req, res) => {
         )
       }
     }
+
+    // Invalidate user cache after client update
+    invalidateUserCache(id)
 
     res.redirect(`/admin/clients/edit/${id}?success=true`)
   } catch (error) {

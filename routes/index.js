@@ -5,6 +5,7 @@ const db = require("../config/database")
 const fs = require("fs")
 const path = require("path")
 const { getServices } = require("../utils/servicesCache")
+const { processProjectImages, getProjectImages } = require("../utils/fileHelpers")
 
 
 // Videos All Page
@@ -75,53 +76,147 @@ router.get("/videos", async (req, res) => {
   }
 })
 
-router.get("/", async (req, res) => {
+// Video Detail Page
+router.get("/videos/:id", async (req, res) => {
   try {
-    const [services] = await db.query("SELECT * FROM services WHERE is_active = true ORDER BY display_order")
-    const [projects] = await db.query(
-      "SELECT * FROM projects WHERE is_featured = true ORDER BY completed_at DESC LIMIT 6",
-    )
+    const { id } = req.params
+    const videoId = parseInt(id)
     
-
-    const [blogs] = await db.query(`
-      SELECT id, title, slug, cover_image, created_at
-      FROM blogs
-      WHERE is_published = true
-      ORDER BY created_at DESC
-      LIMIT 7
-    `)
+    if (isNaN(videoId)) {
+      return res.status(404).render("404", {
+        title: "Video Not Found - Backpack Tech Works",
+      })
+    }
     
-
-    const [polls] = await db.query(`
-      SELECT p.*, 
-        (SELECT COUNT(*) FROM poll_votes WHERE poll_id = p.id) as vote_count
-      FROM polls p
-      WHERE p.is_active = true
-      ORDER BY p.created_at DESC
-      LIMIT 3
-    `)
-
     const [videos] = await db.query(`
       SELECT * FROM videos
-      WHERE is_active = true
-      ORDER BY display_order DESC, created_at DESC
-      LIMIT 3
-    `)
+      WHERE id = ? AND is_active = true
+    `, [videoId])
     
+    if (videos.length === 0) {
+      return res.status(404).render("404", {
+        title: "Video Not Found - Backpack Tech Works",
+      })
+    }
+    
+    const video = videos[0]
+    
+    // Get related videos (other active videos excluding current)
+    const [relatedVideos] = await db.query(`
+      SELECT * FROM videos
+      WHERE is_active = true AND id != ?
+      ORDER BY display_order DESC, created_at DESC
+      LIMIT 6
+    `, [videoId])
+    
+    // Extract YouTube video ID for thumbnail
+    let youtubeVideoId = ''
+    let isShort = false
+    if (video.youtube_url) {
+      const shortsMatch = video.youtube_url.match(/youtube\.com\/shorts\/([^&\n?#]+)/)
+      if (shortsMatch) {
+        youtubeVideoId = shortsMatch[1]
+        isShort = true
+      } else {
+        const urlMatch = video.youtube_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/)
+        youtubeVideoId = urlMatch ? urlMatch[1] : ''
+      }
+    }
+    
+    res.render("videos/detail", {
+      title: `${video.title} - Backpack Tech Works`,
+      seoDescription: video.description || `Watch ${video.title} - A video from Backpack Tech Works`,
+      seoKeywords: "tech video, Backpack Tech Works, " + video.title,
+      seoImage: youtubeVideoId ? `https://img.youtube.com/vi/${youtubeVideoId}/maxresdefault.jpg` : "/Backpack.webp",
+      seoType: "video.other",
+      video,
+      youtubeVideoId,
+      isShort,
+      relatedVideos
+    })
+  } catch (error) {
+    console.error("Error fetching video:", error)
+    res.status(500).render("error", {
+      title: "Error - Backpack Tech Works",
+      message: "Unable to load video at the moment.",
+    })
+  }
+})
+
+router.get("/", async (req, res) => {
+  try {
+    // Parallelize all independent database queries for better performance
+    const [
+      [services],
+      [projects],
+      [blogs],
+      [polls],
+      [videos],
+      [brandsWithProjects]
+    ] = await Promise.all([
+      db.query("SELECT * FROM services WHERE is_active = true ORDER BY display_order"),
+      db.query("SELECT * FROM projects WHERE is_featured = true ORDER BY completed_at DESC LIMIT 6"),
+      db.query(`
+        SELECT id, title, slug, cover_image, created_at
+        FROM blogs
+        WHERE is_published = true
+        ORDER BY created_at DESC
+        LIMIT 7
+      `),
+      db.query(`
+        SELECT p.*, 
+          (SELECT COUNT(*) FROM poll_votes WHERE poll_id = p.id) as vote_count
+        FROM polls p
+        WHERE p.is_active = true
+        ORDER BY p.created_at DESC
+        LIMIT 3
+      `),
+      db.query(`
+        SELECT * FROM videos
+        WHERE is_active = true
+        ORDER BY display_order DESC, created_at DESC
+        LIMIT 3
+      `),
+      db.query(`
+        SELECT 
+          b.*, 
+          COUNT(p.id) AS project_count
+        FROM brands b
+        LEFT JOIN users u 
+          ON b.id = u.brand_id 
+          AND u.role = 'client'
+        LEFT JOIN projects p 
+          ON u.id = p.client_id
+        GROUP BY b.id, b.name, b.logo, b.created_at, b.updated_at
+        ORDER BY project_count DESC
+        LIMIT 9
+      `)
+    ])
+
+    // Batch fetch all poll votes in a single query instead of N+1
+    const pollIds = polls.map(p => p.id)
+    let allPollVotes = []
+    if (pollIds.length > 0) {
+      const [votes] = await db.query(`
+        SELECT poll_id, option_index, COUNT(*) as count
+        FROM poll_votes
+        WHERE poll_id IN (?)
+        GROUP BY poll_id, option_index
+      `, [pollIds])
+      allPollVotes = votes
+    }
 
     for (let poll of polls) {
       if (poll.options) {
         if (typeof poll.options === 'string') {
-
           try {
             poll.options = JSON.parse(poll.options)
           } catch (e) {
             poll.options = []
           }
         } else if (Array.isArray(poll.options)) {
-
+          // already an array
         } else if (typeof poll.options === 'object') {
-
           poll.options = Object.values(poll.options)
         } else {
           poll.options = []
@@ -130,39 +225,19 @@ router.get("/", async (req, res) => {
         poll.options = []
       }
       
-
-      const [votes] = await db.query(`
-        SELECT option_index, COUNT(*) as count
-        FROM poll_votes
-        WHERE poll_id = ?
-        GROUP BY option_index
-      `, [poll.id])
+      // Use the batched votes instead of individual queries
+      const pollVotes = allPollVotes.filter(v => v.poll_id === poll.id)
       
-
       poll.optionVotes = []
       poll.totalVotes = poll.vote_count || 0
       for (let i = 0; i < poll.options.length; i++) {
-        const voteData = votes.find(v => v.option_index === i)
+        const voteData = pollVotes.find(v => v.option_index === i)
         poll.optionVotes[i] = voteData ? voteData.count : 0
       }
     }
-
-    const [brandsWithProjects] = await db.query(`
-      SELECT 
-        b.*, 
-        COUNT(p.id) AS project_count
-      FROM brands b
-      LEFT JOIN users u 
-        ON b.id = u.brand_id 
-        AND u.role = 'client'
-      LEFT JOIN projects p 
-        ON u.id = p.client_id
-      GROUP BY b.id, b.name, b.logo, b.created_at, b.updated_at
-      ORDER BY project_count DESC
-      LIMIT 9
-    `)
     
     
+    // brandsWithProjects is already fetched above via Promise.all
     const count = brandsWithProjects.length
     const roundedCount = count < 3 ? count : Math.floor(count / 3) * 3
     const logos = brandsWithProjects.slice(0, roundedCount).map(brand => ({
@@ -292,33 +367,12 @@ router.get("/projects", async (req, res) => {
       ORDER BY p.completed_at DESC, p.created_at DESC
     `)
 
+    // Process project images asynchronously in parallel
+    const basePath = path.join(__dirname, "../public/images/Projects")
+    await processProjectImages(projects, basePath)
 
+    // Process tech stacks and display names
     projects.forEach(project => {
-
-      if (project.cover_image) {
-        project.thumbnail = `/images/Projects/${project.id}/${project.cover_image}`
-      } else {
-
-        const imagesDir = path.join(__dirname, "../public/images/Projects", project.id.toString())
-        if (fs.existsSync(imagesDir)) {
-          const images = fs.readdirSync(imagesDir).filter(f => f.startsWith('image_') || f.startsWith('project_image_'))
-          if (images.length > 0) {
-            project.thumbnail = `/images/Projects/${project.id}/${images[0]}`
-          }
-        }
-      }
-
-
-      const imagesDir = path.join(__dirname, "../public/images/Projects", project.id.toString())
-      let imageGallery = []
-      if (fs.existsSync(imagesDir)) {
-        imageGallery = fs.readdirSync(imagesDir)
-          .filter(filename => filename.startsWith("image_") || filename.startsWith("project_image_"))
-          .map(filename => `/images/Projects/${project.id}/${filename}`)
-      }
-      project.images = imageGallery
-
-
       let techStack = []
       if (project.technologies) {
         try {
@@ -330,8 +384,6 @@ router.get("/projects", async (req, res) => {
         }
       }
       project.techStack = techStack
-
-
       project.displayName = project.title
     })
     
@@ -396,27 +448,19 @@ router.get("/projects/:slug", async (req, res) => {
     }
     project.techStack = technologies
 
-
-    const imagesDir = path.join(__dirname, "../public/images/Projects", project.id.toString())
-    let imageGallery = []
-
-    if (fs.existsSync(imagesDir)) {
-      imageGallery = fs.readdirSync(imagesDir)
-        .filter(filename => filename.startsWith("image_") || filename.startsWith("project_image_"))
-        .map(filename => `/images/Projects/${project.id}/${filename}`)
-    }
-
+    // Use async file operations instead of sync
+    const basePath = path.join(__dirname, "../public/images/Projects")
+    const imageData = await getProjectImages(project.id, basePath)
+    let imageGallery = imageData.images
 
     let coverImagePath = null
     if (project.cover_image) {
       coverImagePath = `/images/Projects/${project.id}/${project.cover_image}`
     }
     
-
     if (!coverImagePath && imageGallery.length > 0) {
       coverImagePath = imageGallery[0]
     }
-
 
     if (coverImagePath && !imageGallery.includes(coverImagePath)) {
       imageGallery.unshift(coverImagePath)
@@ -872,21 +916,30 @@ router.get("/polls", async (req, res) => {
       LIMIT ? OFFSET ?
     `, [limit, offset])
 
-
+    // Batch fetch all poll votes in a single query instead of N+1
+    const pollIds = polls.map(p => p.id)
+    let allPollVotes = []
+    if (pollIds.length > 0) {
+      const [votes] = await db.query(`
+        SELECT poll_id, option_index, COUNT(*) as count
+        FROM poll_votes
+        WHERE poll_id IN (?)
+        GROUP BY poll_id, option_index
+      `, [pollIds])
+      allPollVotes = votes
+    }
 
     for (let poll of polls) {
       if (poll.options) {
         if (typeof poll.options === 'string') {
-
           try {
             poll.options = JSON.parse(poll.options)
           } catch (e) {
             poll.options = []
           }
         } else if (Array.isArray(poll.options)) {
-
+          // already an array
         } else if (typeof poll.options === 'object') {
-
           poll.options = Object.values(poll.options)
         } else {
           poll.options = []
@@ -895,19 +948,13 @@ router.get("/polls", async (req, res) => {
         poll.options = []
       }
       
-
-      const [votes] = await db.query(`
-        SELECT option_index, COUNT(*) as count
-        FROM poll_votes
-        WHERE poll_id = ?
-        GROUP BY option_index
-      `, [poll.id])
-      
+      // Use the batched votes instead of individual queries
+      const pollVotes = allPollVotes.filter(v => v.poll_id === poll.id)
 
       poll.optionVotes = []
       poll.totalVotes = poll.vote_count || 0
       for (let i = 0; i < poll.options.length; i++) {
-        const voteData = votes.find(v => v.option_index === i)
+        const voteData = pollVotes.find(v => v.option_index === i)
         poll.optionVotes[i] = voteData ? voteData.count : 0
       }
     }

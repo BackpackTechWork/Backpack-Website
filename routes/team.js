@@ -7,6 +7,7 @@ const path = require("path")
 const fs = require("fs")
 const { ensureAuthenticated } = require("../middleware/auth")
 const multer = require("multer")
+const { invalidateUserCache } = require("../config/passport")
 
 
 const parseFormDataMiddleware = multer().none()
@@ -708,7 +709,9 @@ router.post("/upload-avatar", ensureAuthenticated, parseFormDataMiddleware, asyn
 
 
       await db.query("UPDATE users SET avatar = ? WHERE id = ?", [newAvatarPath, req.user.id])
-
+      
+      // Invalidate user cache after avatar update
+      invalidateUserCache(req.user.id)
 
       if (oldAvatarPath && oldAvatarPath !== newAvatarPath) {
         deleteOldProfilePicture(oldAvatarPath)
@@ -732,6 +735,9 @@ router.post("/upload-avatar", ensureAuthenticated, parseFormDataMiddleware, asyn
     const oldAvatarPath = users[0]?.avatar
 
     await db.query("UPDATE users SET avatar = ? WHERE id = ?", [newAvatarPath, req.user.id])
+    
+    // Invalidate user cache after avatar update
+    invalidateUserCache(req.user.id)
 
     if (oldAvatarPath) {
       deleteOldProfilePicture(oldAvatarPath)

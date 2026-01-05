@@ -40,53 +40,56 @@ async function verifyUserExists(req, res, next) {
     return next()
   }
 
-  try {
-    const db = require("../config/database")
-    const [users] = await db.query("SELECT id, role FROM users WHERE id = ?", [req.user.id])
-    
-    if (users.length === 0) {
-
-
-      if (typeof req.logout === 'function') {
-        req.logout((err) => {
-          if (err) console.error("Error logging out deleted user:", err)
-        })
-      }
-      
-
-      req.session.destroy((err) => {
-        if (err) console.error("Error destroying session:", err)
+  // The user was already verified by passport's deserializeUser which uses caching.
+  // If req.user is false (set by deserializeUser when user not found), handle logout.
+  // This avoids an additional redundant database query.
+  if (req.user === false) {
+    if (typeof req.logout === 'function') {
+      req.logout((err) => {
+        if (err) console.error("Error logging out deleted user:", err)
       })
-      
-
-      req.user = null
-      
-      return res.redirect("/")
     }
     
-
-    return next()
-  } catch (error) {
-    console.error("Error verifying user exists:", error)
-
-    return next()
+    req.session.destroy((err) => {
+      if (err) console.error("Error destroying session:", err)
+    })
+    
+    req.user = null
+    
+    return res.redirect("/")
   }
+  
+  // User exists and is valid (already verified by deserializeUser)
+  return next()
 }
 
 
+// In-memory cache to track when we last updated each user's last_active
+// This avoids hitting the database on every single request
+const lastActiveCache = new Map()
+const LAST_ACTIVE_INTERVAL = 60 * 60 * 1000 // 1 hour in milliseconds
+
 async function updateLastActive(req, res, next) {
   if (req.isAuthenticated() && req.user && req.user.id) {
-    try {
+    const userId = req.user.id
+    const now = Date.now()
+    const lastUpdate = lastActiveCache.get(userId)
+    
+    // Only hit the database if we haven't updated this user in the last hour
+    if (!lastUpdate || (now - lastUpdate) >= LAST_ACTIVE_INTERVAL) {
+      // Update cache immediately to prevent concurrent requests from all hitting DB
+      lastActiveCache.set(userId, now)
+      
+      // Fire and forget - don't await, let it run in background
       const db = require("../config/database")
-
-
-      await db.query(
-        "UPDATE users SET last_active = NOW() WHERE id = ? AND (last_active IS NULL OR TIMESTAMPDIFF(HOUR, last_active, NOW()) >= 1)",
-        [req.user.id]
-      )
-    } catch (error) {
-
-      console.error("Error updating last_active:", error)
+      db.query(
+        "UPDATE users SET last_active = NOW() WHERE id = ?",
+        [userId]
+      ).catch(error => {
+        console.error("Error updating last_active:", error)
+        // Remove from cache on error so next request will retry
+        lastActiveCache.delete(userId)
+      })
     }
   }
   next()

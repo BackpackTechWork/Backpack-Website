@@ -4,6 +4,8 @@ const { ensureAuthenticated, ensureClient, verifyUserExists } = require("../midd
 const db = require("../config/database")
 const fs = require("fs")
 const path = require("path")
+const { getProjectImages, processProjectImages } = require("../utils/fileHelpers")
+const { invalidateUserCache } = require("../config/passport")
 
 
 router.get("/portfolio", ensureAuthenticated, verifyUserExists, async (req, res) => {
@@ -32,21 +34,14 @@ router.get("/portfolio", ensureAuthenticated, verifyUserExists, async (req, res)
     `, [req.user.id])
 
 
+    // Process project images asynchronously in parallel
+    const basePath = path.join(__dirname, "../public/images/Projects")
+    await processProjectImages(projects, basePath)
+    
+    // Map thumbnail to image for template compatibility
     projects.forEach(project => {
-      if (project.cover_image) {
-        project.image = `/images/Projects/${project.id}/${project.cover_image}`
-      } else {
-
-        const imagesDir = path.join(__dirname, "../public/images/Projects", project.id.toString())
-        if (fs.existsSync(imagesDir)) {
-          const images = fs.readdirSync(imagesDir).filter(f => f.startsWith('image_'))
-          if (images.length > 0) {
-            project.image = `/images/Projects/${project.id}/${images[0]}`
-          }
-        }
-      }
+      project.image = project.thumbnail || null
     })
-
 
     const [inquiries] = await db.query(`
       SELECT * FROM inquiries
@@ -90,6 +85,9 @@ router.post("/profile", ensureAuthenticated, verifyUserExists, async (req, res) 
       "UPDATE users SET name = ?, phone = ? WHERE id = ?",
       [name, phone || null, req.user.id]
     )
+    
+    // Invalidate user cache after profile update
+    invalidateUserCache(req.user.id)
 
     res.json({ success: true, message: "Profile updated successfully" })
   } catch (error) {
@@ -159,19 +157,13 @@ router.get("/projects", ensureAuthenticated, verifyUserExists, async (req, res) 
     `, [req.user.id])
 
 
+    // Process project images asynchronously in parallel
+    const basePath = path.join(__dirname, "../public/images/Projects")
+    await processProjectImages(projects, basePath)
+    
+    // Map thumbnail to image for template compatibility
     projects.forEach(project => {
-      if (project.cover_image) {
-        project.image = `/images/Projects/${project.id}/${project.cover_image}`
-      } else {
-
-        const imagesDir = path.join(__dirname, "../public/images/Projects", project.id.toString())
-        if (fs.existsSync(imagesDir)) {
-          const images = fs.readdirSync(imagesDir).filter(f => f.startsWith('image_'))
-          if (images.length > 0) {
-            project.image = `/images/Projects/${project.id}/${images[0]}`
-          }
-        }
-      }
+      project.image = project.thumbnail || null
     })
 
     res.render("client/projects", {
@@ -250,34 +242,24 @@ router.get("/projects/:identifier", ensureAuthenticated, verifyUserExists, async
     }
     project.technologies = technologies
 
-
-    const imagesDir = path.join(__dirname, "../public/images/Projects", project.id.toString())
-    let imageGallery = []
-
-    if (fs.existsSync(imagesDir)) {
-      imageGallery = fs.readdirSync(imagesDir)
-        .filter(filename => filename.startsWith("image_"))
-        .map(filename => `/images/Projects/${project.id}/${filename}`)
-    }
-
+    // Use async file operations instead of sync
+    const basePath = path.join(__dirname, "../public/images/Projects")
+    const imageData = await getProjectImages(project.id, basePath)
+    let imageGallery = imageData.images
 
     let coverImagePath = null
     if (project.cover_image) {
       coverImagePath = `/images/Projects/${project.id}/${project.cover_image}`
     }
     
-
     if (!coverImagePath && imageGallery.length > 0) {
       coverImagePath = imageGallery[0]
     }
 
-
     if (coverImagePath && coverImagePath.startsWith(`/images/Projects/${project.id}/`)) {
       if (!imageGallery.includes(coverImagePath)) {
-
         imageGallery.unshift(coverImagePath)
       } else {
-
         const coverIndex = imageGallery.indexOf(coverImagePath)
         if (coverIndex > 0) {
           imageGallery.splice(coverIndex, 1)

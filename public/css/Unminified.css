@@ -6,7 +6,7 @@
   --cream-white: #fdfbf7;
   --white: #ffffff;
   --accent-blue: #4285f4;
-  --approach-gap: 170px; /* horizontal gap from center to step columns */
+  --approach-gap: 220px; /* horizontal gap from center to step columns */
 }
 
 /* Custom Scrollbar Styles */
@@ -46,10 +46,13 @@ body {
   position: relative;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding-top: 80px; /* Space for fixed header */
 }
 
 html {
-  scroll-behavior: smooth;
+scroll-behavior: smooth;
+overflow-y: scroll;
+scrollbar-gutter: stable;
 }
 
 body::before {
@@ -57,8 +60,8 @@ body::before {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background-image: linear-gradient(rgba(197, 29, 52, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(197, 29, 52, 0.08) 1px, transparent 1px);
   background-size: 40px 40px;
@@ -370,10 +373,13 @@ header {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
   box-shadow: 0 2px 30px rgba(0, 0, 0, 0.06);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   border-bottom: 1px solid rgba(197, 29, 52, 0.08);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .navbar {
@@ -892,25 +898,34 @@ header {
   color: var(--dark-gray);
   animation: slideInUp 0.8s ease-out;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  /* Allow glow to be visible - add padding for glow space */
+  padding: 15px 0;
+  margin-left: -15px;
+  margin-right: -15px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 .hero .highlight {
   color: var(--red);
   position: relative;
   display: inline-block;
-  text-shadow: 0 0 30px rgba(197, 29, 52, 0.5);
+  text-shadow: 0 0 10px rgba(197, 29, 52, 0.35), 0 0 20px rgba(197, 29, 52, 0.2), 0 0 30px rgba(197, 29, 52, 0.15);
+  /* Ensure glow is not clipped - add padding for glow space */
+  padding: 5px 15px;
+  margin: -5px -15px;
 }
 
 .hero .highlight::after {
   content: "";
   position: absolute;
   bottom: -5px;
-  left: 0;
-  width: 100%;
+  left: 5%;
+  width: 90%;
   height: 4px;
   background: var(--red);
-  box-shadow: 0 0 10px rgba(197, 29, 52, 0.8);
   animation: slideInLeft 1s ease-out 0.3s both;
+  border-radius: 2px;
 }
 
 .hero p {
@@ -6375,8 +6390,20 @@ section.visible .process-step:nth-child(4) { animation-delay: 0.4s; }
     right: 0;
     top: 0;
     bottom: 0;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     margin-top: 0;
+  }
+  
+  /* Fix center icon floating too high on mobile */
+  .why-icon-center {
+    margin-bottom: 2.5rem;
+    margin-top: 0;
+    bottom: 0;
+  }
+  
+  /* Ensure content has enough space above icon */
+  .why-item-center .why-content {
+    margin-bottom: 1rem;
   }
 
   /* Mobile responsive brands grid */
@@ -8840,6 +8867,7 @@ section.visible .process-step:nth-child(4) { animation-delay: 0.4s; }
 
   .dashboard-main {
     margin-left: 0;
+    padding-top: 4.5rem !important;
   }
 
   .sidebar-mobile-toggle {
@@ -8931,6 +8959,7 @@ section.visible .process-step:nth-child(4) { animation-delay: 0.4s; }
 
   .dashboard-main {
     margin-left: 0;
+    padding-top: 4.5rem !important;
   }
 
   .sidebar-mobile-toggle {
@@ -9011,6 +9040,7 @@ section.visible .process-step:nth-child(4) { animation-delay: 0.4s; }
 
   .dashboard-main {
     margin-left: 0;
+    padding-top: 4.5rem !important;
   }
 
   .sidebar-mobile-toggle {
