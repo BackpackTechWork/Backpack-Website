@@ -12,6 +12,11 @@ const app = express()
 const PORT = process.env.PORT || 3000
 const SESSION_SECRET = process.env.SESSION_SECRET || "dev_secret_change_me"
 
+
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1)
+}
+
 // MySQL session store setup
 const sessionStoreOptions = {
   host: process.env.DB_HOST || "localhost",
@@ -140,6 +145,8 @@ app.use(
     cookie: {
       maxAge: 24 * 60 * 60 * 1000,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      httpOnly: true,
     },
   }),
 )
