@@ -38,7 +38,7 @@ router.post("/login", async (req, res, next) => {
     ])
 
     if (users.length === 0) {
-      req.flash("error_msg", "Invalid email or password")
+      req.flash("error_msg", "Wrong password or email")
       return res.redirect("/staff/login")
     }
 
@@ -54,7 +54,7 @@ router.post("/login", async (req, res, next) => {
     const isMatch = await bcrypt.compare(password, user.password)
 
     if (!isMatch) {
-      req.flash("error_msg", "Invalid email or password")
+      req.flash("error_msg", "Wrong password or email")
       return res.redirect("/staff/login")
     }
 
